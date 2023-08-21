@@ -1,1 +1,3 @@
-ln -s ~/dotfiles/.config/nvim ~/.config/nvim
+# Setup syslinks
+ln -sfv ~/dotfiles/.config/nvim ~/.config/nvim
+ln -sfv ~/dotfiles/.zshrc ~/.zshrc
