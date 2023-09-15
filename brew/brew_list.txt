@@ -29,6 +29,7 @@ ripgrep
 ruby
 rust
 sqlite
+tmux
 tree-sitter
 unibilium
 utf8proc
@@ -42,6 +43,7 @@ flutter
 flux
 github
 godot
+hyperkey
 iterm2
 logi-options-plus
 mono-mdk-for-visual-studio
@@ -53,3 +55,4 @@ teamviewer
 unity-hub
 visual-studio
 visual-studio-code
+whatsapp

@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AutoHideTmuxClientSession</key>
+	<false/>
+	<key>Control</key>
+	<integer>1</integer>
 	<key>Custom Color Presets</key>
 	<dict>
 		<key>tokyonight</key>
@@ -348,10 +352,18 @@
 	</dict>
 	<key>Default Bookmark Guid</key>
 	<string>869F9D81-3167-48E6-8490-9F236D8944BD</string>
+	<key>DimBackgroundWindows</key>
+	<false/>
+	<key>DimInactiveSplitPanes</key>
+	<false/>
+	<key>DimOnlyText</key>
+	<false/>
 	<key>HapticFeedbackForEsc</key>
 	<false/>
 	<key>HotkeyMigratedFromSingleToMulti</key>
 	<true/>
+	<key>LeftCommand</key>
+	<integer>7</integer>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
@@ -979,6 +991,8 @@
 			<string>/Users/shivambaku</string>
 		</dict>
 	</array>
+	<key>PerPaneBackgroundImage</key>
+	<true/>
 	<key>PointerActions</key>
 	<dict>
 		<key>Button,1,1,,</key>
@@ -1014,8 +1028,22 @@
 	</dict>
 	<key>Print In Black And White</key>
 	<true/>
+	<key>RightCommand</key>
+	<integer>1</integer>
+	<key>ShowFullScreenTabBar</key>
+	<false/>
+	<key>ShowPaneTitles</key>
+	<false/>
 	<key>SoundForEsc</key>
 	<false/>
+	<key>SplitPaneDimmingAmount</key>
+	<real>0.4269470570388349</real>
+	<key>SwitchPaneModifier</key>
+	<integer>9</integer>
+	<key>SwitchTabModifier</key>
+	<integer>4</integer>
+	<key>TabViewType</key>
+	<integer>0</integer>
 	<key>VisualIndicatorForEsc</key>
 	<false/>
 </dict>
