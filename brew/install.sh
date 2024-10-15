@@ -6,5 +6,4 @@ brew upgrade
 
 # Install brew programs
 echo "Installing homebrew packages..."
-xargs brew install < brew_programs_list.txt
-
+brew bundle install
