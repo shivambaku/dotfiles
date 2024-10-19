@@ -1,6 +1,9 @@
-print("shivambaku module")
-
--- General Settings
+-- Globals
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+vim.g.netrw_banner = 0
+ 
+-- Options
 vim.opt.nu = true
 vim.opt.relativenumber = true
 vim.opt.softtabstop = 2
@@ -11,7 +14,4 @@ vim.opt.wrap = false
 vim.opt.termguicolors = true
 vim.opt.scrolloff = 8
 vim.opt.colorcolumn = "80"
-
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
 

@@ -21,8 +21,51 @@ config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
 
 -- Keymapping 
+config.leader = { key = "k", mods = "CMD", timeout_milliseconds = 2000 }
 config.keys = {
 
+  -- Disable defaults
+  { 
+    mods = 'CMD',
+    key = 'k',
+    action = act.DisableDefaultAssignment,
+  },
+  { 
+    mods = 'CMD',
+    key = 'n',
+    action = act.DisableDefaultAssignment,
+  },
+  -- Wezterm 
+  {
+    mods = 'LEADER | CMD',
+    key = 'n',
+    action = act.SpawnTab "CurrentPaneDomain",
+  },
+  {
+    mods = 'LEADER | CMD',
+    key = '1',
+    action = act.ActivateTab(0),
+  },
+  {
+    mods = 'LEADER | CMD',
+    key = '2',
+    action = act.ActivateTab(1),
+  },
+  {
+    mods = 'LEADER | CMD',
+    key = '3',
+    action = act.ActivateTab(2),
+  },
+  {
+    mods = 'LEADER | CMD',
+    key = '4',
+    action = act.ActivateTab(3),
+  },
+  {
+    mods = 'LEADER | CMD',
+    key = '5',
+    action = act.ActivateTab(4),
+  },
   -- Telescope fuzzy file finder
   {
     mods = 'CMD',
@@ -68,11 +111,6 @@ config.keys = {
     mods = 'CMD',
     key = '5',
     action = act.SendKey { mods = 'ALT', key = '%' },
-  },
-  {
-    mods = 'CMD',
-    key = 'h',
-    action = act.DisableDefaultAssignment,
   },
   {
     mods = 'CMD',
