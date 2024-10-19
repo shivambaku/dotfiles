@@ -2,11 +2,14 @@
 local wezterm = require 'wezterm'
 local config = {}
 
--- Window Appearance 
+-- Window 
 config.window_decorations = "RESIZE"
 
 -- Styling
 config.color_scheme = 'Tokyo Night'
+
+-- Fonts
+config.font = wezterm.font("MesloLGS Nerd Font Mono")
 config.font_size = 14
 
 -- Tabs
