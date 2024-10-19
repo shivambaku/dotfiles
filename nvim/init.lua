@@ -1,0 +1,2 @@
+require("shivambaku")
+require("lazynvim")

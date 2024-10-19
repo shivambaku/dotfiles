@@ -10,8 +10,5 @@ ln -snfFv ~/dotfiles/wezterm ~/.config/wezterm
 ln -sfv ~/dotfiles/zsh/.zshrc ~/.zshrc
 ln -sfv ~/dotfiles/zsh/.zprofile ~/.zprofile
 ln -sfv ~/dotfiles/zsh/.p10k.zsh ~/.p10k.zsh
+ln -snfFv ~/dotfiles/nvim ~/.config/nvim
 
-# ln -snfFv ~/dotfiles/alacritty ~/.config/alacritty
-# ln -sfv ~/dotfiles/.config/nvim ~/.config/nvim
-# ln -sfv ~/dotfiles/tmux/.tmux.conf ~/.tmux.conf
-#

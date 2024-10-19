@@ -24,3 +24,4 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 # Aliases
 alias ll="ls -la"
+alias proj="find ~/Documents/Projects -mindepth 1 -maxdepth 2 -type d | fzf"
