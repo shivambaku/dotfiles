@@ -23,5 +23,5 @@ source $(brew --prefix)/share/zsh-you-should-use/you-should-use.plugin.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Aliases
-alias ll="ls -la"
-alias proj="find ~/Documents/Projects -mindepth 1 -maxdepth 2 -type d | fzf"
+alias ll='ls -la'
+alias proj='cd $(find ~/Documents/Projects -mindepth 1 -maxdepth 2 -type d | fzf)' 
