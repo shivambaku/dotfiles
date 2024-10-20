@@ -6,8 +6,8 @@ vim.g.netrw_banner = 0
 -- Options
 vim.opt.nu = true
 vim.opt.relativenumber = true
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.smartindent = true
 vim.opt.wrap = false
