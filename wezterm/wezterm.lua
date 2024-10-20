@@ -25,12 +25,12 @@ config.leader = { key = "k", mods = "CMD", timeout_milliseconds = 2000 }
 config.keys = {
 
   -- Disable defaults
-  { 
+  {
     mods = 'CMD',
     key = 'k',
     action = act.DisableDefaultAssignment,
   },
-  { 
+  {
     mods = 'CMD',
     key = 'n',
     action = act.DisableDefaultAssignment,
@@ -66,6 +66,7 @@ config.keys = {
     key = '5',
     action = act.ActivateTab(4),
   },
+  -- Neovim
   -- Telescope fuzzy file finder
   {
     mods = 'CMD',
