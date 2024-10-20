@@ -37,32 +37,47 @@ config.keys = {
   },
   -- Wezterm 
   {
-    mods = 'LEADER | CMD',
+    mods = 'LEADER|CMD',
     key = 'n',
     action = act.SpawnTab "CurrentPaneDomain",
   },
+  -- {
+  --   mods = 'CMD',
+  --   key = 'w',
+  --   action = wezterm.action.CloseCurrentPane { confirm = true },
+  -- },
+  -- {
+  --   key = '-',
+  --   mods = 'CMD',
+  --   action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
+  -- },
+  -- {
+  --   key = '\\',
+  --   mods = 'CMD',
+  --   action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
+  -- },
   {
-    mods = 'LEADER | CMD',
+    mods = 'LEADER|CMD',
     key = '1',
     action = act.ActivateTab(0),
   },
   {
-    mods = 'LEADER | CMD',
+    mods = 'LEADER|CMD',
     key = '2',
     action = act.ActivateTab(1),
   },
   {
-    mods = 'LEADER | CMD',
+    mods = 'LEADER|CMD',
     key = '3',
     action = act.ActivateTab(2),
   },
   {
-    mods = 'LEADER | CMD',
+    mods = 'LEADER|CMD',
     key = '4',
     action = act.ActivateTab(3),
   },
   {
-    mods = 'LEADER | CMD',
+    mods = 'LEADER|CMD',
     key = '5',
     action = act.ActivateTab(4),
   },
