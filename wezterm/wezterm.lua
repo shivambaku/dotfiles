@@ -102,7 +102,7 @@ config.keys = {
 		action = act.Multiple({
 			act.SendKey({ key = " " }),
 			act.SendKey({ key = "f" }),
-			act.SendKey({ key = "s" }),
+			act.SendKey({ key = "o" }),
 		}),
 	},
 	-- Harpoon navigation

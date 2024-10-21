@@ -18,11 +18,11 @@ source $(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme
 # Powerlevel10k - To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Zsh plugins
+# Plugins
 source $(brew --prefix)/share/zsh-you-should-use/you-should-use.plugin.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# fzf key bindings
+# FZF - Keybindings
 source <(fzf --zsh)
 
 # Aliases
