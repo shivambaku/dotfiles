@@ -28,3 +28,10 @@ source <(fzf --zsh)
 # Aliases
 alias ll='ls -la'
 alias proj='cd $(find ~/Documents/Projects -mindepth 1 -maxdepth 2 -type d | fzf)' 
+
+# Git
+alias gst="git status"
+alias gc="git commit -m"
+alias gca="git commit -a -m"
+alias ga="git add"
+alias gaa="git add --all"

@@ -38,27 +38,57 @@ config.keys = {
 		key = "n",
 		action = act.DisableDefaultAssignment,
 	},
+	{
+		mods = "CMD",
+		key = "f",
+		action = act.DisableDefaultAssignment,
+	},
 	-- Wezterm
 	{
 		mods = "LEADER|CMD",
 		key = "n",
 		action = act.SpawnTab("CurrentPaneDomain"),
 	},
-	-- {
-	--   mods = 'CMD',
-	--   key = 'w',
-	--   action = wezterm.action.CloseCurrentPane { confirm = true },
-	-- },
-	-- {
-	--   key = '-',
-	--   mods = 'CMD',
-	--   action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
-	-- },
-	-- {
-	--   key = '\\',
-	--   mods = 'CMD',
-	--   action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
-	-- },
+	{
+		mods = "CMD",
+		key = "w",
+		action = wezterm.action.CloseCurrentPane({ confirm = true }),
+	},
+	{
+		key = "-",
+		mods = "CMD",
+		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+	},
+	{
+		key = "\\",
+		mods = "CMD",
+		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+	},
+	{
+		key = "h",
+		mods = "LEADER|CMD",
+		action = act.ActivatePaneDirection("Left"),
+	},
+	{
+		key = "l",
+		mods = "LEADER|CMD",
+		action = act.ActivatePaneDirection("Right"),
+	},
+	{
+		key = "k",
+		mods = "LEADER|CMD",
+		action = act.ActivatePaneDirection("Up"),
+	},
+	{
+		key = "j",
+		mods = "LEADER|CMD",
+		action = act.ActivatePaneDirection("Down"),
+	},
+	{
+		key = "f",
+		mods = "LEADER|CMD",
+		action = wezterm.action.TogglePaneZoomState,
+	},
 	{
 		mods = "LEADER|CMD",
 		key = "1",
