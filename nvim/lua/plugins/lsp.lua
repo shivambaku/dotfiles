@@ -60,5 +60,8 @@ return {
 		vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
 		vim.keymap.set("n", "[d", vim.diagnostic.goto_next, { desc = "Go to next diagnostics" })
 		vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnositcs" })
+		vim.keymap.set("n", "<C-,>", function()
+			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+		end, { desc = "Toggle inlay hints" })
 	end,
 }
