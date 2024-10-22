@@ -12,16 +12,22 @@ config.window_padding = {
 	bottom = 0,
 }
 
+-- Tabs
+config.tab_bar_at_bottom = true
+config.use_fancy_tab_bar = false
+
+-- Panes
+config.inactive_pane_hsb = {
+	saturation = 1.0,
+	brightness = 0.5,
+}
+
 -- Styling
 config.color_scheme = "Tokyo Night"
 
 -- Fonts
 config.font = wezterm.font("MesloLGS Nerd Font Mono")
 config.font_size = 14
-
--- Tabs
-config.tab_bar_at_bottom = true
-config.use_fancy_tab_bar = false
 
 -- Keymapping
 config.leader = { key = "k", mods = "CMD", timeout_milliseconds = 2000 }
@@ -43,6 +49,11 @@ config.keys = {
 		key = "f",
 		action = act.DisableDefaultAssignment,
 	},
+	{
+		mods = "CMD",
+		key = "-",
+		action = act.DisableDefaultAssignment,
+	},
 	-- Wezterm
 	{
 		mods = "LEADER|CMD",
@@ -56,12 +67,12 @@ config.keys = {
 	},
 	{
 		key = "-",
-		mods = "CMD",
+		mods = "LEADER|CMD",
 		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
 	},
 	{
 		key = "\\",
-		mods = "CMD",
+		mods = "LEADER|CMD",
 		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
 	},
 	{

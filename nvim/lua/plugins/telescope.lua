@@ -27,8 +27,6 @@ return {
 		vim.keymap.set("n", "<leader>fx", builtin.diagnostics, { desc = "Diagnostics" })
 
 		telescope.load_extension("live_grep_args")
-		vim.keymap.set("n", "<leader>fs", function()
-			telescope.extensions.live_grep_args.live_grep_args()
-		end, { desc = "Live grep" })
+		vim.keymap.set("n", "<leader>fs", telescope.extensions.live_grep_args.live_grep_args, { desc = "Live grep" })
 	end,
 }

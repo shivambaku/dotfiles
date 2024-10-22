@@ -10,18 +10,13 @@ return {
 		"hrsh7th/nvim-cmp",
 	},
 	config = function()
-		local cmp_lsp = require("cmp_nvim_lsp")
-		local capabilities = vim.tbl_deep_extend(
-			"force",
-			{},
-			vim.lsp.protocol.make_client_capabilities(),
-			cmp_lsp.default_capabilities()
-		)
+		local capabilities = vim.lsp.protocol.make_client_capabilities()
+		capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 		require("mason").setup()
 		require("mason-lspconfig").setup({
 			handlers = {
-				function(server_name) -- default handler (optional)
+				function(server_name)
 					require("lspconfig")[server_name].setup({
 						capabilities = capabilities,
 					})
@@ -60,5 +55,8 @@ return {
 				},
 			},
 		})
+
+		vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+		vim.keymap.set("n", "K", vim.lsp.buf.hover)
 	end,
 }
