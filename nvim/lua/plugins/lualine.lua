@@ -11,7 +11,11 @@ return {
 				lualine_y = { "" },
 				lualine_z = { "" },
 			},
-			options = { section_separators = "", component_separators = "" },
+			options = {
+				section_separators = "",
+				component_separators = "",
+				globalstatus = true,
+			},
 		})
 	end,
 }

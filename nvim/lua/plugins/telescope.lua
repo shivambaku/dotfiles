@@ -20,11 +20,22 @@ return {
 
 		local builtin = require("telescope.builtin")
 		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
+		vim.keymap.set("n", "<leader>fa", function()
+			builtin.find_files({
+				find_command = {
+					"rg",
+					"--files",
+					"--hidden",
+					"--glob=!**/.git/*",
+					"--glob=!**/*-lock.json",
+				},
+			})
+		end, { desc = "Find all files" })
 		vim.keymap.set("n", "<leader>fg", builtin.git_files, { desc = "Find files (excluding git ingores)" })
 		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find help" })
 		vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Find references" })
 		vim.keymap.set("n", "<leader>fo", builtin.lsp_document_symbols, { desc = "Find symbols" })
-		vim.keymap.set("n", "<leader>fx", builtin.diagnostics, { desc = "Diagnostics" })
+		vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
 
 		telescope.load_extension("live_grep_args")
 		vim.keymap.set("n", "<leader>fs", telescope.extensions.live_grep_args.live_grep_args, { desc = "Live grep" })
