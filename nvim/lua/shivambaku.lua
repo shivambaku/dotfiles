@@ -4,6 +4,8 @@ vim.g.maplocalleader = " "
 vim.g.netrw_banner = 0
 
 -- Options
+vim.opt.backup = false
+vim.opt.clipboard = "unnamedplus"
 vim.opt.cmdheight = 0
 vim.opt.colorcolumn = "80"
 vim.opt.expandtab = true
@@ -16,6 +18,7 @@ vim.opt.shiftwidth = 4
 vim.opt.smartcase = true
 vim.opt.smartindent = true
 vim.opt.softtabstop = 4
+vim.opt.swapfile = false
 vim.opt.tabstop = 4
 vim.opt.termguicolors = true
 vim.opt.updatetime = 250
