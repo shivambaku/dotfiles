@@ -39,8 +39,8 @@ return {
 			}),
 		})
 
-		local nvim_lsp = require("lspconfig")
-		nvim_lsp.rust_analyzer.setup({
+		local lspconfig = require("lspconfig")
+		lspconfig.rust_analyzer.setup({
 			settings = {
 				["rust-analyzer"] = {
 					check = {
@@ -56,12 +56,20 @@ return {
 			},
 		})
 
-		vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-		vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover" })
-		vim.keymap.set("n", "[d", vim.diagnostic.goto_next, { desc = "Go to next diagnostics" })
-		vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnositcs" })
-		vim.keymap.set("n", "<C-,>", function()
-			vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-		end, { desc = "Toggle inlay hints" })
+		vim.api.nvim_create_autocmd("LspAttach", {
+			group = vim.api.nvim_create_augroup("Lsp", {}),
+			callback = function(e)
+				local opts = function(desc)
+					return { desc = desc, buffer = e.buf }
+				end
+				vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))
+				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts("Hover"))
+				vim.keymap.set("n", "[d", vim.diagnostic.goto_next, opts("Go to next diagnostics"))
+				vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, opts("Go to previous diagnositcs"))
+				vim.keymap.set("n", "<C-,>", function()
+					vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+				end, opts("Toggle inlay hints"))
+			end,
+		})
 	end,
 }

@@ -4,35 +4,35 @@ vim.g.maplocalleader = " "
 vim.g.netrw_banner = 0
 
 -- Options
+vim.opt.cmdheight = 0
+vim.opt.colorcolumn = "80"
+vim.opt.expandtab = true
+vim.opt.formatoptions:remove("o")
+vim.opt.ignorecase = true
 vim.opt.nu = true
 vim.opt.relativenumber = true
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
-vim.opt.smartindent = true
-vim.opt.wrap = false
-vim.opt.termguicolors = true
 vim.opt.scrolloff = 8
-vim.opt.colorcolumn = "80"
-vim.opt.cmdheight = 0
+vim.opt.shiftwidth = 4
+vim.opt.smartcase = true
+vim.opt.smartindent = true
+vim.opt.softtabstop = 4
+vim.opt.tabstop = 4
+vim.opt.termguicolors = true
 vim.opt.updatetime = 250
+vim.opt.wrap = false
 
 -- Keymapping
-vim.keymap.set("n", "<Esc>", "<cmd>noh<CR>")
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("n", "<Esc>", "<CMD>noh<CR>")
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { silent = true })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
 
 -- Interested
--- vim.keymap.set("n", "<C-d>", "<C-d>zz")
--- vim.keymap.set("n", "<C-u>", "<C-u>zz")
--- vim.keymap.set("n", "n", "nzzzv")
--- vim.keymap.set("n", "N", "Nzzzv")
--- vim.api.nvim_set_keymap("n", "E", "$", {noremap=false})
--- vim.api.nvim_set_keymap("n", "B", "^", {noremap=false})
--- vim.api.nvim_set_keymap("n", "ss", ":noh<CR>", {noremap=true})
 -- vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 -- Autocmds
