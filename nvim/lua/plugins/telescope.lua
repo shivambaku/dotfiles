@@ -35,9 +35,12 @@ return {
 		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find help" })
 		vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Find references" })
 		vim.keymap.set("n", "<leader>fo", builtin.lsp_document_symbols, { desc = "Find symbols" })
-		vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
+		vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Find diagnostics" })
 
 		telescope.load_extension("live_grep_args")
 		vim.keymap.set("n", "<leader>fs", telescope.extensions.live_grep_args.live_grep_args, { desc = "Live grep" })
+
+		telescope.load_extension("noice")
+		vim.keymap.set("n", "<leader>fn", "<CMD>Telescope noice<CR>", { desc = "Find noice" })
 	end,
 }

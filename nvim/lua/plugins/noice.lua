@@ -5,6 +5,6 @@ return {
 		"MunifTanjim/nui.nvim",
 	},
 	config = {
-		require("noice").setup({}),
+		require("noice").setup(),
 	},
 }
