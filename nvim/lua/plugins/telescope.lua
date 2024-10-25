@@ -39,8 +39,5 @@ return {
 
 		telescope.load_extension("live_grep_args")
 		vim.keymap.set("n", "<leader>fs", telescope.extensions.live_grep_args.live_grep_args, { desc = "Live grep" })
-
-		telescope.load_extension("noice")
-		vim.keymap.set("n", "<leader>fn", "<CMD>Telescope noice<CR>", { desc = "Find noice" })
 	end,
 }
