@@ -9,7 +9,6 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.cmdheight = 0
 vim.opt.colorcolumn = "80"
 vim.opt.expandtab = true
-vim.opt.formatoptions:remove("o")
 vim.opt.ignorecase = true
 vim.opt.nu = true
 vim.opt.relativenumber = true
