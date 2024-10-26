@@ -2,6 +2,33 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 local config = {}
+print("Cat")
+-- Helpers
+local function is_vim(pane)
+	local process_info = pane:get_foreground_process_info()
+	local process_name = process_info and process_info.name
+	return process_name == "nvim" or process_name == "vim"
+end
+
+local function key_map_pane_navigation(key, direction)
+	return {
+		key = key,
+		mods = "LEADER|CMD",
+		action = wezterm.action_callback(function(window, pane)
+			if is_vim(pane) then
+				window:perform_action(
+					act.Multiple({
+						act.SendKey({ key = "w", mods = "CTRL" }),
+						act.SendKey({ key = key }),
+					}),
+					pane
+				)
+			else
+				window:perform_action(act.ActivatePaneDirection(direction), pane)
+			end
+		end),
+	}
+end
 
 -- Window
 config.window_decorations = "RESIZE"
@@ -51,54 +78,45 @@ config.keys = {
 	},
 	{
 		mods = "CMD",
+		key = "+",
+		action = act.DisableDefaultAssignment,
+	},
+	{
+		mods = "CMD",
 		key = "-",
 		action = act.DisableDefaultAssignment,
 	},
 	-- Wezterm
-	{
-		mods = "LEADER|CMD",
-		key = "n",
-		action = act.SpawnTab("CurrentPaneDomain"),
-	},
+	-- Panes
 	{
 		mods = "CMD",
 		key = "w",
-		action = wezterm.action.CloseCurrentPane({ confirm = true }),
+		action = act.CloseCurrentPane({ confirm = true }),
 	},
 	{
 		key = "-",
 		mods = "LEADER|CMD",
-		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+		action = act.SplitVertical({ domain = "CurrentPaneDomain" }),
 	},
 	{
 		key = "\\",
 		mods = "LEADER|CMD",
-		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+		action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
 	},
-	{
-		key = "h",
-		mods = "LEADER|CMD",
-		action = act.ActivatePaneDirection("Left"),
-	},
-	{
-		key = "l",
-		mods = "LEADER|CMD",
-		action = act.ActivatePaneDirection("Right"),
-	},
-	{
-		key = "k",
-		mods = "LEADER|CMD",
-		action = act.ActivatePaneDirection("Up"),
-	},
-	{
-		key = "j",
-		mods = "LEADER|CMD",
-		action = act.ActivatePaneDirection("Down"),
-	},
+	key_map_pane_navigation("h", "Left"),
+	key_map_pane_navigation("j", "Down"),
+	key_map_pane_navigation("k", "Up"),
+	key_map_pane_navigation("l", "Right"),
 	{
 		key = "f",
 		mods = "LEADER|CMD",
-		action = wezterm.action.TogglePaneZoomState,
+		action = act.TogglePaneZoomState,
+	},
+	-- Tabs
+	{
+		mods = "LEADER|CMD",
+		key = "n",
+		action = act.SpawnTab("CurrentPaneDomain"),
 	},
 	{
 		mods = "LEADER|CMD",
