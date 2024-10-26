@@ -5,10 +5,8 @@ return {
 	config = function()
 		require("nvim-treesitter.configs").setup({
 			ensure_installed = {
-				"vimdoc",
 				"lua",
 				"rust",
-				"bash",
 			},
 			sync_install = false,
 			auto_install = true,
