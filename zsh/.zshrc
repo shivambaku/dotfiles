@@ -28,7 +28,7 @@ source <(fzf --zsh)
 # Aliases
 alias ll='ls -la'
 alias dot='cd ~/dotfiles && nvim .' 
-alias proj='cd $(find ~/Documents/Projects -mindepth 1 -maxdepth 2 -type d | fzf)' 
+alias p='cd $(find ~/Documents/Projects -mindepth 1 -maxdepth 2 -type d | fzf)' 
 
 # Git
 alias gst="git status"

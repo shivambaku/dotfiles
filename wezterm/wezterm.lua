@@ -2,32 +2,110 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 local config = {}
-print("Cat")
+
 -- Helpers
+local function disable_default(mods, key)
+	return {
+		mods = mods,
+		key = key,
+		action = act.DisableDefaultAssignment,
+	}
+end
+
 local function is_vim(pane)
 	local process_info = pane:get_foreground_process_info()
 	local process_name = process_info and process_info.name
 	return process_name == "nvim" or process_name == "vim"
 end
 
-local function key_map_pane_navigation(key, direction)
+local function key_map_vim_mix(mods, key, vim_action, non_vim_action)
 	return {
 		key = key,
-		mods = "LEADER|CMD",
+		mods = mods,
 		action = wezterm.action_callback(function(window, pane)
 			if is_vim(pane) then
-				window:perform_action(
-					act.Multiple({
-						act.SendKey({ key = "w", mods = "CTRL" }),
-						act.SendKey({ key = key }),
-					}),
-					pane
-				)
+				window:perform_action(vim_action, pane)
 			else
-				window:perform_action(act.ActivatePaneDirection(direction), pane)
+				window:perform_action(non_vim_action, pane)
 			end
 		end),
 	}
+end
+
+local function key_map_vim_mix_pane_vertical_split(key)
+	return key_map_vim_mix(
+		"LEADER|CMD",
+		key,
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "s" }),
+		}),
+		act.SplitVertical({ domain = "CurrentPaneDomain" })
+	)
+end
+
+local function key_map_vim_mix_pane_horizontal_split(key)
+	return key_map_vim_mix(
+		"LEADER|CMD",
+		key,
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "v" }),
+		}),
+		act.SplitHorizontal({ domain = "CurrentPaneDomain" })
+	)
+end
+
+local function key_map_vim_mix_pane_close(key)
+	return key_map_vim_mix(
+		"LEADER|CMD",
+		key,
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "q" }),
+		}),
+		act.CloseCurrentPane({ confirm = true })
+	)
+end
+
+local function key_map_vim_mix_pane_zoom(key)
+	return key_map_vim_mix(
+		"LEADER|CMD",
+		key,
+		act.Multiple({
+			act.SetPaneZoomState(true),
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "|" }),
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "_" }),
+		}),
+		act.SetPaneZoomState(true)
+	)
+end
+
+local function key_map_vim_mix_pane_zoom_out(key)
+	return key_map_vim_mix(
+		"LEADER|CMD",
+		key,
+		act.Multiple({
+			act.SetPaneZoomState(false),
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "=" }),
+		}),
+		act.SetPaneZoomState(false)
+	)
+end
+
+local function key_map_vim_mix_pane_navigation(key, direction)
+	return key_map_vim_mix(
+		"LEADER|CMD",
+		key,
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = key }),
+		}),
+		act.ActivatePaneDirection(direction)
+	)
 end
 
 -- Window
@@ -60,58 +138,16 @@ config.font_size = 16
 config.leader = { key = "k", mods = "CMD", timeout_milliseconds = 2000 }
 config.keys = {
 
-	-- Disable defaults
-	{
-		mods = "CMD",
-		key = "k",
-		action = act.DisableDefaultAssignment,
-	},
-	{
-		mods = "CMD",
-		key = "n",
-		action = act.DisableDefaultAssignment,
-	},
-	{
-		mods = "CMD",
-		key = "f",
-		action = act.DisableDefaultAssignment,
-	},
-	{
-		mods = "CMD",
-		key = "+",
-		action = act.DisableDefaultAssignment,
-	},
-	{
-		mods = "CMD",
-		key = "-",
-		action = act.DisableDefaultAssignment,
-	},
 	-- Wezterm
-	-- Panes
-	{
-		mods = "CMD",
-		key = "w",
-		action = act.CloseCurrentPane({ confirm = true }),
-	},
-	{
-		key = "-",
-		mods = "LEADER|CMD",
-		action = act.SplitVertical({ domain = "CurrentPaneDomain" }),
-	},
-	{
-		key = "\\",
-		mods = "LEADER|CMD",
-		action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
-	},
-	key_map_pane_navigation("h", "Left"),
-	key_map_pane_navigation("j", "Down"),
-	key_map_pane_navigation("k", "Up"),
-	key_map_pane_navigation("l", "Right"),
-	{
-		key = "f",
-		mods = "LEADER|CMD",
-		action = act.TogglePaneZoomState,
-	},
+	-- Disable defaults
+	disable_default("CMD", "k"),
+	disable_default("CMD", "w"),
+	disable_default("CMD", "n"),
+	disable_default("CMD", "f"),
+	disable_default("CMD", "+"),
+	disable_default("CMD", "-"),
+	disable_default("CMD", "k"),
+	disable_default("CMD", "k"),
 	-- Tabs
 	{
 		mods = "LEADER|CMD",
@@ -143,58 +179,47 @@ config.keys = {
 		key = "5",
 		action = act.ActivateTab(4),
 	},
+
+	-- Wezterm & Neovim
+	-- Panes
+	key_map_vim_mix_pane_vertical_split("-"),
+	key_map_vim_mix_pane_horizontal_split("\\"),
+	key_map_vim_mix_pane_close("w"),
+	key_map_vim_mix_pane_zoom("f"),
+	key_map_vim_mix_pane_zoom_out("g"),
+	key_map_vim_mix_pane_navigation("h", "Left"),
+	key_map_vim_mix_pane_navigation("j", "Down"),
+	key_map_vim_mix_pane_navigation("k", "Up"),
+	key_map_vim_mix_pane_navigation("l", "Right"),
+
 	-- Neovim
-	-- Telescope fuzzy file finder
-	{
-		mods = "CMD",
-		key = "p",
-		action = act.Multiple({
+	-- Telescope file finder
+	key_map_vim_mix(
+		"CMD",
+		"p",
+		act.Multiple({
 			act.SendKey({ key = " " }),
 			act.SendKey({ key = "f" }),
 			act.SendKey({ key = "f" }),
-		}),
-	},
-	-- Telescope fuzzy lsp symbol finder
-	{
-		mods = "CMD",
-		key = "o",
-		action = act.Multiple({
+		})
+	),
+	-- Telescope lsp symbol finder
+	key_map_vim_mix(
+		"CMD",
+		"o",
+		act.Multiple({
 			act.SendKey({ key = " " }),
 			act.SendKey({ key = "f" }),
 			act.SendKey({ key = "o" }),
-		}),
-	},
+		})
+	),
 	-- Harpoon navigation
-	{
-		mods = "CMD",
-		key = "1",
-		action = act.SendKey({ mods = "ALT", key = "!" }),
-	},
-	{
-		mods = "CMD",
-		key = "2",
-		action = act.SendKey({ mods = "ALT", key = "@" }),
-	},
-	{
-		mods = "CMD",
-		key = "3",
-		action = act.SendKey({ mods = "ALT", key = "#" }),
-	},
-	{
-		mods = "CMD",
-		key = "4",
-		action = act.SendKey({ mods = "ALT", key = "$" }),
-	},
-	{
-		mods = "CMD",
-		key = "5",
-		action = act.SendKey({ mods = "ALT", key = "%" }),
-	},
-	{
-		mods = "CMD",
-		key = "h",
-		action = act.SendKey({ mods = "ALT", key = "h" }),
-	},
+	key_map_vim_mix("CMD", "h", act.SendKey({ mods = "ALT", key = "h" })),
+	key_map_vim_mix("CMD", "1", act.SendKey({ mods = "ALT", key = "!" })),
+	key_map_vim_mix("CMD", "2", act.SendKey({ mods = "ALT", key = "@" })),
+	key_map_vim_mix("CMD", "3", act.SendKey({ mods = "ALT", key = "#" })),
+	key_map_vim_mix("CMD", "4", act.SendKey({ mods = "ALT", key = "$" })),
+	key_map_vim_mix("CMD", "5", act.SendKey({ mods = "ALT", key = "%" })),
 }
 
 return config

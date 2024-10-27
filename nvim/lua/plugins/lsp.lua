@@ -32,6 +32,8 @@ return {
 					return { desc = desc, buffer = e.buf }
 				end
 				vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))
+				vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))
+				vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, opts("Rename symbol"))
 				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts("Hover"))
 				vim.keymap.set("n", "[d", vim.diagnostic.goto_next, opts("Go to next diagnostics"))
 				vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, opts("Go to previous diagnositcs"))
