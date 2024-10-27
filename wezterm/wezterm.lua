@@ -4,6 +4,7 @@ local act = wezterm.action
 local mux = wezterm.mux
 local utils = require("utils")
 local utils_vim = require("utils-vim")
+local projects = require("projects")
 
 local config = {}
 
@@ -47,9 +48,14 @@ config.keys = {
 	utils.disable_default("CMD", "r"),
 	-- Sessions
 	{
-		key = "p",
+		key = "s",
 		mods = "LEADER|CMD",
 		action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }),
+	},
+	{
+		key = "p",
+		mods = "LEADER|CMD",
+		action = projects.choose_project(),
 	},
 	{
 		key = "r",
