@@ -24,6 +24,7 @@ vim.opt.updatetime = 250
 vim.opt.wrap = false
 
 -- Keymapping
+vim.keymap.set("n", "<leader>pe", vim.cmd.Ex)
 vim.keymap.set("n", "<Esc>", "<CMD>noh<CR>")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
@@ -34,9 +35,6 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("n", "<BS>", "<C-6>")
-
--- Interested
--- vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 -- Autocmds
 local autocmd = vim.api.nvim_create_autocmd
