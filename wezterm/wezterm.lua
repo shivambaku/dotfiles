@@ -62,7 +62,7 @@ config.keys = {
 		mods = "LEADER|CMD",
 		action = act.PromptInputLine({
 			description = "Rename current workspace",
-			action = wezterm.action_callback(function(window, pane, line)
+			action = wezterm.action_callback(function(window, _, line)
 				if line then
 					mux.rename_workspace(window:mux_window():get_workspace(), line)
 				end
