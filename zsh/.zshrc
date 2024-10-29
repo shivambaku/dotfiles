@@ -26,8 +26,9 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 source <(fzf --zsh)
 
 # Aliases
-alias ll='ls -lh'
-alias lla='ls -lha'
+alias ls='eza'
+alias ll='ls -lh --git --icons=always'
+alias lla='ll -a'
 alias dot='cd ~/dotfiles && nvim .' 
 alias proj='cd $(find ~/Documents/Projects -mindepth 1 -maxdepth 2 -type d | fzf)' 
 
@@ -40,3 +41,4 @@ alias gaa="git add --all"
 alias gf="git fetch"
 alias gp="git push"
 alias gl="git pull"
+alias gd="git diff"
