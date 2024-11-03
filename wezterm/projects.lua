@@ -4,9 +4,10 @@ local module = {}
 
 local dotfiles_dir = wezterm.home_dir .. "/dotfiles"
 local project_dir = wezterm.home_dir .. "/Documents/Projects"
+local downloads_dir = wezterm.home_dir .. "/Downloads"
 
 local function project_dirs()
-	local projects = { wezterm.home_dir, dotfiles_dir, project_dir }
+	local projects = { wezterm.home_dir, dotfiles_dir, downloads_dir, project_dir }
 
 	for _, dir in ipairs(wezterm.glob(project_dir .. "/*")) do
 		table.insert(projects, dir)
