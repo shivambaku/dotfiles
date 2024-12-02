@@ -45,6 +45,7 @@ return {
 					local opts = function(desc)
 						return { desc = desc, buffer = e.buf }
 					end
+					vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("Code actions"))
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Go to definition"))
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))
 					vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, opts("Rename symbol"))
