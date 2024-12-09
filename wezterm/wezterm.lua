@@ -11,9 +11,9 @@ local config = {}
 -- Window
 config.window_decorations = "RESIZE"
 config.window_padding = {
-	top = 0,
-	left = 5,
-	right = 5,
+	top = 25,
+	left = 25,
+	right = 25,
 	bottom = 0,
 }
 

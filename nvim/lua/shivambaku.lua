@@ -10,8 +10,6 @@ vim.opt.cmdheight = 0
 vim.opt.colorcolumn = "80"
 vim.opt.expandtab = true
 vim.opt.ignorecase = true
-vim.opt.nu = true
-vim.opt.relativenumber = true
 vim.opt.scrolloff = 8
 vim.opt.shiftwidth = 4
 vim.opt.smartcase = true
@@ -26,7 +24,6 @@ vim.opt.updatetime = 250
 vim.opt.wrap = false
 
 -- Keymapping
--- vim.keymap.set("n", "<leader>pe", vim.cmd.Ex)
 vim.keymap.set("n", "<Esc>", "<CMD>noh<CR>")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
