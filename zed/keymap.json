@@ -1,0 +1,75 @@
+[
+  {
+    "bindings": {
+      "cmd-,": "editor::ToggleInlayHints",
+      "cmd-+": "zed::IncreaseBufferFontSize",
+      "cmd-_": "zed::DecreaseBufferFontSize",
+      "cmd-e": "project_panel::ToggleFocus",
+      "cmd--": "pane::GoBack",
+      "cmd-=": "pane::GoForward"
+    }
+  },
+  {
+    "context": "AssistantPanel",
+    "bindings": {
+      "cmd-i cmd-c": "workspace::ToggleRightDock",
+      "cmd-i cmd-n": "assistant::NewContext",
+      "cmd-i cmd-h": "assistant::DeployHistory",
+      "cmd-i cmd-1": ["pane::ActivateItem", 0],
+      "cmd-i cmd-2": ["pane::ActivateItem", 1],
+      "cmd-i cmd-3": ["pane::ActivateItem", 2],
+      "cmd-i cmd-4": ["pane::ActivateItem", 3],
+      "cmd-i cmd-5": ["pane::ActivateItem", 4],
+      "cmd-i cmd-6": ["pane::ActivateItem", 5],
+      "cmd-i cmd-7": ["pane::ActivateItem", 6],
+      "cmd-i cmd-8": ["pane::ActivateItem", 7]
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "cmd-r": "editor::FindAllReferences",
+      "cmd-g": "editor::GoToDefinition",
+      "cmd-o": "outline::Toggle",
+      "cmd-;": "go_to_line::Toggle"
+      // "cmd-w": "pane::CloseAllItems"
+    }
+  },
+  {
+    "context": "ProjectPanel",
+    "bindings": {
+      "cmd-e": "workspace::ToggleLeftDock"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "cmd-j cmd-n": "workspace::NewTerminal",
+      "cmd-j cmd-1": ["pane::ActivateItem", 0],
+      "cmd-j cmd-2": ["pane::ActivateItem", 1],
+      "cmd-j cmd-3": ["pane::ActivateItem", 2],
+      "cmd-j cmd-4": ["pane::ActivateItem", 3],
+      "cmd-j cmd-5": ["pane::ActivateItem", 4],
+      "cmd-j cmd-6": ["pane::ActivateItem", 5],
+      "cmd-j cmd-7": ["pane::ActivateItem", 6],
+      "cmd-j cmd-8": ["pane::ActivateItem", 7]
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-i cmd-i": "assistant::InlineAssist",
+      "cmd-i cmd-c": "assistant::ToggleFocus",
+      "cmd-j cmd-j": "workspace::ToggleBottomDock",
+      "cmd-k cmd-,": "zed::OpenSettings",
+      "cmd-k cmd-p": "projects::OpenRecent",
+      "cmd-k cmd-b": "branches::OpenRecent",
+      "cmd-k cmd-n": "workspace::NewWindow",
+      "cmd-k cmd-1": ["workspace::ActivatePane", 0],
+      "cmd-k cmd-2": ["workspace::ActivatePane", 1],
+      "cmd-k cmd-3": ["workspace::ActivatePane", 2],
+      "cmd-k cmd-4": ["workspace::ActivatePane", 3]
+    }
+  }
+]
+

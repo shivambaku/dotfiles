@@ -1,0 +1,35 @@
+{
+  "collaboration_panel": {
+    "button": false
+  },
+  "current_line_highlight": "none",
+  "experimental.theme_overrides": {
+    "element.active": "#0b0b0b"
+  },
+  "gutter": {
+    "line_numbers": false,
+    "code_actions": false
+  },
+  "outline_panel": {
+    "button": false
+  },
+  "project_panel": {
+    "button": false
+  },
+  "tab_bar": {
+    "show": false
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "terminal": {
+    "button": false
+  },
+  "theme": "Tokyo Night",
+  "toolbar": {
+    "breadcrumbs": false,
+    "quick_actions": false
+  },
+  "vim_mode": true
+}
