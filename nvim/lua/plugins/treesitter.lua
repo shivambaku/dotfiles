@@ -1,7 +1,7 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
 	version = false,
-	ft = { "rust", "lua" },
+	event = { "BufReadPre", "BufNewFile" },
 	build = ":TSUpdate",
 	config = function()
 		require("nvim-treesitter.configs").setup({
