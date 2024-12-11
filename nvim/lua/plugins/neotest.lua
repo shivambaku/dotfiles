@@ -1,6 +1,6 @@
 return {
 	"nvim-neotest/neotest",
-	event = { "BufReadPre", "BufNewFile" },
+	event = "VeryLazy",
 	dependencies = {
 		"nvim-neotest/nvim-nio",
 		"rouge8/neotest-rust",
