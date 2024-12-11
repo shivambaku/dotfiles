@@ -1,6 +1,5 @@
 return {
 	"nvim-neotest/neotest",
-	event = "VeryLazy",
 	dependencies = {
 		"nvim-neotest/nvim-nio",
 		"rouge8/neotest-rust",
@@ -8,6 +7,7 @@ return {
 		"antoinemadec/FixCursorHold.nvim",
 		"nvim-treesitter/nvim-treesitter",
 	},
+	keys = { "<leader>tr" },
 	config = function()
 		local neotest = require("neotest")
 		neotest.setup({

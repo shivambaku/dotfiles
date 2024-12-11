@@ -26,6 +26,7 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 source <(fzf --zsh)
 
 # Aliases
+alias n='nvim .'
 alias ls='eza'
 alias ll='ls -lh --git --icons=always'
 alias lla='ll -a'

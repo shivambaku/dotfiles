@@ -1,6 +1,5 @@
 return {
 	"mfussenegger/nvim-dap",
-	event = "VeryLazy",
 	dependencies = {
 		"rcarriga/nvim-dap-ui",
 		"theHamsta/nvim-dap-virtual-text",
@@ -8,6 +7,7 @@ return {
 		"williamboman/mason.nvim",
 		"julianolf/nvim-dap-lldb",
 	},
+	keys = { "<leader>dd", "<leader>db", "<F5>" },
 	config = function()
 		local dap = require("dap")
 		local dapui = require("dapui")
