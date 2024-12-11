@@ -7,6 +7,19 @@ return {
 		"nvim-telescope/telescope-live-grep-args.nvim",
 		"nvim-telescope/telescope-ui-select.nvim",
 	},
+	keys = {
+		"<leader>ff",
+		"<leader>fa",
+		"<leader>fg",
+		"<leader>fh",
+		"<leader>fg",
+		"<leader>fh",
+		"<leader>fr",
+		"<leader>fo",
+		"<leader>fd",
+		"<leader>fs",
+		"<leader>ca",
+	},
 	config = function()
 		local telescope = require("telescope")
 		local actions = require("telescope.actions")
