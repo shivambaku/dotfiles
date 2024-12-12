@@ -1,6 +1,6 @@
 return {
 	"folke/flash.nvim",
-	event = "VeryLazy",
+	keys = { "s", "S" },
 	config = function()
 		local flash = require("flash")
 		flash.setup({
