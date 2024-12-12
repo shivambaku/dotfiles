@@ -7,7 +7,6 @@ return {
 			highlight = {
 				backdrop = false,
 				current = false,
-
 				groups = {
 					match = "FlashMatch",
 					current = "FlashMatch",
