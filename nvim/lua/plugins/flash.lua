@@ -7,9 +7,10 @@ return {
 			highlight = {
 				backdrop = false,
 				current = false,
+				matches = false,
 				groups = {
 					match = "FlashMatch",
-					current = "FlashMatch",
+					eurrent = "FlashMatch",
 					label = "FlashCurrent",
 				},
 			},
@@ -19,6 +20,9 @@ return {
 				},
 			},
 		})
+
+		vim.api.nvim_set_hl(0, "FlashCurrent", { bold = true, fg = "#ff0000" })
+
 		vim.keymap.set({ "n", "x", "o" }, "s", flash.jump, { desc = "Flash jump" })
 		vim.keymap.set({ "n", "x", "o" }, "S", flash.treesitter, { desc = "Flash treesitter" })
 	end,

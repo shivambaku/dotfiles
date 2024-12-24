@@ -141,6 +141,8 @@ config.keys = {
 	utils_vim.key_map_vim_mix("CMD", "3", act.SendKey({ mods = "ALT", key = "#" })),
 	utils_vim.key_map_vim_mix("CMD", "4", act.SendKey({ mods = "ALT", key = "$" })),
 	utils_vim.key_map_vim_mix("CMD", "5", act.SendKey({ mods = "ALT", key = "%" })),
+	-- Multi cursor
+	utils_vim.key_map_vim_mix("CMD", "d", act.SendKey({ mods = "CTRL", key = "n" })),
 }
 
 return config
