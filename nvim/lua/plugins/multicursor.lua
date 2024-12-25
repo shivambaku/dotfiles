@@ -1,12 +1,30 @@
 return {
-	"mg979/vim-visual-multi",
-	event = "VeryLazy",
+	"jake-stewart/multicursor.nvim",
+	branch = "1.0",
 	config = function()
-		vim.g.VM_silent_exit = true
-		vim.g.VM_quit_after_leaving_insert_mode = true
-		vim.g.VM_default_mappings = 0
+		local mc = require("multicursor-nvim")
+		mc.setup()
 
-		vim.api.nvim_set_hl(0, "VM_Extend", { bg = "#3d59a1", fg = "#c0caf5" })
-		vim.api.nvim_set_hl(0, "VM_Cursor", { bg = "#3d59a1", fg = "#c0caf5" })
+		vim.api.nvim_set_hl(0, "MultiCursorCursor", { fg = "#12131b", bg = "#868dac" })
+
+		vim.keymap.set("n", "<esc>", function()
+			if not mc.cursorsEnabled() then
+				mc.enableCursors()
+			elseif mc.hasCursors() then
+				mc.clearCursors()
+			else
+				vim.cmd("noh")
+			end
+		end)
+
+		vim.keymap.set({ "n", "v" }, "<Tab>", mc.toggleCursor)
+		vim.keymap.set({ "n", "v" }, "<C-n>", function()
+			mc.matchAddCursor(1)
+		end)
+		vim.keymap.set({ "n", "v" }, "q", mc.nextCursor)
+		vim.keymap.set({ "n", "v" }, "Q", mc.prevCursor)
+		vim.keymap.set({ "n", "v" }, "<c-q>", function()
+			mc.matchSkipCursor(1)
+		end)
 	end,
 }
