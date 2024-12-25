@@ -6,6 +6,7 @@ return {
 		{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 		"nvim-telescope/telescope-live-grep-args.nvim",
 		"nvim-telescope/telescope-ui-select.nvim",
+		"debugloop/telescope-undo.nvim",
 	},
 	event = "VeryLazy",
 	config = function()
@@ -45,7 +46,10 @@ return {
 		vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })
 
 		telescope.load_extension("live_grep_args")
-		vim.keymap.set("n", "<leader>fs", telescope.extensions.live_grep_args.live_grep_args, { desc = "Live grep" })
+		vim.keymap.set("n", "<leader>fs", telescope.extensions.live_grep_args.live_grep_args, { desc = "Search" })
+
+		telescope.load_extension("undo")
+		vim.keymap.set("n", "<leader>fu", telescope.extensions.undo.undo, { desc = "Undo history" })
 
 		telescope.load_extension("ui-select")
 	end,
