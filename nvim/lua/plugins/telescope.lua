@@ -21,6 +21,7 @@ return {
 				},
 			},
 			extensions = {
+				fzf = {},
 				["ui-select"] = {},
 			},
 		})
