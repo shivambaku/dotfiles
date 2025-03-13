@@ -5,6 +5,7 @@ local mux = wezterm.mux
 local utils = require("utils")
 local utils_vim = require("utils-vim")
 local projects = require("projects")
+local toggle_workspace = require("toggle-workspace")
 
 local config = {}
 
@@ -47,6 +48,11 @@ config.keys = {
 	utils.disable_default("CMD", "-"),
 	utils.disable_default("CMD", "r"),
 	-- Sessions
+	{
+		key = "Backspace",
+		mods = "CMD",
+		action = toggle_workspace.toggle_workspace(),
+	},
 	{
 		key = "s",
 		mods = "LEADER|CMD",
