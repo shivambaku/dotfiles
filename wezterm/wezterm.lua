@@ -4,8 +4,7 @@ local act = wezterm.action
 local mux = wezterm.mux
 local utils = require("utils")
 local utils_vim = require("utils-vim")
-local projects = require("projects")
-local toggle_workspace = require("toggle-workspace")
+local workspaces = require("workspaces")
 
 local config = {}
 
@@ -51,17 +50,17 @@ config.keys = {
 	{
 		key = "Backspace",
 		mods = "CMD",
-		action = toggle_workspace.toggle_workspace(),
+		action = workspaces.toggle_workspace(),
+	},
+	{
+		key = "p",
+		mods = "LEADER|CMD",
+		action = workspaces.choose_project(),
 	},
 	{
 		key = "s",
 		mods = "LEADER|CMD",
 		action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }),
-	},
-	{
-		key = "p",
-		mods = "LEADER|CMD",
-		action = projects.choose_project(),
 	},
 	{
 		key = "r",
