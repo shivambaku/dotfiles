@@ -11,11 +11,36 @@ return {
 				chat = { adapter = "ollama" },
 				inline = { adapter = "ollama" },
 			},
+			adapters = {
+				ollama = function()
+					return require("codecompanion.adapters").extend("openai_compatible", {
+						env = {
+							url = "http://localhost:1234",
+						},
+						schema = {
+							model = {
+								default = "qwen2.5-coder-7b-instruct-mlx@4bit",
+							},
+							temperature = {
+								default = 0.2,
+							},
+						},
+					})
+				end,
+			},
 			display = {
 				chat = {
+					auto_scroll = false,
 					window = {
 						position = "right",
+						opts = {
+							wrap = false,
+						},
 					},
+				},
+				diff = {
+					enabled = true,
+					provider = "mini_diff",
 				},
 			},
 		})
@@ -26,7 +51,6 @@ return {
 
 		vim.keymap.set({ "n", "v" }, "<leader>ia", "<cmd>CodeCompanionActions<cr>", opts("Companion actions"))
 		vim.keymap.set({ "n", "v" }, "<leader>in", "<cmd>CodeCompanionChat<cr>", opts("Open a new assistant chat"))
-		vim.keymap.set({ "n", "v" }, "<leader>ii", "<cmd>CodeCompanion<cr>", opts("Start inline chat"))
 		vim.keymap.set({ "n", "v" }, "<leader>ic", "<cmd>CodeCompanionChat Toggle<cr>", opts("Toggle assistant chat"))
 		vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", opts("Companion add to chat"))
 
