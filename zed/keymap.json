@@ -5,6 +5,7 @@
       "cmd-+": "zed::IncreaseBufferFontSize",
       "cmd-_": "zed::DecreaseBufferFontSize",
       "cmd-e": "project_panel::ToggleFocus",
+      "cmd-shift-g": "git_panel::ToggleFocus",
       "cmd--": "pane::GoBack",
       "cmd-=": "pane::GoForward"
     }
@@ -13,7 +14,7 @@
     "context": "AssistantPanel",
     "bindings": {
       "cmd-i cmd-c": "workspace::ToggleRightDock",
-      "cmd-i cmd-n": "assistant::NewContext",
+      // "cmd-i cmd-n": "assistant::NewContext",
       "cmd-i cmd-h": "assistant::DeployHistory",
       "cmd-i cmd-1": ["pane::ActivateItem", 0],
       "cmd-i cmd-2": ["pane::ActivateItem", 1],
@@ -33,6 +34,12 @@
       "cmd-o": "outline::Toggle",
       "cmd-;": "go_to_line::Toggle"
       // "cmd-w": "pane::CloseAllItems"
+    }
+  },
+  {
+    "context": "GitPanel",
+    "bindings": {
+      "cmd-shift-g": "workspace::ToggleLeftDock"
     }
   },
   {
@@ -63,12 +70,8 @@
       "cmd-j cmd-j": "workspace::ToggleBottomDock",
       "cmd-k cmd-,": "zed::OpenSettings",
       "cmd-k cmd-p": "projects::OpenRecent",
-      "cmd-k cmd-b": "branches::OpenRecent",
-      "cmd-k cmd-n": "workspace::NewWindow",
-      "cmd-k cmd-1": ["workspace::ActivatePane", 0],
-      "cmd-k cmd-2": ["workspace::ActivatePane", 1],
-      "cmd-k cmd-3": ["workspace::ActivatePane", 2],
-      "cmd-k cmd-4": ["workspace::ActivatePane", 3]
+      "cmd-k cmd-b": "git::Branch",
+      "cmd-k cmd-n": "workspace::NewWindow"
     }
   }
 ]

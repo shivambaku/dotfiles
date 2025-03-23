@@ -1,3 +1,2 @@
 require("shivambaku")
 require("lazynvim")
-
