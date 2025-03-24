@@ -34,7 +34,7 @@ return {
 					window = {
 						position = "right",
 						opts = {
-							wrap = false,
+							-- wrap = false,
 						},
 					},
 				},

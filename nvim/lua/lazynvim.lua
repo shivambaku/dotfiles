@@ -14,9 +14,17 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Setup lazy.nvim
 require("lazy").setup({
-	spec = {
-		{ import = "plugins" },
-	},
+	spec = (function()
+		if vim.g.vscode then
+			return {
+				{ import = "plugins.flash" },
+			}
+		else
+			return {
+				{ import = "plugins" },
+			}
+		end
+	end)(),
 	checker = { enabled = true, notify = false },
 	performance = {
 		rtp = {
