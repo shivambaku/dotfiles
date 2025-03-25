@@ -1,9 +1,7 @@
 {
-  "features": {
-    "edit_prediction_provider": "zed"
-  },
-  "edit_predictions": {
-    "mode": "subtle"
+  "assistant": {
+    "version": "2",
+    "button": false
   },
   "collaboration_panel": {
     "button": false
@@ -12,15 +10,31 @@
   "experimental.theme_overrides": {
     "element.active": "#0b0b0b"
   },
+  "features": {
+    "edit_prediction_provider": "zed"
+  },
+  "git": {
+    "git_gutter": "hide"
+  },
+  "git_panel": {
+    "button": false
+  },
   "gutter": {
     "line_numbers": false,
     "code_actions": false
+  },
+  "notification_panel": {
+    "button": false
   },
   "outline_panel": {
     "button": false
   },
   "project_panel": {
-    "button": false
+    "button": false,
+    "git_status": false
+  },
+  "scrollbar": {
+    "git_diff": false
   },
   "tab_bar": {
     "show": false
