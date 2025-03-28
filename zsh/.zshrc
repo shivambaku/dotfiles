@@ -30,5 +30,8 @@ alias gf="git fetch"
 alias gp="git push"
 alias gl="git pull"
 alias gd="git diff"
-
+alias gb="git branch"
+alias gba="git branch -a"
+alias gcb="git checkout -b"
+alias gco="git checkout"
 
