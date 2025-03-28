@@ -7,6 +7,11 @@
     "button": false
   },
   "current_line_highlight": "none",
+  "diagnostics": {
+    "inline": {
+      "enabled": true
+    }
+  },
   "experimental.theme_overrides": {
     "element.active": "#0b0b0b"
   },
@@ -23,6 +28,7 @@
     "line_numbers": false,
     "code_actions": false
   },
+  // "max_tabs": 1,
   "notification_panel": {
     "button": false
   },

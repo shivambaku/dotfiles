@@ -9,7 +9,6 @@ vim.g.netrw_banner = 0
 vim.opt.backup = false
 vim.opt.clipboard = "unnamedplus"
 vim.opt.cmdheight = 0
-vim.opt.colorcolumn = "80"
 vim.opt.expandtab = true
 vim.opt.ignorecase = true
 vim.opt.scrolloff = 8
