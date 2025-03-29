@@ -26,6 +26,12 @@ return {
 			},
 		})
 
+		cmp.setup.filetype({ "sql" }, {
+			sources = cmp.config.sources({
+				{ name = "vim-dadbod-completion" },
+			}),
+		})
+
 		cmp.setup.cmdline("/", {
 			mapping = cmp.mapping.preset.cmdline(),
 			sources = {
