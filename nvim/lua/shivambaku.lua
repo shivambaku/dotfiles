@@ -23,6 +23,7 @@ vim.opt.termguicolors = true
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
 vim.opt.updatetime = 250
+-- vim.opt.winborder = "rounded"
 vim.opt.wrap = false
 
 -- Keymapping
@@ -37,6 +38,18 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("n", "<BS>", "<C-6>")
+
+-- User Commands
+vim.api.nvim_create_user_command("SetDatabaseURL", function()
+	local line = vim.api.nvim_get_current_line()
+	local _, match, _ = line:match('^(.-)"([^"]+)"(.*)$')
+	if match then
+		vim.fn.setenv("DATABASE_URL", match)
+		print("DATABASE_URL set to: " .. match)
+	else
+		print("No quoted string found near the cursor.")
+	end
+end, { desc = "Set DATABASE_URL from the nearest quoted string" })
 
 -- Autocmds
 local autocmd = vim.api.nvim_create_autocmd

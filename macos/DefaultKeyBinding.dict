@@ -1,4 +1,0 @@
-{
-    "~f"     = "moveWordForward:";                                 /* Esc f        Move forward word */
-    "~b"     = "moveWordBackward:";                                /* Esc b        Move backward word */
-}
