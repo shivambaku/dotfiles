@@ -54,7 +54,6 @@ return {
 		vim.keymap.set({ "n", "v" }, "<leader>ic", "<cmd>CodeCompanionChat Toggle<cr>", opts("Toggle assistant chat"))
 		vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", opts("Companion add to chat"))
 
-		-- Expand 'cc' into 'CodeCompanion' in the command line
 		vim.cmd([[cab cc CodeCompanion]])
 	end,
 }

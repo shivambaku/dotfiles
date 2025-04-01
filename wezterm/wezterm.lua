@@ -8,6 +8,10 @@ local workspaces = require("workspaces")
 
 local config = {}
 
+-- FPS
+config.max_fps = 144
+config.animation_fps = 144
+
 -- Window
 config.window_decorations = "RESIZE"
 config.window_padding = {

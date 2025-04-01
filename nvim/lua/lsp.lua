@@ -1,4 +1,4 @@
-vim.diagnostic.config({ virtual_lines = true })
+vim.diagnostic.config({ severity_sort = true })
 
 vim.lsp.enable({ "lua-language-server", "rust-analyzer" })
 
