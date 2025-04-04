@@ -12,3 +12,6 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 # Postgres
 export PATH="$(brew --prefix)/opt/postgresql@17/bin:$PATH"
+
+# UV
+export PATH="$HOME/.local/bin:$PATH"
