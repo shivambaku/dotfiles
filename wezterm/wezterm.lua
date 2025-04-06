@@ -5,6 +5,7 @@ local mux = wezterm.mux
 local utils = require("utils")
 local utils_vim = require("utils-vim")
 local workspaces = require("workspaces")
+local notes = require("notes")
 
 local config = {}
 
@@ -61,6 +62,16 @@ config.keys = {
 		key = "p",
 		mods = "LEADER|CMD",
 		action = workspaces.choose_project(),
+	},
+	{
+		key = "o",
+		mods = "LEADER|CMD",
+		action = notes.choose_note(),
+	},
+	{
+		key = "i",
+		mods = "LEADER|CMD",
+		action = notes.create_note(),
 	},
 	{
 		key = "s",

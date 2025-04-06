@@ -1,14 +1,18 @@
 local wezterm = require("wezterm")
 local module = {}
 
+local notes_dir_from_home = "/Documents/Notes"
+local project_dir_from_home = "/Documents/Projects"
 local last_workspace = nil
 
 local function project_dirs()
 	local dotfiles_dir = wezterm.home_dir .. "/dotfiles"
-	local project_dir = wezterm.home_dir .. "/Documents/Projects"
 	local downloads_dir = wezterm.home_dir .. "/Downloads"
+	local notes_dir = wezterm.home_dir .. notes_dir_from_home
+	local project_dir = wezterm.home_dir .. project_dir_from_home
 
-	local projects = { wezterm.home_dir, dotfiles_dir, downloads_dir, project_dir }
+	local projects = { wezterm.home_dir, dotfiles_dir, downloads_dir, notes_dir, project_dir }
+
 	for _, dir in ipairs(wezterm.glob(project_dir .. "/*")) do
 		table.insert(projects, dir)
 	end
@@ -22,8 +26,20 @@ end
 function module.choose_project()
 	return wezterm.action_callback(function(window, pane)
 		local choices = {}
-		for _, value in ipairs(project_dirs()) do
-			table.insert(choices, { label = value })
+		for _, full_path in ipairs(project_dirs()) do
+			local label = full_path:gsub("^" .. wezterm.home_dir, "")
+			label = label:gsub("^" .. notes_dir_from_home, "/Notes")
+			label = label:gsub("^" .. project_dir_from_home, "/Projects")
+			label = label:gsub("^/", "")
+
+			if label == "" then
+				label = "~"
+			end
+
+			table.insert(choices, {
+				label = label,
+				id = full_path,
+			})
 		end
 
 		window:perform_action(
@@ -32,16 +48,16 @@ function module.choose_project()
 				choices = choices,
 				fuzzy = true,
 				fuzzy_description = "Project: ",
-				action = wezterm.action_callback(function(child_window, child_pane, _, label)
-					if not label then
+				action = wezterm.action_callback(function(child_window, child_pane, id, _)
+					if not id then
 						return
 					end
 
 					last_workspace = child_window:active_workspace()
 					child_window:perform_action(
 						wezterm.action.SwitchToWorkspace({
-							name = label:match("([^/]+)$"),
-							spawn = { cwd = label },
+							name = id:match("([^/]+)$"),
+							spawn = { cwd = id },
 						}),
 						child_pane
 					)
