@@ -6,7 +6,7 @@ return {
 	},
 	config = function()
 		require("img-clip").setup({
-			prompt_for_file_name = false,
+			default = { prompt_for_file_name = false },
 		})
 	end,
 }

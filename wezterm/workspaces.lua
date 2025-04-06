@@ -1,18 +1,15 @@
 local wezterm = require("wezterm")
 local module = {}
 
-local editor_path = "/opt/homebrew/bin/nvim"
-local notes_dir_from_home = "/Documents/Notes"
-local project_dir_from_home = "/Documents/Projects"
+local dotfiles_dir = wezterm.home_dir .. "/dotfiles"
+local downloads_dir = wezterm.home_dir .. "/Downloads"
+local notes_dir = wezterm.home_dir .. "/Documents/Notes"
+local project_dir = wezterm.home_dir .. "/Documents/Projects"
+
 local last_workspace = nil
 local saved_workspaces = {}
 
 local function project_dirs()
-	local dotfiles_dir = wezterm.home_dir .. "/dotfiles"
-	local downloads_dir = wezterm.home_dir .. "/Downloads"
-	local notes_dir = wezterm.home_dir .. notes_dir_from_home
-	local project_dir = wezterm.home_dir .. project_dir_from_home
-
 	local projects = { wezterm.home_dir, dotfiles_dir, downloads_dir, notes_dir, project_dir }
 
 	for _, dir in ipairs(wezterm.glob(project_dir .. "/*")) do
@@ -29,9 +26,10 @@ function module.choose_project()
 	return wezterm.action_callback(function(window, pane)
 		local choices = {}
 		for _, full_path in ipairs(project_dirs()) do
-			local label = full_path:gsub("^" .. wezterm.home_dir, "")
-			label = label:gsub("^" .. notes_dir_from_home, "/Notes")
-			label = label:gsub("^" .. project_dir_from_home, "/Projects")
+			local label = full_path
+			label = label:gsub("^" .. notes_dir, "/Notes")
+			label = label:gsub("^" .. project_dir, "/Projects")
+			label = label:gsub("^" .. wezterm.home_dir, "")
 			label = label:gsub("^/", "")
 
 			if label == "" then
@@ -87,7 +85,7 @@ function module.switch_to_notes_workspace()
 			wezterm.action.SwitchToWorkspace({
 				name = "notes",
 				spawn = {
-					cwd = wezterm.home_dir .. notes_dir_from_home,
+					cwd = notes_dir,
 					-- args = { editor_path, "." },
 				},
 			}),

@@ -5,7 +5,7 @@ return {
 		require("render-markdown").setup({
 			file_types = { "markdown", "codecompanion" },
 			win_options = {
-				wrap = { default = true, rendered = true },
+				wrap = { default = false, rendered = false },
 			},
 			sign = {
 				enabled = false,
@@ -14,6 +14,14 @@ return {
 				icons = { "", "", "", "", "", "" },
 				position = "inline",
 				backgrounds = {},
+			},
+			link = {
+				image = "",
+				email = "",
+				hyperlink = "",
+				custom = {
+					web = { icon = "" },
+				},
 			},
 		})
 	end,

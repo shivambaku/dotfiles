@@ -53,5 +53,13 @@ return {
 		vim.keymap.set("n", "<leader>fu", telescope.extensions.undo.undo, { desc = "Undo history" })
 
 		telescope.load_extension("ui-select")
+
+		local notes_path = "~/Documents/Notes/"
+		vim.keymap.set("n", "<leader>fn", function()
+			builtin.find_files({
+				cwd = notes_path,
+				prompt_title = "Notes",
+			})
+		end)
 	end,
 }
