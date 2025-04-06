@@ -23,7 +23,6 @@ vim.opt.termguicolors = true
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
 vim.opt.updatetime = 250
--- vim.opt.winborder = "rounded"
 vim.opt.wrap = false
 
 -- Keymapping

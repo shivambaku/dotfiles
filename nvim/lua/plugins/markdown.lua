@@ -1,11 +1,19 @@
 return {
-	"OXY2DEV/markview.nvim",
-	lazy = false,
+	"MeanderingProgrammer/render-markdown.nvim",
+	dependencies = { "nvim-treesitter/nvim-treesitter" },
 	config = function()
-		require("markview").setup({
-			preview = {
-				filetypes = { "markdown", "codecompanion" },
-				ignore_buftypes = {},
+		require("render-markdown").setup({
+			file_types = { "markdown", "codecompanion" },
+			win_options = {
+				wrap = { default = true, rendered = true },
+			},
+			sign = {
+				enabled = false,
+			},
+			heading = {
+				icons = { "", "", "", "", "", "" },
+				position = "inline",
+				backgrounds = {},
 			},
 		})
 	end,

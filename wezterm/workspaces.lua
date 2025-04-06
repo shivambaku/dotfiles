@@ -1,6 +1,8 @@
 local wezterm = require("wezterm")
 local module = {}
 
+local editor_path = "/opt/homebrew/bin/nvim"
+local notes_dir_from_home = "/Documents/Notes"
 local project_dir_from_home = "/Documents/Projects"
 local last_workspace = nil
 local saved_workspaces = {}
@@ -8,9 +10,10 @@ local saved_workspaces = {}
 local function project_dirs()
 	local dotfiles_dir = wezterm.home_dir .. "/dotfiles"
 	local downloads_dir = wezterm.home_dir .. "/Downloads"
+	local notes_dir = wezterm.home_dir .. notes_dir_from_home
 	local project_dir = wezterm.home_dir .. project_dir_from_home
 
-	local projects = { wezterm.home_dir, dotfiles_dir, downloads_dir, project_dir }
+	local projects = { wezterm.home_dir, dotfiles_dir, downloads_dir, notes_dir, project_dir }
 
 	for _, dir in ipairs(wezterm.glob(project_dir .. "/*")) do
 		table.insert(projects, dir)
@@ -27,6 +30,7 @@ function module.choose_project()
 		local choices = {}
 		for _, full_path in ipairs(project_dirs()) do
 			local label = full_path:gsub("^" .. wezterm.home_dir, "")
+			label = label:gsub("^" .. notes_dir_from_home, "/Notes")
 			label = label:gsub("^" .. project_dir_from_home, "/Projects")
 			label = label:gsub("^/", "")
 
@@ -73,6 +77,22 @@ function module.toggle_workspace()
 			window:perform_action(wezterm.action.SwitchToWorkspace({ name = last_workspace }), pane)
 		end
 		last_workspace = current_workspace
+	end)
+end
+
+function module.switch_to_notes_workspace()
+	return wezterm.action_callback(function(window, pane)
+		last_workspace = window:active_workspace()
+		window:perform_action(
+			wezterm.action.SwitchToWorkspace({
+				name = "notes",
+				spawn = {
+					cwd = wezterm.home_dir .. notes_dir_from_home,
+					-- args = { editor_path, "." },
+				},
+			}),
+			pane
+		)
 	end)
 end
 
