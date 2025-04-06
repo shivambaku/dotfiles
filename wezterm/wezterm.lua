@@ -63,11 +63,6 @@ config.keys = {
 		action = workspaces.choose_project(),
 	},
 	{
-		key = "n",
-		mods = "CMD",
-		action = workspaces.switch_to_notes_workspace(),
-	},
-	{
 		key = "s",
 		mods = "LEADER|CMD",
 		action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }),
