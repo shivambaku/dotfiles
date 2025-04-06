@@ -5,6 +5,7 @@ local editor_path = "/opt/homebrew/bin/nvim"
 local notes_dir_from_home = "/Documents/Notes"
 local project_dir_from_home = "/Documents/Projects"
 local last_workspace = nil
+local saved_workspaces = {}
 
 local function project_dirs()
 	local dotfiles_dir = wezterm.home_dir .. "/dotfiles"
@@ -92,6 +93,27 @@ function module.switch_to_notes_workspace()
 			}),
 			pane
 		)
+	end)
+end
+
+function module.save_workspace(slot)
+	return wezterm.action_callback(function(window, _)
+		local current_workspace = window:active_workspace()
+		saved_workspaces[slot] = current_workspace
+		wezterm.log_info("Saved current workspace '" .. current_workspace .. "' to slot " .. slot)
+	end)
+end
+
+function module.switch_to_saved_workspace(slot)
+	return wezterm.action_callback(function(window, pane)
+		last_workspace = window:active_workspace()
+		local workspace_name = saved_workspaces[slot]
+		if workspace_name then
+			window:perform_action(wezterm.action.SwitchToWorkspace({ name = workspace_name }), pane)
+			wezterm.log_info("Switched to workspace '" .. workspace_name .. "' from slot " .. slot)
+		else
+			wezterm.log_warn("No workspace saved in slot " .. slot)
+		end
 	end)
 end
 

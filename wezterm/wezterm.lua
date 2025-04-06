@@ -95,6 +95,42 @@ config.keys = {
 			end),
 		}),
 	},
+	{
+		key = "F1",
+		mods = "CMD",
+		action = workspaces.save_workspace(1),
+	},
+	{
+		key = "F2",
+		mods = "CMD",
+		action = workspaces.save_workspace(2),
+	},
+	{
+		key = "F3",
+		mods = "CMD",
+		action = workspaces.save_workspace(3),
+	},
+	{
+		key = "F4",
+		mods = "CMD",
+		action = workspaces.save_workspace(4),
+	},
+	{
+		key = "F1",
+		action = workspaces.switch_to_saved_workspace(1),
+	},
+	{
+		key = "F2",
+		action = workspaces.switch_to_saved_workspace(2),
+	},
+	{
+		key = "F3",
+		action = workspaces.switch_to_saved_workspace(3),
+	},
+	{
+		key = "F4",
+		action = workspaces.switch_to_saved_workspace(4),
+	},
 	-- Tabs
 	{
 		mods = "LEADER|CMD",
