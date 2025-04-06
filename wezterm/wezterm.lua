@@ -5,7 +5,6 @@ local mux = wezterm.mux
 local utils = require("utils")
 local utils_vim = require("utils-vim")
 local workspaces = require("workspaces")
-local notes = require("notes")
 
 local config = {}
 
@@ -64,16 +63,6 @@ config.keys = {
 		action = workspaces.choose_project(),
 	},
 	{
-		key = "o",
-		mods = "LEADER|CMD",
-		action = notes.choose_note(),
-	},
-	{
-		key = "i",
-		mods = "LEADER|CMD",
-		action = notes.create_note(),
-	},
-	{
 		key = "n",
 		mods = "CMD",
 		action = workspaces.switch_to_notes_workspace(),
@@ -97,22 +86,22 @@ config.keys = {
 	},
 	{
 		key = "F1",
-		mods = "CMD",
+		mods = "ALT",
 		action = workspaces.save_workspace(1),
 	},
 	{
 		key = "F2",
-		mods = "CMD",
+		mods = "ALT",
 		action = workspaces.save_workspace(2),
 	},
 	{
 		key = "F3",
-		mods = "CMD",
+		mods = "ALT",
 		action = workspaces.save_workspace(3),
 	},
 	{
 		key = "F4",
-		mods = "CMD",
+		mods = "ALT",
 		action = workspaces.save_workspace(4),
 	},
 	{
