@@ -1,6 +1,7 @@
 local wezterm = require("wezterm")
 local module = {}
 
+local editor_path = "/opt/homebrew/bin/nvim"
 local notes_dir_from_home = "/Documents/Notes"
 local project_dir_from_home = "/Documents/Projects"
 local last_workspace = nil
@@ -75,6 +76,22 @@ function module.toggle_workspace()
 			window:perform_action(wezterm.action.SwitchToWorkspace({ name = last_workspace }), pane)
 		end
 		last_workspace = current_workspace
+	end)
+end
+
+function module.switch_to_notes_workspace()
+	return wezterm.action_callback(function(window, pane)
+		last_workspace = window:active_workspace()
+		window:perform_action(
+			wezterm.action.SwitchToWorkspace({
+				name = "notes",
+				spawn = {
+					cwd = wezterm.home_dir .. notes_dir_from_home,
+					args = { editor_path, "." },
+				},
+			}),
+			pane
+		)
 	end)
 end
 
