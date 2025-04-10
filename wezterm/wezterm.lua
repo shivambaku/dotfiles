@@ -15,9 +15,9 @@ config.animation_fps = 144
 -- Window
 config.window_decorations = "RESIZE"
 config.window_padding = {
-	top = 25,
-	left = 25,
-	right = 25,
+	top = 15,
+	left = 15,
+	right = 15,
 	bottom = 0,
 }
 

@@ -1,4 +1,18 @@
 {
+  "show_edit_predictions": true,
+  "languages": {
+    "Rust": {
+      "show_edit_predictions": true
+    }
+  },
+  "edit_predictions": {
+    "mode": "eager",
+    "copilot": {
+      "proxy": null,
+      "proxy_no_verify": null
+    },
+    "enabled_in_assistant": false
+  },
   "assistant": {
     "version": "2",
     "button": false
@@ -7,6 +21,7 @@
     "button": false
   },
   "current_line_highlight": "none",
+  "cursor_blink": false,
   "diagnostics": {
     "inline": {
       "enabled": true
@@ -15,9 +30,6 @@
   "experimental.theme_overrides": {
     "element.active": "#0b0b0b"
   },
-  "features": {
-    "edit_prediction_provider": "zed"
-  },
   "git": {
     "git_gutter": "hide"
   },
@@ -25,8 +37,12 @@
     "button": false
   },
   "gutter": {
-    "line_numbers": false,
-    "code_actions": false
+    "code_actions": false,
+    "folds": false,
+    "line_numbers": false
+  },
+  "indent_guides": {
+    "enabled": false
   },
   // "max_tabs": 1,
   "notification_panel": {

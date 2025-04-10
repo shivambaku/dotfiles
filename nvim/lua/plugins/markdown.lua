@@ -1,3 +1,4 @@
+-- https://github.com/MeanderingProgrammer/render-markdown.nvim/wiki
 return {
 	"MeanderingProgrammer/render-markdown.nvim",
 	dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -21,6 +22,7 @@ return {
 				hyperlink = "",
 				custom = {
 					web = { icon = "" },
+					youtube = { icon = "" },
 				},
 			},
 		})
