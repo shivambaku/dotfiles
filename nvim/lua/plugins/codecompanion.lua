@@ -38,10 +38,6 @@ return {
 						},
 					},
 				},
-				diff = {
-					enabled = true,
-					provider = "mini_diff",
-				},
 			},
 		})
 
