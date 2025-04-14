@@ -7,6 +7,7 @@ return {
 				lua = { "stylua" },
 				rust = { "rustfmt" },
 				markdown = { "prettierd" },
+				html = { "prettierd" },
 			},
 			format_on_save = {
 				timeout_ms = 500,
