@@ -8,6 +8,7 @@ return {
 				rust = { "rustfmt" },
 				markdown = { "prettierd" },
 				html = { "prettierd" },
+				toml = { "taplo" },
 			},
 			format_on_save = {
 				timeout_ms = 500,

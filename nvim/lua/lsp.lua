@@ -1,37 +1,6 @@
+vim.lsp.enable({ "lua", "rust" })
+
 vim.diagnostic.config({ severity_sort = true })
-
-vim.lsp.enable({ "lua-language-server", "rust-analyzer" })
-
-vim.lsp.config["lua-language-server"] = {
-	cmd = { "lua-language-server" },
-	filetypes = { "lua" },
-	root_markers = { ".luarc.json" },
-	settings = {
-		Lua = {
-			diagnostics = {
-				globals = { "vim" },
-			},
-		},
-	},
-}
-
-vim.lsp.config["rust-analyzer"] = {
-	cmd = { "rust-analyzer" },
-	filetypes = { "rs", "rust" },
-	settings = {
-		["rust-analyzer"] = {
-			check = {
-				command = "clippy",
-				extraArgs = {
-					"--",
-					"--no-deps",
-					"-Wclippy::all",
-					"-Wclippy::nursery",
-				},
-			},
-		},
-	},
-}
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(ev)
@@ -52,12 +21,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			end, 500)
 		end
 
-		vim.keymap.set("n", "D", vim.diagnostic.open_float, opts("Hover Dianostics"))
 		vim.keymap.set("n", "<C-,>", toggle_inlay_hints, opts("Toggle inlay hints"))
+		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))
 		vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("Code actions"))
 		vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, opts("Rename symbol"))
-		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))
-		vim.keymap.set("n", "<leader>li", ":silent checkhealth lsp<CR>", opts("LSP health check"))
 		vim.keymap.set("n", "<leader>lr", restart_lsp, opts("Restart LSP"))
 	end,
 })
+
+vim.keymap.set("n", "D", vim.diagnostic.open_float, { desc = "Hover Dianostics" })
+vim.keymap.set("n", "<leader>li", ":silent checkhealth lsp<CR>", { desc = "LSP health check" })

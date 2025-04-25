@@ -18,12 +18,12 @@ return {
 		end)
 
 		vim.keymap.set({ "n", "v" }, "<Tab>", mc.toggleCursor)
+		vim.keymap.set({ "n", "v" }, "q", mc.nextCursor)
+		vim.keymap.set({ "n", "v" }, "Q", mc.prevCursor)
 		vim.keymap.set({ "n", "v" }, "<C-n>", function()
 			mc.matchAddCursor(1)
 		end)
-		vim.keymap.set({ "n", "v" }, "q", mc.nextCursor)
-		vim.keymap.set({ "n", "v" }, "Q", mc.prevCursor)
-		vim.keymap.set({ "n", "v" }, "<c-q>", function()
+		vim.keymap.set({ "n", "v" }, "<C-q>", function()
 			mc.matchSkipCursor(1)
 		end)
 	end,
