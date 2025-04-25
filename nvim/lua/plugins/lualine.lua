@@ -7,7 +7,7 @@ return {
 				lualine_b = { "" },
 				lualine_c = { { "filename", path = 1 } },
 				lualine_x = { "branch", "location" },
-				lualine_y = { require("custom.lualine-codecompanion") },
+				lualine_y = { "" },
 				lualine_z = { "" },
 			},
 			options = {
