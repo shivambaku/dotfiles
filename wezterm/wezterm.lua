@@ -37,7 +37,7 @@ config.color_scheme = "Tokyo Night"
 -- Fonts
 config.font = wezterm.font("MesloLGS Nerd Font Mono")
 config.font_size = 15
-config.line_height = 1.25
+config.line_height = 1.2
 
 -- Keymapping
 config.leader = { key = "k", mods = "CMD", timeout_milliseconds = 2000 }
