@@ -32,10 +32,13 @@ config.inactive_pane_hsb = {
 }
 
 -- Styling
-config.color_scheme = "Tokyo Night"
+-- config.color_scheme = "Catppuccin Mocha"
+config.colors = {
+	background = "#0a0c10",
+}
 
 -- Fonts
-config.font = wezterm.font("MesloLGS Nerd Font Mono")
+config.font = wezterm.font("MesloLGS Nerd Font")
 config.font_size = 15
 config.line_height = 1.2
 
