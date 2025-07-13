@@ -35,6 +35,3 @@ alias gba="git branch -a"
 alias gcb="git checkout -b"
 alias gco="git checkout"
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/shivambaku/.lmstudio/bin"
-# End of LM Studio CLI section
