@@ -3,6 +3,12 @@ return {
 	version = false,
 	event = { "BufReadPre", "BufNewFile" },
 	build = ":TSUpdate",
+	dependencies = {
+		{
+			"JoosepAlviste/nvim-ts-context-commentstring",
+			lazy = true,
+		},
+	},
 	config = function()
 		require("nvim-treesitter.configs").setup({
 			sync_install = false,
