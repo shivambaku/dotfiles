@@ -1,4 +1,4 @@
-vim.lsp.enable({ "lua_ls", "rust_analyzer", "eslint", "tailwindcss", "html", "ruff", "basedpyright", "vtsls", "vue_ls" })
+vim.lsp.enable({ "lua", "rust", "eslint", "tailwindcss", "html", "ruff", "python", "ts", "vue", "toml" })
 
 vim.diagnostic.config({ severity_sort = true })
 
