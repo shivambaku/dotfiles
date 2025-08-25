@@ -78,22 +78,6 @@ function module.toggle_workspace()
 	end)
 end
 
-function module.switch_to_notes_workspace()
-	return wezterm.action_callback(function(window, pane)
-		last_workspace = window:active_workspace()
-		window:perform_action(
-			wezterm.action.SwitchToWorkspace({
-				name = "notes",
-				spawn = {
-					cwd = notes_dir,
-					-- args = { editor_path, "." },
-				},
-			}),
-			pane
-		)
-	end)
-end
-
 function module.save_workspace(slot)
 	return wezterm.action_callback(function(window, _)
 		local current_workspace = window:active_workspace()
