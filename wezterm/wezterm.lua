@@ -32,7 +32,7 @@ config.inactive_pane_hsb = {
 }
 
 -- Styling
--- config.color_scheme = "Catppuccin Mocha"
+config.color_scheme = "Catppuccin Mocha"
 config.colors = {
 	background = "#0a0c10",
 }

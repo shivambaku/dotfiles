@@ -1,18 +1,22 @@
-# Powerlevel10k - Instant prompt
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# oh-my-zsh
+export ZSH="$HOME/.oh-my-zsh"
 
-# Plugins
-source $(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme
-source $(brew --prefix)/share/zsh-you-should-use/you-should-use.plugin.zsh
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+ZSH_CUSTOM=$HOME/.config/zsh/custom
+ZSH_THEME="catppuccin"
 
-# Powerlevel10k - To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+DISABLE_AUTO_TITLE="true"
+DISABLE_LS_COLORS="true"
 
-# FZF - Keybindings
-source <(fzf --zsh)
+plugins=(
+    git
+    vi-mode
+    zsh-syntax-highlighting
+    you-should-use
+    fzf
+)
+
+source $ZSH/oh-my-zsh.sh
+source $ZSH_CUSTOM/fzf-theme.sh
 
 # Aliases
 alias n='nvim .'
@@ -20,19 +24,7 @@ alias ls='eza'
 alias ll='ls -lh --git --icons=always'
 alias lla='ll -a'
 alias lg="lazygit"
+alias oc="opencode"
+alias reload="source ~/.zshrc"
 
-# Aliases - git
-alias gst="git status"
-alias gc="git commit -m"
-alias gca="git commit -a -m"
-alias ga="git add"
-alias gaa="git add --all"
-alias gf="git fetch"
-alias gp="git push"
-alias gl="git pull"
-alias gd="git diff"
-alias gb="git branch"
-alias gba="git branch -a"
-alias gcb="git checkout -b"
-alias gco="git checkout"
 
