@@ -22,3 +22,10 @@ export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE="/var/run/docker.sock"
 
 # Editor
 export EDITOR="nvim"
+
+# Eza
+export EZA_CONFIG_DIR="$HOME/.config/eza"
+
+# XDG
+export XDG_CONFIG_HOME="$HOME/.config"
+

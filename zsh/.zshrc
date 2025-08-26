@@ -19,6 +19,7 @@ alias n='nvim .'
 alias ls='eza'
 alias ll='ls -lh --git --icons=always'
 alias lla='ll -a'
+alias lg="lazygit"
 
 # Aliases - git
 alias gst="git status"

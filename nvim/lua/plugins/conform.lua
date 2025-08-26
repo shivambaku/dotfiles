@@ -9,6 +9,7 @@ return {
 				markdown = { "prettierd" },
 				html = { "prettierd" },
 				toml = { "taplo" },
+				json = { "prettierd" },
 			},
 			format_on_save = {
 				timeout_ms = 500,

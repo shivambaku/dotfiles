@@ -1,2 +1,3 @@
-ln -snfFv "$(pwd)" ~/Library/Application\ Support/eza
+ln -snfFv "$(pwd)" ~/.config/eza
+
 
