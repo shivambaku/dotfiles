@@ -104,18 +104,22 @@ config.keys = {
 	},
 	{
 		key = "F1",
+		mods = "CMD",
 		action = workspaces.switch_to_saved_workspace(1),
 	},
 	{
 		key = "F2",
+		mods = "CMD",
 		action = workspaces.switch_to_saved_workspace(2),
 	},
 	{
 		key = "F3",
+		mods = "CMD",
 		action = workspaces.switch_to_saved_workspace(3),
 	},
 	{
 		key = "F4",
+		mods = "CMD",
 		action = workspaces.switch_to_saved_workspace(4),
 	},
 	-- Tabs
@@ -149,6 +153,9 @@ config.keys = {
 		key = "5",
 		action = act.ActivateTab(4),
 	},
+
+	-- OpenCode
+	utils.key_map_mix("CMD", "i", act.SendKey({ mods = "CTRL", key = "x" })),
 
 	-- Wezterm & Neovim
 	-- Panes

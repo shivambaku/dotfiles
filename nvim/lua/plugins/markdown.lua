@@ -4,7 +4,7 @@ return {
 	dependencies = { "nvim-treesitter/nvim-treesitter" },
 	config = function()
 		require("render-markdown").setup({
-			file_types = { "markdown", "codecompanion" },
+			file_types = { "markdown" },
 			win_options = {
 				wrap = { default = false, rendered = false },
 			},
