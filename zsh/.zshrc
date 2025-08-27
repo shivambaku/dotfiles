@@ -3,7 +3,6 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_CUSTOM=$HOME/.config/zsh/custom
 ZSH_THEME="catppuccin"
-
 DISABLE_AUTO_TITLE="true"
 DISABLE_LS_COLORS="true"
 
@@ -11,7 +10,7 @@ plugins=(
     git
     vi-mode
     zsh-syntax-highlighting
-    you-should-use
+    zsh-you-should-use
     fzf
 )
 

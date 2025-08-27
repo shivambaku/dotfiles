@@ -1,1 +1,0 @@
-ln -sfv "$(pwd)/.p10k.zsh" ~/.p10k.zsh
