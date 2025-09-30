@@ -24,5 +24,5 @@ export EDITOR="nvim"
 export EZA_CONFIG_DIR="$HOME/.config/eza"
 
 # XDG
-export XDG_CONFIG_HOME="$HOME/.config"
+# export XDG_CONFIG_HOME="$HOME/.config"
 
