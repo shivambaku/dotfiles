@@ -7,7 +7,6 @@ return {
 		"typescriptreact",
 		"vue",
 		"html",
-		"markdown",
 		"json",
 		"jsonc",
 		"yaml",

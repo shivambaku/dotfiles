@@ -84,22 +84,22 @@ config.keys = {
 	},
 	{
 		key = "F1",
-		mods = "ALT",
+		mods = "CTRL",
 		action = workspaces.save_workspace(1),
 	},
 	{
 		key = "F2",
-		mods = "ALT",
+		mods = "CTRL",
 		action = workspaces.save_workspace(2),
 	},
 	{
 		key = "F3",
-		mods = "ALT",
+		mods = "CTRL",
 		action = workspaces.save_workspace(3),
 	},
 	{
 		key = "F4",
-		mods = "ALT",
+		mods = "CTRL",
 		action = workspaces.save_workspace(4),
 	},
 	{
@@ -191,7 +191,7 @@ config.keys = {
 		})
 	),
 	-- Harpoon navigation
-	utils_vim.key_map_vim_mix("CMD", "h", act.SendKey({ mods = "ALT", key = "h" })),
+	utils_vim.key_map_vim_mix("CMD", "h", act.SendKey({ mods = "CTRL", key = "h" })),
 	utils_vim.key_map_vim_mix("CMD", "1", act.SendKey({ mods = "ALT", key = "!" })),
 	utils_vim.key_map_vim_mix("CMD", "2", act.SendKey({ mods = "ALT", key = "@" })),
 	utils_vim.key_map_vim_mix("CMD", "3", act.SendKey({ mods = "ALT", key = "#" })),

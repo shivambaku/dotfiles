@@ -3,12 +3,12 @@ return {
 	branch = "harpoon2",
 	dependencies = { "nvim-lua/plenary.nvim" },
 	keys = {
-		"<M-h>",
-		"<M-1>",
-		"<M-2>",
-		"<M-3>",
-		"<M-4>",
-		"<M-5>",
+		"<C-h>",
+		"<C-1>",
+		"<C-2>",
+		"<C-3>",
+		"<C-4>",
+		"<C-5>",
 		"<M-!>",
 		"<M-@>",
 		"<M-#>",
@@ -19,22 +19,22 @@ return {
 		local harpoon = require("harpoon")
 		harpoon:setup()
 
-		vim.keymap.set("n", "<M-h>", function()
+		vim.keymap.set("n", "<C-h>", function()
 			harpoon.ui:toggle_quick_menu(harpoon:list())
 		end)
-		vim.keymap.set("n", "<M-1>", function()
+		vim.keymap.set("n", "<C-1>", function()
 			harpoon:list():replace_at(1)
 		end)
-		vim.keymap.set("n", "<M-2>", function()
+		vim.keymap.set("n", "<C-2>", function()
 			harpoon:list():replace_at(2)
 		end)
-		vim.keymap.set("n", "<M-3>", function()
+		vim.keymap.set("n", "<C-3>", function()
 			harpoon:list():replace_at(3)
 		end)
-		vim.keymap.set("n", "<M-4>", function()
+		vim.keymap.set("n", "<C-4>", function()
 			harpoon:list():replace_at(4)
 		end)
-		vim.keymap.set("n", "<M-5>", function()
+		vim.keymap.set("n", "<C-5>", function()
 			harpoon:list():replace_at(5)
 		end)
 		vim.keymap.set("n", "<M-!>", function()
