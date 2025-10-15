@@ -192,11 +192,11 @@ config.keys = {
 	),
 	-- Harpoon navigation
 	utils_vim.key_map_vim_mix("CMD", "h", act.SendKey({ mods = "CTRL", key = "h" })),
-	utils_vim.key_map_vim_mix("CMD", "1", act.SendKey({ mods = "ALT", key = "!" })),
-	utils_vim.key_map_vim_mix("CMD", "2", act.SendKey({ mods = "ALT", key = "@" })),
-	utils_vim.key_map_vim_mix("CMD", "3", act.SendKey({ mods = "ALT", key = "#" })),
-	utils_vim.key_map_vim_mix("CMD", "4", act.SendKey({ mods = "ALT", key = "$" })),
-	utils_vim.key_map_vim_mix("CMD", "5", act.SendKey({ mods = "ALT", key = "%" })),
+	utils_vim.key_map_vim_mix("CMD", "1", act.SendKey({ mods = "CTRL", key = "!" })),
+	utils_vim.key_map_vim_mix("CMD", "2", act.SendKey({ mods = "CTRL", key = "@" })),
+	utils_vim.key_map_vim_mix("CMD", "3", act.SendKey({ mods = "CTRL", key = "#" })),
+	utils_vim.key_map_vim_mix("CMD", "4", act.SendKey({ mods = "CTRL", key = "$" })),
+	utils_vim.key_map_vim_mix("CMD", "5", act.SendKey({ mods = "CTRL", key = "%" })),
 	-- Multi cursor
 	utils_vim.key_map_vim_mix("CMD", "d", act.SendKey({ mods = "CTRL", key = "n" })),
 }

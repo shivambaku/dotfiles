@@ -9,11 +9,11 @@ return {
 		"<C-3>",
 		"<C-4>",
 		"<C-5>",
-		"<M-!>",
-		"<M-@>",
-		"<M-#>",
-		"<M-$>",
-		"<M-%>",
+		"<C-!>",
+		"<C-@>",
+		"<C-#>",
+		"<C-$>",
+		"<C-%>",
 	},
 	config = function()
 		local harpoon = require("harpoon")
@@ -37,19 +37,19 @@ return {
 		vim.keymap.set("n", "<C-5>", function()
 			harpoon:list():replace_at(5)
 		end)
-		vim.keymap.set("n", "<M-!>", function()
+		vim.keymap.set("n", "<C-!>", function()
 			harpoon:list():select(1)
 		end)
-		vim.keymap.set("n", "<M-@>", function()
+		vim.keymap.set("n", "<C-@>", function()
 			harpoon:list():select(2)
 		end)
-		vim.keymap.set("n", "<M-#>", function()
+		vim.keymap.set("n", "<C-#>", function()
 			harpoon:list():select(3)
 		end)
-		vim.keymap.set("n", "<M-$>", function()
+		vim.keymap.set("n", "<C-$>", function()
 			harpoon:list():select(4)
 		end)
-		vim.keymap.set("n", "<M-%>", function()
+		vim.keymap.set("n", "<C-%>", function()
 			harpoon:list():select(5)
 		end)
 	end,
