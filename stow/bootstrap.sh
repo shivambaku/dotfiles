@@ -10,11 +10,11 @@ log "→ Linking common configs"
 (cd common && stow -t ~ .)
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  log "→ Linking macOS configs"
-  (cd mac && stow -t ~ .)
+  # log "→ Linking macOS configs"
+  # (cd mac && stow -t ~ .)
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  log "→ Linking Linux configs"
-  (cd linux && stow -t ~ .)
+  # log "→ Linking Linux configs"
+  # (cd linux && stow -t ~ .)
 else
   log "⚠️  Unsupported OS: $OSTYPE"
 fi

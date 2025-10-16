@@ -1,9 +1,6 @@
-[submodule "zsh/custom/plugins/zsh-syntax-highlighting"]
-	path = zsh/custom/plugins/zsh-syntax-highlighting
+[submodule "stow/common/.config/zsh/custom/plugins/zsh-syntax-highlighting"]
+	path = stow/common/.config/zsh/custom/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting
-[submodule "zsh/custom/plugins/you-should-use"]
-	path = zsh/custom/plugins/you-should-use
-	url = https://github.com/MichaelAquilina/zsh-you-should-use
-[submodule "zsh/custom/plugins/zsh-you-should-use"]
-	path = zsh/custom/plugins/zsh-you-should-use
+[submodule "stow/common/.config/zsh/custom/plugins/zsh-you-should-use"]
+	path = stow/common/.config/zsh/custom/plugins/zsh-you-should-use
 	url = https://github.com/MichaelAquilina/zsh-you-should-use.git
