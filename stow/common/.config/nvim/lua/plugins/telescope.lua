@@ -26,7 +26,16 @@ return {
 		})
 
 		local builtin = require("telescope.builtin")
-		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
+		vim.keymap.set("n", "<leader>ff", function()
+			builtin.find_files({
+				find_command = {
+					"rg",
+					"--files",
+					"--hidden",
+					"--glob=!**/.git/*",
+				},
+			})
+		end, { desc = "Find files" })
 		vim.keymap.set("n", "<leader>fa", function()
 			builtin.find_files({
 				find_command = {
@@ -47,7 +56,21 @@ return {
 		vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })
 
 		telescope.load_extension("live_grep_args")
-		vim.keymap.set("n", "<leader>fs", telescope.extensions.live_grep_args.live_grep_args, { desc = "Search" })
+		vim.keymap.set("n", "<leader>fs", function()
+			telescope.extensions.live_grep_args.live_grep_args({
+				vimgrep_arguments = {
+					"rg",
+					"--color=never",
+					"--no-heading",
+					"--with-filename",
+					"--line-number",
+					"--column",
+					"--smart-case",
+					"--hidden",
+					"--glob=!**/.git/*",
+				},
+			})
+		end, { desc = "Search" })
 
 		telescope.load_extension("undo")
 		vim.keymap.set("n", "<leader>fu", telescope.extensions.undo.undo, { desc = "Undo history" })
