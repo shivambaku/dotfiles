@@ -39,7 +39,7 @@ return {
 				},
 			})
 		end, { desc = "Find all files" })
-		vim.keymap.set("n", "<leader>fg", builtin.git_files, { desc = "Find files (excluding git ingores)" })
+		vim.keymap.set("n", "<leader>fg", builtin.git_files, { desc = "Find files (excluding git ignore)" })
 		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find help" })
 		vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Find diagnostics" })
 		vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Find references" })
