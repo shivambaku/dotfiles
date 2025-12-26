@@ -1,6 +1,12 @@
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# Editor
+export EDITOR="nvim"
+
+# Eza
+export EZA_CONFIG_DIR="$HOME/.config/eza"
+
 # Python
 export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
 
@@ -16,13 +22,4 @@ export PATH="$HOME/.local/bin:$PATH"
 # Colima
 export DOCKER_HOST="unix://${HOME}/.colima/default/docker.sock"
 export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE="/var/run/docker.sock"
-
-# Editor
-export EDITOR="nvim"
-
-# Eza
-export EZA_CONFIG_DIR="$HOME/.config/eza"
-
-# XDG
-# export XDG_CONFIG_HOME="$HOME/.config"
 
