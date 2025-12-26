@@ -6,9 +6,9 @@ local utils = require("utils")
 local utils_vim = require("utils-vim")
 local workspaces = require("workspaces")
 
--- Cross-platform modifier key (CMD on macOS, ALT on Linux)
-local is_mac = wezterm.target_triple:find("darwin") ~= nil
-local mod = is_mac and "CMD" or "ALT"
+-- Cross-platform modifier key (SUPER on both macOS and Linux)
+-- CMD maps to SUPER on Linux, so we use SUPER consistently
+local mod = "SUPER"
 local leader_mod = "LEADER|" .. mod
 
 local config = {}
