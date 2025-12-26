@@ -1,3 +1,3 @@
-require("shivambaku")
+require("settings")
 require("lazynvim")
 require("lsp")
