@@ -46,6 +46,12 @@ else
   log "oh-my-zsh already installed"
 fi
 
+# Backup existing .zshrc if present (so stow can create symlink)
+if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
+  log "Backing up existing .zshrc..."
+  mv "$HOME/.zshrc" "$HOME/.zshrc.backup"
+fi
+
 # Stow common and mac configs
 log "Linking configs with stow..."
 stow -d "$DOTFILES_DIR/stow" -t ~ common mac
