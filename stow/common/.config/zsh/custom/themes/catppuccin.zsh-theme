@@ -1,3 +1,4 @@
+# Catppuccin Mocha color palette
 catppuccin_rosewater="#f5e0dc"
 catppuccin_flamingo="#f2cdcd"
 catppuccin_pink="#f5c2e7"
@@ -25,9 +26,12 @@ catppuccin_base="#1e1e2e"
 catppuccin_mantle="#181825"
 catppuccin_crust="#11111b"
 
-# Vim mode indicator
-# Note: visual|viopp case is included for completeness but standard zsh vi-mode
-# doesn't set KEYMAP to 'visual' - it stays as 'vicmd' during visual selection
+# Cursor shapes
+_beam_cursor='\e[6 q'
+_block_cursor='\e[2 q'
+
+# Vim mode indicator (shown in prompt)
+# Note: visual|viopp won't trigger - zsh vi-mode stays 'vicmd' during visual selection
 function vim_mode_indicator() {
   case $KEYMAP in
     vicmd) echo "%K{${catppuccin_mauve}}%F{${catppuccin_crust}} NORMAL %k%f " ;;
@@ -36,19 +40,16 @@ function vim_mode_indicator() {
   esac
 }
 
-# Cursor shapes
-_beam_cursor='\e[6 q'
-_block_cursor='\e[2 q'
-
-# Prompt definition
-PROMPT='$(vim_mode_indicator)'
-PROMPT+="%(?:%F{${catppuccin_green}}%1{➜%} :%F{${catppuccin_red}}%1{➜%} )"
-if [[ "$CATPPUCCIN_SHOW_TIME" == true ]]; then
-  PROMPT+="%F{${catppuccin_mauve}}%T%  "
-fi
-PROMPT+="%F{${catppuccin_pink}}%n%  "
-PROMPT+="%F{${catppuccin_blue}}%c%{$reset_color%}"
-PROMPT+=' $(git_prompt_info)'
+# Build the full prompt
+function _build_prompt() {
+  PROMPT='$(vim_mode_indicator)'
+  if [[ "$CATPPUCCIN_SHOW_TIME" == true ]]; then
+    PROMPT+="%F{${catppuccin_mauve}}%T%  "
+  fi
+  PROMPT+="%F{${catppuccin_pink}}%n%  "
+  PROMPT+="%F{${catppuccin_blue}}%c%{$reset_color%}"
+  PROMPT+=' $(git_prompt_info)'
+}
 
 # Vim mode: update cursor shape on mode change
 function zle-keymap-select() {
@@ -67,6 +68,15 @@ function zle-line-init() {
 zle -N zle-keymap-select
 zle -N zle-line-init
 
+# Initialize prompt
+_build_prompt
+
+# Git prompt settings
+ZSH_THEME_GIT_PROMPT_PREFIX="%F{${catppuccin_teal}}("
+ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
+ZSH_THEME_GIT_PROMPT_DIRTY="%F{${catppuccin_teal}}) %F{${catppuccin_yellow}}%1{✗%}"
+ZSH_THEME_GIT_PROMPT_CLEAN="%F{${catppuccin_teal}}) %F{${catppuccin_green}}%1{✔%}"
+
 # ==============================================================================
 # TRANSIENT PROMPT (optional)
 # Collapses previous prompts to "❯" after command execution.
@@ -74,20 +84,12 @@ zle -N zle-line-init
 #
 # To disable: comment out from here to "END TRANSIENT PROMPT"
 # ==============================================================================
-_transient_prompt_compact=0
 
-function _set-prompt() {
+function _set_transient_prompt() {
   if (( _transient_prompt_compact )); then
     PROMPT="%F{${catppuccin_overlay1}}❯%f "
   else
-    PROMPT='$(vim_mode_indicator)'
-    PROMPT+="%(?:%F{${catppuccin_green}}%1{➜%} :%F{${catppuccin_red}}%1{➜%} )"
-    if [[ "$CATPPUCCIN_SHOW_TIME" == true ]]; then
-      PROMPT+="%F{${catppuccin_mauve}}%T%  "
-    fi
-    PROMPT+="%F{${catppuccin_pink}}%n%  "
-    PROMPT+="%F{${catppuccin_blue}}%c%{$reset_color%}"
-    PROMPT+=' $(git_prompt_info)'
+    _build_prompt
   fi
 }
 
@@ -95,7 +97,7 @@ function zle-line-init() {
   [[ $CONTEXT == start ]] || return 0
 
   _transient_prompt_compact=0
-  _set-prompt
+  _set_transient_prompt
   echo -ne "$_beam_cursor"
   zle .reset-prompt
 
@@ -107,17 +109,17 @@ function zle-line-init() {
   # Handle Ctrl-D (EOT)
   if [[ $ret == 0 && $KEYS == $'\4' ]]; then
     _transient_prompt_compact=1
-    _set-prompt
+    _set_transient_prompt
     zle .reset-prompt
     exit
   fi
 
   # Collapse prompt and execute
   _transient_prompt_compact=1
-  _set-prompt
+  _set_transient_prompt
   zle .reset-prompt
   _transient_prompt_compact=0
-  _set-prompt
+  _set_transient_prompt
 
   if (( ret )); then
     zle .send-break
@@ -135,13 +137,10 @@ function zle-keymap-select() {
   zle .reset-prompt
 }
 
+_transient_prompt_compact=0
 zle -N zle-line-init
 zle -N zle-keymap-select
+
 # ==============================================================================
 # END TRANSIENT PROMPT
 # ==============================================================================
-
-ZSH_THEME_GIT_PROMPT_PREFIX="%F{${catppuccin_teal}}("
-ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
-ZSH_THEME_GIT_PROMPT_DIRTY="%F{${catppuccin_teal}}) %F{${catppuccin_yellow}}%1{✗%}"
-ZSH_THEME_GIT_PROMPT_CLEAN="%F{${catppuccin_teal}}) %F{${catppuccin_green}}%1{✔%}"
