@@ -17,6 +17,9 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 source $ZSH_CUSTOM/fzf-theme.sh
 
+# Exposts
+export EDITOR='nvim'
+
 # Aliases
 alias n='nvim .'
 alias ls='eza'
@@ -26,4 +29,6 @@ alias lg="lazygit"
 alias oc="opencode"
 alias reload="source ~/.zshrc"
 
+# Hotkeys
+bindkey '^E' edit-command-line 
 
