@@ -17,6 +17,9 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 source $ZSH_CUSTOM/fzf-theme.sh
 
+# Faster vim mode switching (default is 40 = 400ms)
+KEYTIMEOUT=1
+
 # Exposts
 export EDITOR='nvim'
 
