@@ -5,6 +5,8 @@ ZSH_CUSTOM=$HOME/.config/zsh/custom
 ZSH_THEME="catppuccin"
 DISABLE_AUTO_TITLE="true"
 DISABLE_LS_COLORS="true"
+VI_MODE_SET_CURSOR=false
+VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=false
 
 plugins=(
     git
@@ -16,6 +18,10 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 source $ZSH_CUSTOM/fzf-theme.sh
+
+# Clear vi-mode right prompt (mode indicator handled by theme)
+RPS1=''
+RPROMPT=''
 
 # Faster vim mode switching (default is 40 = 400ms)
 KEYTIMEOUT=1

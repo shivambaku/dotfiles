@@ -34,9 +34,9 @@ _block_cursor='\e[2 q'
 # Note: visual|viopp won't trigger - zsh vi-mode stays 'vicmd' during visual selection
 function vim_mode_indicator() {
   case $KEYMAP in
-    vicmd) echo "%K{${catppuccin_mauve}}%F{${catppuccin_crust}} NORMAL %k%f " ;;
-    viins|main) echo "%K{${catppuccin_green}}%F{${catppuccin_crust}} INSERT %k%f " ;;
-    visual|viopp) echo "%K{${catppuccin_yellow}}%F{${catppuccin_crust}} VISUAL %k%f " ;;
+    vicmd) echo "%F{${catppuccin_mauve}}❯%f " ;;
+    viins|main) echo "%F{${catppuccin_green}}❯%f " ;;
+    visual|viopp) echo "%F{${catppuccin_yellow}}❯%f " ;;
   esac
 }
 
