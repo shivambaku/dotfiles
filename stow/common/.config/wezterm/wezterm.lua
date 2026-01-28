@@ -1,13 +1,10 @@
 -- https://wezfurlong.org/wezterm/config/lua/general.html
 local wezterm = require("wezterm")
 local act = wezterm.action
-local mux = wezterm.mux
 local utils = require("utils")
 local utils_vim = require("utils-vim")
 local workspaces = require("workspaces")
 
--- Cross-platform modifier key (SUPER on both macOS and Linux)
--- CMD maps to SUPER on Linux, so we use SUPER consistently
 local mod = "SUPER"
 local leader_mod = "LEADER|" .. mod
 
@@ -61,70 +58,53 @@ config.keys = {
 	utils.disable_default(mod, "r"),
 	-- Sessions
 	{
-		key = "Backspace",
 		mods = mod,
+		key = "Backspace",
 		action = workspaces.toggle_workspace(),
 	},
 	{
-		key = "p",
 		mods = leader_mod,
+		key = "p",
 		action = workspaces.choose_project(),
 	},
 	{
-		key = "s",
-		mods = leader_mod,
-		action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }),
-	},
-	{
-		key = "r",
-		mods = leader_mod,
-		action = act.PromptInputLine({
-			description = "Rename current workspace",
-			action = wezterm.action_callback(function(window, _, line)
-				if line then
-					mux.rename_workspace(window:mux_window():get_workspace(), line)
-				end
-			end),
-		}),
-	},
-	{
-		key = "F1",
 		mods = "CTRL",
+		key = "F1",
 		action = workspaces.save_workspace(1),
 	},
 	{
-		key = "F2",
 		mods = "CTRL",
+		key = "F2",
 		action = workspaces.save_workspace(2),
 	},
 	{
-		key = "F3",
 		mods = "CTRL",
+		key = "F3",
 		action = workspaces.save_workspace(3),
 	},
 	{
-		key = "F4",
 		mods = "CTRL",
+		key = "F4",
 		action = workspaces.save_workspace(4),
 	},
 	{
-		key = "F1",
 		mods = mod,
+		key = "F1",
 		action = workspaces.switch_to_saved_workspace(1),
 	},
 	{
-		key = "F2",
 		mods = mod,
+		key = "F2",
 		action = workspaces.switch_to_saved_workspace(2),
 	},
 	{
-		key = "F3",
 		mods = mod,
+		key = "F3",
 		action = workspaces.switch_to_saved_workspace(3),
 	},
 	{
-		key = "F4",
 		mods = mod,
+		key = "F4",
 		action = workspaces.switch_to_saved_workspace(4),
 	},
 	-- Tabs

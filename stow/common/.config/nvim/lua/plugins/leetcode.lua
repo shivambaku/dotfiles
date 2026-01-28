@@ -9,6 +9,10 @@ return {
 	opts = {
 		lang = "rust",
 
+		editor = {
+			reset_previous_code = false,
+		},
+
 		injector = {
 			["rust"] = {
 				before = { "#[allow(dead_code)]", "fn main(){}", "#[allow(dead_code)]", "struct Solution;" },

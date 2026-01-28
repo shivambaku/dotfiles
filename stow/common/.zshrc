@@ -7,6 +7,7 @@ DISABLE_AUTO_TITLE="true"
 DISABLE_LS_COLORS="true"
 VI_MODE_SET_CURSOR=false
 VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=false
+KEYTIMEOUT=1
 
 plugins=(
     git
@@ -23,11 +24,12 @@ source $ZSH_CUSTOM/fzf-theme.sh
 RPS1=''
 RPROMPT=''
 
-# Faster vim mode switching (default is 40 = 400ms)
-KEYTIMEOUT=1
+# Hotkeys
+bindkey '^E' edit-command-line 
 
-# Exposts
+# Exports
 export EDITOR='nvim'
+export XDG_CONFIG_HOME="$HOME/.config"
 
 # Aliases
 alias n='nvim .'
@@ -38,6 +40,4 @@ alias lg="lazygit"
 alias oc="opencode"
 alias reload="source ~/.zshrc"
 
-# Hotkeys
-bindkey '^E' edit-command-line 
 
