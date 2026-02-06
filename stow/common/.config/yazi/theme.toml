@@ -2,6 +2,8 @@
 overall = { bg = "#0a0c10" }
 
 [mgr]
+syntect_theme = "~/.config/bat/themes/Catppuccin Mocha.tmTheme"
+
 cwd = { fg = "#94e2d5" }
 
 find_keyword = { fg = "#f9e2af", italic = true }
@@ -19,7 +21,6 @@ count_selected = { fg = "#1e1e2e", bg = "#89b4fa" }
 border_symbol = "│"
 border_style = { fg = "#7f849c" }
 
-syntect_theme = "~/.config/yazi/Catppuccin Mocha.tmTheme"
 
 [tabs]
 active = { fg = "#1e1e2e", bg = "#cdd6f4", bold = true }
