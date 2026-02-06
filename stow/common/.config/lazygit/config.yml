@@ -1,3 +1,8 @@
+git:
+  pagers:
+    - useExternalDiffGitConfig: false
+    - externalDiffCommand: difft --color=always --display=inline --syntax-highlight=off 
+
 gui:
   theme:
     activeBorderColor:
@@ -19,6 +24,5 @@ gui:
       - '#cdd6f4'
     searchingActiveBorderColor:
       - '#f9e2af'
-
   authorColors:
     '*': '#b4befe'

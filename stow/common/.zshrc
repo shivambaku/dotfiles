@@ -24,12 +24,12 @@ source $ZSH_CUSTOM/fzf-theme.sh
 RPS1=''
 RPROMPT=''
 
-# Hotkeys
-bindkey '^E' edit-command-line 
-
 # Exports
 export EDITOR='nvim'
 export XDG_CONFIG_HOME="$HOME/.config"
+
+# Hotkeys
+bindkey '^E' edit-command-line 
 
 # Aliases
 alias n='nvim .'
@@ -39,5 +39,5 @@ alias lla='ll -a'
 alias lg="lazygit"
 alias oc="opencode"
 alias reload="source ~/.zshrc"
-
-
+alias cat="bat"
+alias yz="yazi"
