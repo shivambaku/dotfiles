@@ -83,23 +83,3 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.opt_local.formatoptions:remove({ "c", "r", "o" })
 	end,
 })
-
--- rust leetcode.nvim support
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "rust",
-	callback = function()
-		local bufpath = vim.api.nvim_buf_get_name(0)
-		local leetcode_path = vim.fn.stdpath("data") .. "/leetcode"
-
-		-- Only apply if we're in the leetcode directory
-		if bufpath:match(leetcode_path) then
-			vim.lsp.buf_notify(0, "workspace/didChangeConfiguration", {
-				settings = {
-					["rust-analyzer"] = {
-						linkedProjects = { leetcode_path .. "/Cargo.toml" },
-					},
-				},
-			})
-		end
-	end,
-})

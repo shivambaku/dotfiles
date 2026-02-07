@@ -10,7 +10,6 @@ git:
 
 gui:
   sidePanelWidth: 0.3
-
   expandFocusedSidePanel: true
   expandedSidePanelWeight: 3
 
