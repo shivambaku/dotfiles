@@ -1,9 +1,28 @@
 git:
   pagers:
-    - useExternalDiffGitConfig: false
-    - externalDiffCommand: difft --color=always --display=inline --syntax-highlight=off 
+    - colorArg: always
+      pager: delta --features="catppuccin-mocha" 
+      useConfig: false
+    - colorArg: always
+      pager: delta --features="catppuccin-mocha" -s
+      useConfig: false
+
 
 gui:
+  sidePanelWidth: 0.3
+
+  expandFocusedSidePanel: true
+  expandedSidePanelWeight: 3
+
+  showFileTree: false
+  showNumstatInFilesView: true
+  showRandomTip: false
+  showCommandLog: false
+  showBottomLine: false
+  showPanelJumps: false
+
+  promptToReturnFromSubprocess: false
+
   theme:
     activeBorderColor:
       - '#f2cdcd'

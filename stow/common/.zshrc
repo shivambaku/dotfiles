@@ -37,7 +37,7 @@ alias ls='eza'
 alias ll='ls -lh --git --icons=always'
 alias lla='ll -a'
 alias lg="lazygit"
-alias oc="opencode"
+alias oc='OPENCODE_EXPERIMENTAL_MARKDOWN=true opencode'
 alias reload="source ~/.zshrc"
 alias cat="bat"
 alias yz="yazi"
