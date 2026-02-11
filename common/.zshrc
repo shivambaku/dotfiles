@@ -27,6 +27,7 @@ RPROMPT=''
 # Exports
 export EDITOR='nvim'
 export XDG_CONFIG_HOME="$HOME/.config"
+export EZA_CONFIG_DIR="$HOME/.config/eza"
 
 # Hotkeys
 bindkey '^E' edit-command-line 
