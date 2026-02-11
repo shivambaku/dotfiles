@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 log()  { echo -e "\033[1;32m$*\033[0m"; }
 warn() { echo -e "\033[1;33m$*\033[0m"; }
@@ -41,9 +41,20 @@ else
   log "oh-my-zsh already installed"
 fi
 
+# Backup existing .zshrc if present (so stow can create symlink)
+if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
+  log "Backing up existing .zshrc..."
+  mv "$HOME/.zshrc" "$HOME/.zshrc.backup"
+fi
+
+# Initialize git submodules
+log "Initializing git submodules..."
+git -C "$DOTFILES_DIR" submodule update --init --recursive
+
 # Stow common and linux configs
 log "Linking configs with stow..."
-stow -d "$DOTFILES_DIR/stow" -t ~ common linux
+stow -d "$DOTFILES_DIR" -t ~ common
+stow -d "$SCRIPT_DIR" -t ~ stow
 
 log "Done!"
 log "Note: You may need to install additional packages manually (nvim, eza, lazygit, etc.)"
