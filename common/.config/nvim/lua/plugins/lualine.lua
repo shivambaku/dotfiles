@@ -7,7 +7,11 @@ return {
 				lualine_b = { "" },
 				lualine_c = { { "filename", path = 1 } },
 				lualine_x = { "branch", "location" },
-				lualine_y = { "" },
+				lualine_y = {
+					function()
+						return require("faf").statusline()
+					end,
+				},
 				lualine_z = { "" },
 			},
 			options = {

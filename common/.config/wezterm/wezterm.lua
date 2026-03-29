@@ -153,6 +153,14 @@ config.keys = {
 	utils_vim.key_map_vim_mix_pane_navigation(leader_mod, "j", "Down"),
 	utils_vim.key_map_vim_mix_pane_navigation(leader_mod, "k", "Up"),
 	utils_vim.key_map_vim_mix_pane_navigation(leader_mod, "l", "Right"),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		";",
+		act.Multiple({
+			act.SendKey({ mods = "CTRL", key = "w" }),
+			act.SendKey({ key = "w" }),
+		})
+	),
 
 	-- Neovim
 	-- Telescope file finder

@@ -16,6 +16,10 @@ return {
 				mappings = {
 					i = {
 						["<esc>"] = actions.close,
+						["<C-q>"] = actions.send_selected_to_qflist,
+					},
+					n = {
+						["<C-q>"] = actions.send_selected_to_qflist,
 					},
 				},
 			},
@@ -51,6 +55,8 @@ return {
 		vim.keymap.set("n", "<leader>fg", builtin.git_files, { desc = "Find files (excluding git ignore)" })
 		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find help" })
 		vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Find diagnostics" })
+		vim.keymap.set("n", "<leader>fq", builtin.quickfix, { desc = "Find quickfix" })
+		vim.keymap.set("n", "<leader>fQ", builtin.quickfixhistory, { desc = "Find quickfix history" })
 		vim.keymap.set("n", "<leader>fr", builtin.lsp_references, { desc = "Find references" })
 		vim.keymap.set("n", "<leader>fo", builtin.lsp_document_symbols, { desc = "Find symbols" })
 		vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })

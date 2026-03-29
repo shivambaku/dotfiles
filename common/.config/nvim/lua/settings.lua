@@ -24,6 +24,7 @@ vim.opt.termguicolors = true
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
 vim.opt.updatetime = 250
+vim.opt.winborder = "rounded"
 vim.opt.wrap = false
 
 -- Keymapping
@@ -38,6 +39,18 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("n", "<BS>", "<C-6>")
+vim.keymap.set("n", "]q", "<Cmd>try | cnext | catch | cfirst | catch | endtry<CR>")
+vim.keymap.set("n", "[q", "<Cmd>try | cprevious | catch | clast | catch | endtry<CR>")
+vim.keymap.set("n", "<leader>qo", "<Cmd>copen<CR>", { desc = "Open quickfix list" })
+vim.keymap.set("n", "<leader>qc", "<Cmd>cclose<CR>", { desc = "Close quickfix list" })
+vim.keymap.set(
+	"n",
+	"<leader>qt",
+	"<Cmd>if empty(filter(getwininfo(), 'v:val.quickfix')) | copen | else | cclose | endif<CR>",
+	{ desc = "Toggle quickfix list" }
+)
+vim.keymap.set("n", "<leader>qn", "<Cmd>cnewer<CR>", { desc = "Newer quickfix list" })
+vim.keymap.set("n", "<leader>qp", "<Cmd>colder<CR>", { desc = "Older quickfix list" })
 
 -- User Commands
 vim.api.nvim_create_user_command("SetDatabaseURL", function()
@@ -51,7 +64,21 @@ vim.api.nvim_create_user_command("SetDatabaseURL", function()
 	end
 end, { desc = "Set DATABASE_URL from the nearest quoted string" })
 
--- highlight yank
+vim.api.nvim_create_user_command("Scratch", function()
+	vim.cmd("bel 10new")
+	local buf = vim.api.nvim_get_current_buf()
+	for name, value in pairs({
+		filetype = "scratch",
+		buftype = "nofile",
+		bufhidden = "wipe",
+		swapfile = false,
+		modifiable = true,
+	}) do
+		vim.api.nvim_set_option_value(name, value, { buf = buf })
+	end
+end, { desc = "Open a scratch buffer", nargs = 0 })
+
+-- Auto Commands
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
 	pattern = "*",
@@ -61,7 +88,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- restore cursor to file position in previous editing session
 vim.api.nvim_create_autocmd("BufReadPost", {
 	callback = function(args)
 		local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
@@ -76,7 +102,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	end,
 })
 
--- no auto continue comments on new line
 vim.api.nvim_create_autocmd("FileType", {
 	group = vim.api.nvim_create_augroup("no_auto_comment", {}),
 	callback = function()

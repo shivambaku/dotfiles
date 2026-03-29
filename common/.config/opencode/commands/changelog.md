@@ -26,4 +26,5 @@ Format (bullet points grouped by type):
 - Fixed: bug fixes (from fix commits)
 - Security: security-related changes
 
+Each bullet should start with its category verb (e.g. "Added ...", "Fixed ...", "Changed ...").
 Omit empty types.
