@@ -1,5 +1,6 @@
 [delta "catppuccin-mocha"]
 	syntax-theme = Catppuccin Mocha
+    width = variable
     paging = never
     dark = true
     tabs = 4
@@ -7,7 +8,7 @@
     commit-decoration-style = none 
     file-decoration-style = none
 
-    hunk-header-decoration-style = none
+    hunk-header-decoration-style = ul
 	hunk-header-file-style = bold
 	hunk-header-line-number-style = bold "#a6adc8"
 	hunk-header-style = file line-number syntax
