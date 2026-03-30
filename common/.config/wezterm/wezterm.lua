@@ -4,6 +4,7 @@ local act = wezterm.action
 local utils = require("utils")
 local utils_vim = require("utils-vim")
 local workspaces = require("workspaces")
+local worktrees = require("worktrees")
 
 local mod = "SUPER"
 local leader_mod = "LEADER|" .. mod
@@ -64,79 +65,24 @@ config.keys = {
 	},
 	{
 		mods = leader_mod,
+		key = "o",
+		action = worktrees.choose_worktree(),
+	},
+	{
+		mods = leader_mod,
 		key = "p",
 		action = workspaces.choose_project(),
 	},
 	{
-		mods = "CTRL",
-		key = "F1",
-		action = workspaces.save_workspace(1),
-	},
-	{
-		mods = "CTRL",
-		key = "F2",
-		action = workspaces.save_workspace(2),
-	},
-	{
-		mods = "CTRL",
-		key = "F3",
-		action = workspaces.save_workspace(3),
-	},
-	{
-		mods = "CTRL",
-		key = "F4",
-		action = workspaces.save_workspace(4),
-	},
-	{
-		mods = mod,
-		key = "F1",
-		action = workspaces.switch_to_saved_workspace(1),
-	},
-	{
-		mods = mod,
-		key = "F2",
-		action = workspaces.switch_to_saved_workspace(2),
-	},
-	{
-		mods = mod,
-		key = "F3",
-		action = workspaces.switch_to_saved_workspace(3),
-	},
-	{
-		mods = mod,
-		key = "F4",
-		action = workspaces.switch_to_saved_workspace(4),
+		mods = leader_mod,
+		key = "s",
+		action = workspaces.choose_workspace(),
 	},
 	-- Tabs
 	{
 		mods = leader_mod,
 		key = "n",
 		action = act.SpawnTab("CurrentPaneDomain"),
-	},
-	{
-		mods = leader_mod,
-		key = "1",
-		action = act.ActivateTab(0),
-	},
-	{
-		mods = leader_mod,
-		key = "2",
-		action = act.ActivateTab(1),
-	},
-	{
-		mods = leader_mod,
-		key = "3",
-		action = act.ActivateTab(2),
-	},
-	{
-		mods = leader_mod,
-		key = "4",
-		action = act.ActivateTab(3),
-	},
-	{
-		mods = leader_mod,
-		key = "5",
-		action = act.ActivateTab(4),
 	},
 
 	-- OpenCode
@@ -193,5 +139,27 @@ config.keys = {
 	-- Multi cursor
 	utils_vim.key_map_vim_mix(mod, "d", act.SendKey({ mods = "CTRL", key = "n" })),
 }
+
+for slot = 1, 9 do
+	table.insert(config.keys, {
+		mods = "CTRL",
+		key = "F" .. slot,
+		action = workspaces.save_workspace(slot),
+	})
+
+	table.insert(config.keys, {
+		mods = mod,
+		key = "F" .. slot,
+		action = workspaces.switch_to_saved_workspace(slot),
+	})
+end
+
+for tab = 1, 5 do
+	table.insert(config.keys, {
+		mods = leader_mod,
+		key = tostring(tab),
+		action = act.ActivateTab(tab - 1),
+	})
+end
 
 return config

@@ -13,10 +13,10 @@
 	hunk-header-line-number-style = bold "#a6adc8"
 	hunk-header-style = file line-number syntax
 
-    minus-style = syntax "#2a222a"
-    minus-emph-style = syntax "#2a222a"
-    plus-style = syntax "#222a2a"
-    plus-emph-style = syntax "#222a2a"
+    plus-style = syntax "#27312b"
+    plus-emph-style = syntax "#27312b"
+    minus-style = syntax "#392b32"
+    minus-emph-style = syntax "#392b32"
 
 	blame-palette = "#1e1e2e #181825 #11111b #313244 #45475a"
 	file-style = "#cdd6f4"
