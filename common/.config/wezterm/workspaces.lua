@@ -150,6 +150,30 @@ local function project_slots(saved_workspaces)
 	return slots_by_path
 end
 
+local function workspace_slots(saved_workspaces, workspace_name)
+	local slots = {}
+
+	for slot, saved_workspace_name in pairs(saved_workspaces) do
+		if saved_workspace_name == workspace_name then
+			table.insert(slots, tonumber(slot) or slot)
+		end
+	end
+
+	table.sort(slots)
+
+	return slots
+end
+
+local function slot_keys(slots)
+	local keys = {}
+
+	for _, slot in ipairs(slots) do
+		table.insert(keys, "F" .. slot)
+	end
+
+	return table.concat(keys, ", ")
+end
+
 local function project_label(path, slots_by_path)
 	local label = path_label(path)
 	local slots = slots_by_path[path]
@@ -157,12 +181,7 @@ local function project_label(path, slots_by_path)
 		return label
 	end
 
-	local keys = {}
-	for _, slot in ipairs(slots) do
-		table.insert(keys, "F" .. slot)
-	end
-
-	return label .. " (" .. table.concat(keys, ", ") .. ")"
+	return label .. " (" .. slot_keys(slots) .. ")"
 end
 
 local function remember_last_workspace(window, target_workspace)
@@ -304,6 +323,17 @@ function module.switch_to_saved_workspace(slot)
 		module.switch_to_workspace(window, pane, workspace_name)
 		utils_session.notify("Workspace", window, "Opened slot " .. slot .. ": " .. workspace_label(workspace_name))
 	end)
+end
+
+function module.status_text(workspace_name)
+	local label = workspace_label(workspace_name)
+	local slots = workspace_slots(load_saved_workspaces(), workspace_name)
+
+	if #slots == 0 then
+		return label
+	end
+
+	return label .. " [" .. slot_keys(slots) .. "]"
 end
 
 return module

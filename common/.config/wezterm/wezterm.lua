@@ -8,6 +8,10 @@ local worktrees = require("worktrees")
 local mod = "SUPER"
 local leader_mod = "LEADER|" .. mod
 
+wezterm.on("update-status", function(window, _)
+	window:set_right_status(" " .. workspaces.status_text(window:active_workspace()) .. " ")
+end)
+
 local config = {}
 
 -- FPS
@@ -219,7 +223,7 @@ for _, key in ipairs({ "k", "w", "n", "f", "+", "-", "r" }) do
 	})
 end
 
-for slot = 1, 9 do
+for slot = 1, 12 do
 	table.insert(config.keys, {
 		mods = "CTRL",
 		key = "F" .. slot,
