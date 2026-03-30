@@ -1,5 +1,5 @@
 local wezterm = require("wezterm")
-local session_utils = require("session_utils")
+local utils_session = require("utils-session")
 local module = {}
 
 local dotfiles_dir = wezterm.home_dir .. "/dotfiles"
@@ -12,10 +12,6 @@ local is_windows = wezterm.target_triple:find("windows") ~= nil
 local is_macos = wezterm.target_triple:find("apple%-darwin") ~= nil
 
 local last_workspace = nil
-
-local function escape_pattern(text)
-	return text:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
-end
 
 local function project_dirs()
 	local projects = { wezterm.home_dir, dotfiles_dir, downloads_dir, notes_dir, project_dir }
@@ -36,12 +32,12 @@ local function slots_file()
 
 	local data_home
 	if is_macos then
-		data_home = session_utils.join_path(wezterm.home_dir, "Library", "Application Support")
+		data_home = utils_session.join_path(wezterm.home_dir, "Library", "Application Support")
 	else
-		data_home = os.getenv("XDG_DATA_HOME") or session_utils.join_path(wezterm.home_dir, ".local", "share")
+		data_home = os.getenv("XDG_DATA_HOME") or utils_session.join_path(wezterm.home_dir, ".local", "share")
 	end
 
-	return session_utils.join_path(data_home, "wezterm", slot_file_name)
+	return utils_session.join_path(data_home, "wezterm", slot_file_name)
 end
 
 local function load_saved_workspaces()
@@ -76,7 +72,7 @@ local function save_saved_workspaces(saved_workspaces)
 		return true
 	end
 
-	local dir = session_utils.dirname(path)
+	local dir = utils_session.dirname(path)
 	if not dir then
 		return false
 	end
@@ -97,10 +93,6 @@ local function save_saved_workspaces(saved_workspaces)
 	return true
 end
 
-local function workspace_name_for_path(path)
-	return workspace_prefix .. path
-end
-
 function module.path_for_workspace_name(name)
 	if type(name) ~= "string" or name:sub(1, #workspace_prefix) ~= workspace_prefix then
 		return nil
@@ -111,10 +103,18 @@ end
 
 local function path_label(path)
 	local label = path
-	label = label:gsub("^" .. escape_pattern(notes_dir), "/Notes")
-	label = label:gsub("^" .. escape_pattern(project_dir), "/Projects")
-	label = label:gsub("^" .. escape_pattern(wezterm.home_dir), "")
-	label = label:gsub("^/", "")
+
+	if label == notes_dir or label:sub(1, #notes_dir + 1) == notes_dir .. "/" then
+		label = "/Notes" .. label:sub(#notes_dir + 1)
+	elseif label == project_dir or label:sub(1, #project_dir + 1) == project_dir .. "/" then
+		label = "/Projects" .. label:sub(#project_dir + 1)
+	elseif label == wezterm.home_dir or label:sub(1, #wezterm.home_dir + 1) == wezterm.home_dir .. "/" then
+		label = label:sub(#wezterm.home_dir + 1)
+	end
+
+	if label:sub(1, 1) == "/" then
+		label = label:sub(2)
+	end
 
 	if label == "" then
 		return "~"
@@ -130,6 +130,39 @@ local function workspace_label(name)
 	end
 
 	return name
+end
+
+local function project_slots(saved_workspaces)
+	local slots_by_path = {}
+
+	for slot, workspace_name in pairs(saved_workspaces) do
+		local path = module.path_for_workspace_name(workspace_name)
+		if path then
+			slots_by_path[path] = slots_by_path[path] or {}
+			table.insert(slots_by_path[path], tonumber(slot) or slot)
+		end
+	end
+
+	for _, slots in pairs(slots_by_path) do
+		table.sort(slots)
+	end
+
+	return slots_by_path
+end
+
+local function project_label(path, slots_by_path)
+	local label = path_label(path)
+	local slots = slots_by_path[path]
+	if not slots or #slots == 0 then
+		return label
+	end
+
+	local keys = {}
+	for _, slot in ipairs(slots) do
+		table.insert(keys, "F" .. slot)
+	end
+
+	return label .. " (" .. table.concat(keys, ", ") .. ")"
 end
 
 local function remember_last_workspace(window, target_workspace)
@@ -152,15 +185,16 @@ function module.switch_to_workspace(window, pane, workspace_name)
 end
 
 function module.switch_to_path_workspace(window, pane, path)
-	module.switch_to_workspace(window, pane, workspace_name_for_path(path))
+	module.switch_to_workspace(window, pane, workspace_prefix .. path)
 end
 
 function module.choose_project()
 	return wezterm.action_callback(function(window, pane)
+		local slots_by_path = project_slots(load_saved_workspaces())
 		local choices = {}
 		for _, full_path in ipairs(project_dirs()) do
 			table.insert(choices, {
-				label = path_label(full_path),
+				label = project_label(full_path, slots_by_path),
 				id = full_path,
 			})
 		end
@@ -250,7 +284,7 @@ function module.save_workspace(slot)
 			return
 		end
 
-		session_utils.notify("Workspace", window, "Saved " .. workspace_label(current_workspace) .. " to slot " .. slot)
+		utils_session.notify("Workspace", window, "Saved " .. workspace_label(current_workspace) .. " to slot " .. slot)
 	end)
 end
 
@@ -263,12 +297,12 @@ function module.switch_to_saved_workspace(slot)
 		local saved_workspaces = load_saved_workspaces()
 		local workspace_name = saved_workspaces[tostring(slot)]
 		if type(workspace_name) ~= "string" then
-			session_utils.notify("Workspace", window, "No workspace saved in slot " .. slot)
+			utils_session.notify("Workspace", window, "No workspace saved in slot " .. slot)
 			return
 		end
 
 		module.switch_to_workspace(window, pane, workspace_name)
-		session_utils.notify("Workspace", window, "Opened slot " .. slot .. ": " .. workspace_label(workspace_name))
+		utils_session.notify("Workspace", window, "Opened slot " .. slot .. ": " .. workspace_label(workspace_name))
 	end)
 end
 

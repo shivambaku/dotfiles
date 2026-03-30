@@ -1,7 +1,6 @@
 -- https://wezfurlong.org/wezterm/config/lua/general.html
 local wezterm = require("wezterm")
 local act = wezterm.action
-local utils = require("utils")
 local utils_vim = require("utils-vim")
 local workspaces = require("workspaces")
 local worktrees = require("worktrees")
@@ -49,14 +48,6 @@ config.line_height = 1.2
 config.leader = { key = "k", mods = mod, timeout_milliseconds = 2000 }
 config.keys = {
 	-- Wezterm
-	-- Disable defaults
-	utils.disable_default(mod, "k"),
-	utils.disable_default(mod, "w"),
-	utils.disable_default(mod, "n"),
-	utils.disable_default(mod, "f"),
-	utils.disable_default(mod, "+"),
-	utils.disable_default(mod, "-"),
-	utils.disable_default(mod, "r"),
 	-- Sessions
 	{
 		mods = mod,
@@ -86,19 +77,99 @@ config.keys = {
 	},
 
 	-- OpenCode
-	utils.key_map_mix(mod, "i", act.SendKey({ mods = "CTRL", key = "x" })),
+	{
+		key = "i",
+		mods = mod,
+		action = act.SendKey({ mods = "CTRL", key = "x" }),
+	},
 
 	-- Wezterm & Neovim
 	-- Panes
-	utils_vim.key_map_vim_mix_pane_vertical_split(leader_mod, "-"),
-	utils_vim.key_map_vim_mix_pane_horizontal_split(leader_mod, "\\"),
-	utils_vim.key_map_vim_mix_pane_close(leader_mod, "w"),
-	utils_vim.key_map_vim_mix_pane_zoom(leader_mod, "f"),
-	utils_vim.key_map_vim_mix_pane_zoom_out(leader_mod, "g"),
-	utils_vim.key_map_vim_mix_pane_navigation(leader_mod, "h", "Left"),
-	utils_vim.key_map_vim_mix_pane_navigation(leader_mod, "j", "Down"),
-	utils_vim.key_map_vim_mix_pane_navigation(leader_mod, "k", "Up"),
-	utils_vim.key_map_vim_mix_pane_navigation(leader_mod, "l", "Right"),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"-",
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "s" }),
+		}),
+		act.SplitVertical({ domain = "CurrentPaneDomain" })
+	),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"\\",
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "v" }),
+		}),
+		act.SplitHorizontal({ domain = "CurrentPaneDomain" })
+	),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"w",
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "q" }),
+		}),
+		act.CloseCurrentPane({ confirm = true })
+	),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"f",
+		act.Multiple({
+			act.SetPaneZoomState(true),
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "|" }),
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "_" }),
+		}),
+		act.SetPaneZoomState(true)
+	),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"g",
+		act.Multiple({
+			act.SetPaneZoomState(false),
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "=" }),
+		}),
+		act.SetPaneZoomState(false)
+	),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"h",
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "h" }),
+		}),
+		act.ActivatePaneDirection("Left")
+	),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"j",
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "j" }),
+		}),
+		act.ActivatePaneDirection("Down")
+	),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"k",
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "k" }),
+		}),
+		act.ActivatePaneDirection("Up")
+	),
+	utils_vim.key_map_vim_mix(
+		leader_mod,
+		"l",
+		act.Multiple({
+			act.SendKey({ key = "w", mods = "CTRL" }),
+			act.SendKey({ key = "l" }),
+		}),
+		act.ActivatePaneDirection("Right")
+	),
 	utils_vim.key_map_vim_mix(
 		leader_mod,
 		";",
@@ -140,6 +211,14 @@ config.keys = {
 	utils_vim.key_map_vim_mix(mod, "d", act.SendKey({ mods = "CTRL", key = "n" })),
 }
 
+for _, key in ipairs({ "k", "w", "n", "f", "+", "-", "r" }) do
+	table.insert(config.keys, 1, {
+		mods = mod,
+		key = key,
+		action = act.DisableDefaultAssignment,
+	})
+end
+
 for slot = 1, 9 do
 	table.insert(config.keys, {
 		mods = "CTRL",
@@ -148,13 +227,13 @@ for slot = 1, 9 do
 	})
 
 	table.insert(config.keys, {
-		mods = mod,
+		mods = "NONE",
 		key = "F" .. slot,
 		action = workspaces.switch_to_saved_workspace(slot),
 	})
 end
 
-for tab = 1, 5 do
+for tab = 1, 9 do
 	table.insert(config.keys, {
 		mods = leader_mod,
 		key = tostring(tab),

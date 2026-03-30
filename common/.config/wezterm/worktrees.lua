@@ -1,6 +1,6 @@
 local wezterm = require("wezterm")
 local workspaces = require("workspaces")
-local session_utils = require("session_utils")
+local utils_session = require("utils-session")
 local module = {}
 
 local function run_git(args, cwd)
@@ -111,21 +111,21 @@ local function get_main_worktree_root(cwd)
 		return nil
 	end
 
-	return session_utils.dirname(stdout)
+	return utils_session.dirname(stdout)
 end
 
 local function build_worktree_path(git_root, main_worktree_root, branch)
-	local parent_dir = session_utils.dirname(git_root)
-	local project_name = session_utils.basename(main_worktree_root or git_root)
+	local parent_dir = utils_session.dirname(git_root)
+	local project_name = utils_session.basename(main_worktree_root or git_root)
 	if not parent_dir or not project_name then
 		return nil
 	end
 
-	return session_utils.join_path(parent_dir, project_name .. "-" .. sanitize_branch_name(branch))
+	return utils_session.join_path(parent_dir, project_name .. "-" .. sanitize_branch_name(branch))
 end
 
 local function worktree_label(worktree)
-	local label = worktree.branch or session_utils.basename(worktree.path) or worktree.path
+	local label = worktree.branch or utils_session.basename(worktree.path) or worktree.path
 
 	if worktree.detached then
 		label = label .. " (detached)"
@@ -137,7 +137,7 @@ end
 local function add_worktree(window, pane, git_root, main_worktree_root, branch, create_branch)
 	local worktree_path = build_worktree_path(git_root, main_worktree_root, branch)
 	if not worktree_path then
-		session_utils.notify("Worktree", window, "Unable to determine the new worktree path", "warn")
+		utils_session.notify("Worktree", window, "Unable to determine the new worktree path", "warn")
 		return
 	end
 
@@ -154,7 +154,7 @@ local function add_worktree(window, pane, git_root, main_worktree_root, branch, 
 
 	local success, stdout, stderr = run_git(args, git_root)
 	if not success then
-		session_utils.notify("Worktree", window, git_error_message(stdout, stderr), "warn")
+		utils_session.notify("Worktree", window, git_error_message(stdout, stderr), "warn")
 		return
 	end
 
@@ -164,7 +164,7 @@ end
 local function create_worktree(window, pane, git_root, main_worktree_root, worktrees)
 	local branches, branch_error = get_local_branches(git_root)
 	if not branches then
-		session_utils.notify("Worktree", window, branch_error, "warn")
+		utils_session.notify("Worktree", window, branch_error, "warn")
 		return
 	end
 
@@ -227,23 +227,24 @@ end
 
 function module.choose_worktree()
 	return wezterm.action_callback(function(window, pane)
-		local cwd = session_utils.current_path(pane)
+		local cwd = utils_session.current_path(pane)
 		if not cwd then
-			session_utils.notify("Worktree", window, "Unable to determine the current directory", "warn")
+			utils_session.notify("Worktree", window, "Unable to determine the current directory", "warn")
 			return
 		end
 
 		local git_root = get_git_root(cwd)
 		if not git_root then
-			session_utils.notify("Worktree", window, "Not in a git repository", "warn")
+			utils_session.notify("Worktree", window, "Not in a git repository", "warn")
 			return
 		end
 
+		local current_worktree_root = git_root
 		local main_worktree_root = get_main_worktree_root(cwd) or git_root
 
 		local worktrees, worktree_error = get_worktrees(git_root)
 		if not worktrees then
-			session_utils.notify("Worktree", window, worktree_error, "warn")
+			utils_session.notify("Worktree", window, worktree_error, "warn")
 			return
 		end
 
@@ -252,11 +253,11 @@ function module.choose_worktree()
 
 		for _, wt in ipairs(worktrees) do
 			local label = worktree_label(wt)
-			if wt.path == git_root then
+			if wt.path == current_worktree_root then
 				label = label .. " (current)"
 			end
 
-			if wt.path ~= main_worktree_root then
+			if wt.path ~= main_worktree_root and wt.path ~= current_worktree_root then
 				table.insert(deletable_worktrees, wt)
 			end
 
@@ -316,7 +317,7 @@ function module.choose_worktree()
 
 									local success, stdout, stderr = run_git({ "worktree", "remove", del_id }, git_root)
 									if not success then
-										session_utils.notify("Worktree", del_window, git_error_message(stdout, stderr), "warn")
+										utils_session.notify("Worktree", del_window, git_error_message(stdout, stderr), "warn")
 									end
 								end),
 							}),
