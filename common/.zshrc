@@ -39,6 +39,7 @@ alias ll='ls -lh --git --icons=always'
 alias lla='ll -a'
 alias lg="lazygit"
 alias oc='opencode'
+alias ock='opencode-kit'
 alias reload="source ~/.zshrc"
 alias cat="bat"
 alias yz="yazi"
