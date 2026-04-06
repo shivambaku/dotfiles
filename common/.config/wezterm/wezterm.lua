@@ -8,6 +8,7 @@ local worktrees = require("worktrees")
 local mod = "SUPER"
 local leader_mod = "LEADER|" .. mod
 
+-- on
 wezterm.on("update-status", function(window, _)
 	window:set_right_status(" " .. workspaces.status_text(window:active_workspace()) .. " ")
 end)
