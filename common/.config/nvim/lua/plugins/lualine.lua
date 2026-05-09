@@ -7,12 +7,12 @@ return {
 				lualine_b = { "" },
 				lualine_c = { { "filename", path = 1 } },
 				lualine_x = { "branch", "location" },
-				lualine_y = {
+				lualine_y = { { "searchcount", maxcount = 999999 } },
+				lualine_z = {
 					function()
 						return require("faf").statusline()
 					end,
 				},
-				lualine_z = { "" },
 			},
 			options = {
 				icons_enabled = false,

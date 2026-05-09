@@ -43,3 +43,4 @@ alias ock='opencode-kit'
 alias reload="source ~/.zshrc"
 alias cat="bat"
 alias yz="yazi"
+alias ff="fastfetch"
