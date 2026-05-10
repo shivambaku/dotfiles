@@ -7,7 +7,7 @@ return {
 		"williamboman/mason.nvim",
 		"julianolf/nvim-dap-lldb",
 	},
-	keys = { "<leader>dd", "<leader>db", "<F5>" },
+	keys = { "<leader>dd", "<leader>db", "<F53>", "<F54>", "<F57>", "<F58>", "<F59>", "<s-F11>" },
 	config = function()
 		local dap = require("dap")
 		local dapui = require("dapui")
@@ -21,13 +21,13 @@ return {
 		vim.keymap.set("n", "<leader>dc", dap.run_to_cursor, { desc = "Run to cursor" })
 		vim.keymap.set("n", "<leader>dK", require("dap.ui.widgets").hover, { desc = "Inspect" })
 		vim.keymap.set("n", "<leader>dC", dap.clear_breakpoints, { desc = "Clear all breakpoints" })
-		vim.keymap.set("n", "<F5>", dap.continue, { desc = "Continue" })
-		vim.keymap.set("n", "<F17>", dap.terminate, { desc = "Terminate" })
-		vim.keymap.set("n", "<F6>", dap.pause, { desc = "Pause" })
-		vim.keymap.set("n", "<F9>", dap.toggle_breakpoint, { desc = "Toggle breakpoint" })
-		vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Step over" })
-		vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Step into" })
-		vim.keymap.set("n", "<s-F11>", dap.step_out, { desc = "Step out" })
+		vim.keymap.set("n", "<F53>", dap.continue, { desc = "Continue" }) -- Option-F5
+		vim.keymap.set("n", "<F17>", dap.terminate, { desc = "Terminate" }) -- Shift-F5
+		vim.keymap.set("n", "<F54>", dap.pause, { desc = "Pause" }) -- Option-F6
+		vim.keymap.set("n", "<F57>", dap.toggle_breakpoint, { desc = "Toggle breakpoint" }) -- Option-F9
+		vim.keymap.set("n", "<F58>", dap.step_over, { desc = "Step over" }) -- Option-F10
+		vim.keymap.set("n", "<F59>", dap.step_into, { desc = "Step into" }) -- Option-F11
+		vim.keymap.set("n", "<s-F11>", dap.step_out, { desc = "Step out" }) -- Shift-F11
 
 		vim.api.nvim_set_hl(0, "DapBreakpoint", { ctermbg = 0, fg = "#993939" })
 		vim.api.nvim_set_hl(0, "DapStopped", { ctermbg = 0, fg = "#98c379", bg = "#31353f" })
@@ -38,7 +38,25 @@ return {
 		)
 
 		require("nvim-dap-virtual-text").setup()
-		require("mason").setup()
+
+		dap.adapters.coreclr = {
+			type = "executable",
+			command = vim.fn.stdpath("data") .. "/mason/bin/netcoredbg",
+			args = { "--interpreter=vscode" },
+		}
+
+		dap.configurations.cs = {
+			{
+				type = "coreclr",
+				name = "Launch .NET",
+				request = "launch",
+				program = function()
+					return vim.fn.input("Path to dll: ", vim.fn.getcwd() .. "/bin/Debug/", "file")
+				end,
+				cwd = "${workspaceFolder}",
+				stopAtEntry = false,
+			},
+		}
 
 		local dap_lldb = require("dap-lldb")
 		dap_lldb.setup()

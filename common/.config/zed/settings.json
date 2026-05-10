@@ -7,9 +7,26 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/.jj",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    "**/bin",
+    "**/obj",
+    "**/node_modules",
+    "**/dist",
+    "**/dist-server",
+  ],
   "ui_font_size": 16,
   "buffer_font_size": 15,
   "collaboration_panel": {
+    "dock": "left",
     "button": false,
   },
   "debugger": {
@@ -19,7 +36,14 @@
   "agent": {
     "button": false,
     "dock": "right",
-    "sidebar_side": "right",
+    "sidebar_side": "left",
+  },
+  "agent_servers": {
+    "OpenCode": {
+      "type": "custom",
+      "command": "opencode",
+      "args": ["acp"],
+    },
   },
   "current_line_highlight": "none",
   "cursor_blink": false,
@@ -56,6 +80,7 @@
   },
   "max_tabs": 1,
   "outline_panel": {
+    "dock": "left",
     "button": false,
   },
   "project_panel": {

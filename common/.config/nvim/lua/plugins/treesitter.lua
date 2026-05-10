@@ -14,6 +14,7 @@ return {
 			"bash",
 			"c",
 			"cpp",
+			"c_sharp",
 			"gitcommit",
 			"go",
 			"graphql",
@@ -37,8 +38,5 @@ return {
 			"vimdoc",
 			"yaml",
 		})
-
-		-- Lowering the LSP priority so treesitter has higher priority.
-		vim.highlight.priorities.semantic_tokens = 95
 	end,
 }
