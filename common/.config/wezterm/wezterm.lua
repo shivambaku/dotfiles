@@ -8,9 +8,47 @@ local worktrees = require("worktrees")
 local mod = "SUPER"
 local leader_mod = "LEADER|" .. mod
 
+local bg = "#0a0c10"
+local active_tab_bg = "#313244"
+
 -- Shows the project name and the assigned group on the bottom right
 wezterm.on("update-status", function(window, _)
 	window:set_right_status(" " .. workspaces.status_text(window:active_workspace()) .. " ")
+end)
+
+-- Customize the tab bar so inactive tabs stay compact and the active tab keeps context.
+wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
+	local title = tab.tab_title
+	if title == "" then
+		title = tab.active_pane.title
+	end
+
+	local label = " " .. tab.tab_index + 1 .. " " .. title .. " "
+
+	if tab.is_active then
+		local available_width = math.max(1, max_width - 2)
+		if #label > available_width then
+			label = wezterm.truncate_right(label, available_width - 1) .. " "
+		end
+		return {
+			{ Background = { Color = bg } },
+			{ Foreground = { Color = active_tab_bg } },
+			{ Text = "" },
+			{ Background = { Color = active_tab_bg } },
+			{ Foreground = { Color = "#b4befe" } },
+			{ Attribute = { Intensity = "Bold" } },
+			{ Text = label },
+			{ Background = { Color = bg } },
+			{ Foreground = { Color = active_tab_bg } },
+			{ Text = "" },
+		}
+	end
+
+	return {
+		{ Background = { Color = bg } },
+		{ Foreground = { Color = "#cdd6f4" } },
+		{ Text = " " .. tab.tab_index + 1 .. " " },
+	}
 end)
 
 local config = {}
@@ -31,6 +69,8 @@ config.window_padding = {
 -- Tabs
 config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
+config.show_new_tab_button_in_tab_bar = false
+config.tab_max_width = 48
 
 -- Panes
 config.inactive_pane_hsb = {
@@ -41,7 +81,10 @@ config.inactive_pane_hsb = {
 -- Styling
 config.color_scheme = "Catppuccin Mocha"
 config.colors = {
-	background = "#0a0c10",
+	background = bg,
+	tab_bar = {
+		background = bg,
+	},
 }
 
 -- Fonts
