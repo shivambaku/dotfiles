@@ -278,6 +278,51 @@ function module.choose_workspace()
 	end)
 end
 
+function module.choose_saved_workspace()
+	return wezterm.action_callback(function(window, pane)
+		if is_windows then
+			return
+		end
+
+		local saved_workspaces = load_saved_workspaces()
+		local choices = {}
+
+		for slot = 1, 12 do
+			local workspace_name = saved_workspaces[tostring(slot)]
+			local label = "-"
+			local id = ""
+
+			if type(workspace_name) == "string" then
+				label = workspace_label(workspace_name)
+				id = workspace_name
+			end
+
+			table.insert(choices, {
+				label = string.format("%-5s %s", "F" .. slot, label),
+				id = id,
+			})
+		end
+
+		window:perform_action(
+			wezterm.action.InputSelector({
+				title = "Workspace Slots",
+				choices = choices,
+				fuzzy = true,
+				alphabet = "",
+				fuzzy_description = "Workspace slot: ",
+				action = wezterm.action_callback(function(child_window, child_pane, id, _)
+					if not id or id == "" then
+						return
+					end
+
+					module.switch_to_workspace(child_window, child_pane, id)
+				end),
+			}),
+			pane
+		)
+	end)
+end
+
 function module.toggle_workspace()
 	return wezterm.action_callback(function(window, pane)
 		local current_workspace = window:active_workspace()

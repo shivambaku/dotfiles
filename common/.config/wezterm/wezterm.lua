@@ -117,6 +117,11 @@ config.keys = {
 		key = "s",
 		action = workspaces.choose_workspace(),
 	},
+	{
+		mods = leader_mod,
+		key = "a",
+		action = workspaces.choose_saved_workspace(),
+	},
 	-- Tabs
 	{
 		mods = leader_mod,
