@@ -131,7 +131,7 @@ config.keys = {
 	},
 	{
 		mods = leader_mod,
-		key = "z",
+		key = "g",
 		action = lazygit.open(),
 	},
 	-- Tabs
@@ -187,11 +187,11 @@ config.keys = {
 			act.SendKey({ key = "w", mods = "CTRL" }),
 			act.SendKey({ key = "_" }),
 		}),
-		act.SetPaneZoomState(true)
+		act.TogglePaneZoomState
 	),
 	utils_vim.key_map_vim_mix(
 		leader_mod,
-		"g",
+		"z",
 		act.Multiple({
 			act.SetPaneZoomState(false),
 			act.SendKey({ key = "w", mods = "CTRL" }),
