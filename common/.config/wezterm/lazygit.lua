@@ -11,7 +11,7 @@ function module.open()
 				direction = "Bottom",
 				size = 0.85,
 				cwd = cwd,
-				args = { "/bin/zsh", "-lc", "lazygit" },
+				args = { "/bin/zsh", "-lic", "exec lazygit" },
 			})
 		end)
 		if not ok or not lazygit_pane then
