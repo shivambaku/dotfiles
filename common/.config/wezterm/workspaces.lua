@@ -207,6 +207,22 @@ function module.switch_to_path_workspace(window, pane, path)
 	module.switch_to_workspace(window, pane, workspace_prefix .. path)
 end
 
+function module.switch_to_path_workspace_with_spawn(window, pane, path, spawn)
+	local workspace_name = workspace_prefix .. path
+	remember_last_workspace(window, workspace_name)
+
+	spawn = spawn or { cwd = path }
+	spawn.cwd = spawn.cwd or path
+
+	window:perform_action(
+		wezterm.action.SwitchToWorkspace({
+			name = workspace_name,
+			spawn = spawn,
+		}),
+		pane
+	)
+end
+
 function module.choose_project()
 	return wezterm.action_callback(function(window, pane)
 		local slots_by_path = project_slots(load_saved_workspaces())

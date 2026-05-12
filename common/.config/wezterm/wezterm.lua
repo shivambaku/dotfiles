@@ -4,6 +4,7 @@ local act = wezterm.action
 local utils_vim = require("utils-vim")
 local workspaces = require("workspaces")
 local worktrees = require("worktrees")
+local opencode_sessions = require("opencode-sessions")
 
 local mod = "SUPER"
 local leader_mod = "LEADER|" .. mod
@@ -121,6 +122,11 @@ config.keys = {
 		mods = leader_mod,
 		key = "a",
 		action = workspaces.choose_saved_workspace(),
+	},
+	{
+		mods = leader_mod,
+		key = "r",
+		action = opencode_sessions.choose_session(),
 	},
 	-- Tabs
 	{
