@@ -1,6 +1,6 @@
 [delta "catppuccin-mocha"]
+    navigate = true
 	syntax-theme = Catppuccin Mocha
-    width = variable
     paging = never
     dark = true
     tabs = 4
@@ -8,15 +8,15 @@
     commit-decoration-style = none 
     file-decoration-style = none
 
-    hunk-header-decoration-style = ul
-	hunk-header-file-style = bold
-	hunk-header-line-number-style = bold "#a6adc8"
-	hunk-header-style = file line-number syntax
+    hunk-header-style = omit
+    # hunk-header-decoration-style = ul
+	# #hunk-header-file-style = bold
+	# hunk-header-line-number-style = bold "#a6adc8"
 
-    plus-style = syntax "#27312b"
-    plus-emph-style = syntax "#27312b"
-    minus-style = syntax "#392b32"
-    minus-emph-style = syntax "#392b32"
+    plus-style = syntax "#112715"
+    plus-emph-style = syntax "#112715"
+    minus-style = syntax "#2b1217"
+    minus-emph-style = syntax "#2b1217"
 
 	blame-palette = "#1e1e2e #181825 #11111b #313244 #45475a"
 	file-style = "#cdd6f4"

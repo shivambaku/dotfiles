@@ -38,7 +38,7 @@ alias ls='eza'
 alias ll='ls -lh --git --icons=always'
 alias lla='ll -a'
 alias lg="lazygit"
-alias oc='opencode'
+alias oc='LEDGER_DEBUG=1 opencode'
 alias sboc='shivambaku-opencode'
 alias reload="source ~/.zshrc"
 alias cat="bat"
