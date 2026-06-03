@@ -37,7 +37,8 @@ alias n='nvim .'
 alias ls='eza'
 alias ll='ls -lh --git --icons=always'
 alias lla='ll -a'
-alias lg="lazygit"
+alias lzg="lazygit"
+alias lzd="lazydocker"
 alias oc='LEDGER_DEBUG=1 opencode'
 alias reload="source ~/.zshrc"
 alias cat="bat"
