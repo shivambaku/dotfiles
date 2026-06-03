@@ -363,8 +363,6 @@ function module.save_workspace(slot)
 		if not ok then
 			return
 		end
-
-		utils_session.notify("Workspace", window, "Saved " .. workspace_label(current_workspace) .. " to slot " .. slot)
 	end)
 end
 
@@ -377,12 +375,10 @@ function module.switch_to_saved_workspace(slot)
 		local saved_workspaces = load_saved_workspaces()
 		local workspace_name = saved_workspaces[tostring(slot)]
 		if type(workspace_name) ~= "string" then
-			utils_session.notify("Workspace", window, "No workspace saved in slot " .. slot)
 			return
 		end
 
 		module.switch_to_workspace(window, pane, workspace_name)
-		utils_session.notify("Workspace", window, "Opened slot " .. slot .. ": " .. workspace_label(workspace_name))
 	end)
 end
 
