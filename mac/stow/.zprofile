@@ -1,6 +1,9 @@
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# fnm
+eval "$(fnm env --use-on-cd)"
+
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
