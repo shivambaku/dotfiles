@@ -27,16 +27,17 @@ catppuccin_mantle="#181825"
 catppuccin_crust="#11111b"
 
 # Cursor shapes
-_beam_cursor='\e[6 q'
-_block_cursor='\e[2 q'
+_beam_cursor=$'\e[6 q'
+_block_cursor=$'\e[2 q'
 
 # Vim mode indicator (shown in prompt)
 # Note: visual|viopp won't trigger - zsh vi-mode stays 'vicmd' during visual selection
 function vim_mode_indicator() {
   case $KEYMAP in
-    vicmd) echo "%F{${catppuccin_mauve}}❯%f " ;;
-    viins|main) echo "%F{${catppuccin_green}}❯%f " ;;
-    visual|viopp) echo "%F{${catppuccin_yellow}}❯%f " ;;
+    vicmd) print -r -- "%F{${catppuccin_mauve}}❯%f " ;;
+    viins|main) print -r -- "%F{${catppuccin_green}}❯%f " ;;
+    visual|viopp) print -r -- "%F{${catppuccin_yellow}}❯%f " ;;
+    *) print -r -- "%F{${catppuccin_green}}❯%f " ;;
   esac
 }
 
@@ -44,25 +45,30 @@ function vim_mode_indicator() {
 function _build_prompt() {
   PROMPT='$(vim_mode_indicator)'
   if [[ "$CATPPUCCIN_SHOW_TIME" == true ]]; then
-    PROMPT+="%F{${catppuccin_mauve}}%T%  "
+    PROMPT+="%F{${catppuccin_mauve}}%T  "
   fi
-  PROMPT+="%F{${catppuccin_pink}}%n%  "
+  PROMPT+="%F{${catppuccin_pink}}%n  "
   PROMPT+="%F{${catppuccin_blue}}%c%{$reset_color%}"
   PROMPT+=' $(git_prompt_info)'
 }
 
-# Vim mode: update cursor shape on mode change
-function zle-keymap-select() {
+# Base prompt behavior. Keep this outside the transient block so the theme works
+# if the optional transient prompt section is removed.
+function _set_cursor_for_keymap() {
   case $KEYMAP in
-    vicmd) echo -ne "$_block_cursor" ;;
-    viins|main) echo -ne "$_beam_cursor" ;;
+    vicmd) print -rn -- "$_block_cursor" ;;
+    viins|main) print -rn -- "$_beam_cursor" ;;
   esac
-  zle reset-prompt
+}
+
+function zle-keymap-select() {
+  _set_cursor_for_keymap
+  zle .reset-prompt
 }
 
 function zle-line-init() {
-  echo -ne "$_beam_cursor"
-  zle reset-prompt
+  print -rn -- "$_beam_cursor"
+  zle .reset-prompt
 }
 
 zle -N zle-keymap-select
@@ -98,7 +104,7 @@ function zle-line-init() {
 
   _transient_prompt_compact=0
   _set_transient_prompt
-  echo -ne "$_beam_cursor"
+  print -rn -- "$_beam_cursor"
   zle .reset-prompt
 
   (( $+zle_bracketed_paste )) && print -r -n - $zle_bracketed_paste[1]
@@ -129,17 +135,8 @@ function zle-line-init() {
   return ret
 }
 
-function zle-keymap-select() {
-  case $KEYMAP in
-    vicmd) echo -ne "$_block_cursor" ;;
-    viins|main) echo -ne "$_beam_cursor" ;;
-  esac
-  zle .reset-prompt
-}
-
 _transient_prompt_compact=0
 zle -N zle-line-init
-zle -N zle-keymap-select
 
 # ==============================================================================
 # END TRANSIENT PROMPT

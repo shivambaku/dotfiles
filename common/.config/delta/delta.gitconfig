@@ -10,7 +10,7 @@
 
     hunk-header-style = omit
     # hunk-header-decoration-style = ul
-	# #hunk-header-file-style = bold
+	# hunk-header-file-style = bold
 	# hunk-header-line-number-style = bold "#a6adc8"
 
     plus-style = syntax "#112715"
