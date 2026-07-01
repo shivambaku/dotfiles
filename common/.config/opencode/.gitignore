@@ -3,3 +3,4 @@ bun.lock
 package.json
 package-lock.json
 .gitignore
+sboc.json
