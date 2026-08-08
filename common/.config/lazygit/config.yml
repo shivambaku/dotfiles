@@ -1,26 +1,22 @@
 git:
   diffContextSize: 0
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --features="catppuccin-mocha"
+      command: delta --features="catppuccin-mocha"
     - colorArg: always
-      pager: delta --features="catppuccin-mocha" -s
-
+      command: delta --features="catppuccin-mocha" -s
 gui:
   sidePanelWidth: 0.4
   expandFocusedSidePanel: true
   expandedSidePanelWeight: 3
   wrapLinesInStagingView: false
-
   showBottomLine: false
   showCommandLog: false
   showFileTree: false
   showNumstatInFilesView: true
   showPanelJumps: false
   showRandomTip: false
-
   promptToReturnFromSubprocess: false
-
   theme:
     activeBorderColor:
       - '#f2cdcd'
