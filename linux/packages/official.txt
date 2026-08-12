@@ -77,7 +77,6 @@ unzip
 usbutils
 vulkan-intel
 waybar
-wezterm
 wireplumber
 wl-clipboard
 xdg-desktop-portal

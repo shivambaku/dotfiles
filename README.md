@@ -16,6 +16,23 @@ showing its AUR build files for review. No display manager is configured.
 
 Tailscale is enabled but must be connected manually with `sudo tailscale up`.
 
+## Dotfiles Only
+
+Preview and apply only the shared configs:
+
+```bash
+./linux/stow.sh --common
+```
+
+Apply the Linux desktop configs separately when ready:
+
+```bash
+./linux/stow.sh --linux
+```
+
+Run `./linux/stow.sh` with no option to apply both. Existing conflicting files
+are not overwritten; move them aside and retry after reviewing the preview.
+
 ## AUR
 
 Install the remaining packages from `linux/packages/aur.txt` separately:

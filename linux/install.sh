@@ -30,15 +30,12 @@ read -r -p 'Continue? [y/N] ' reply
 sudo pacman -Syu --needed -- "${packages[@]}"
 
 git -C "$DOTFILES_DIR" submodule update --init --recursive
-stow --simulate -R -d "$DOTFILES_DIR" -t "$HOME" common
-stow --simulate -R -d "$SCRIPT_DIR" -t "$HOME" stow
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
 fi
 
-stow -R -d "$DOTFILES_DIR" -t "$HOME" common
-stow -R -d "$SCRIPT_DIR" -t "$HOME" stow
+"$SCRIPT_DIR/stow.sh" --yes
 
 if [[ "${SHELL:-}" != */zsh ]]; then
   chsh -s "$(command -v zsh)"
