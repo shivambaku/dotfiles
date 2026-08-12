@@ -14,7 +14,7 @@ case "$(uname -s)" in
     ;;
   Linux)
     log "Detected Linux"
-    exec "$SCRIPT_DIR/linux/install.sh"
+    exec "$SCRIPT_DIR/linux/install.sh" "$@"
     ;;
   *)
     error "Unsupported OS: $(uname -s)"

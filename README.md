@@ -2,24 +2,57 @@
 
 Personal dotfiles for macOS and Arch Linux.
 
-## Quick Start
+## Install
 
 ```bash
 git clone https://github.com/shivambaku/dotfiles.git
 cd dotfiles
-./install.sh  # Auto-detects OS and installs
+./install.sh
 ```
 
-## Package Management
+On Arch, this installs `linux/packages/official.txt`, applies the dotfiles,
+enables NetworkManager, Bluetooth, TuneD, UFW, and Tailscale, then installs Paru after
+showing its AUR build files for review. No display manager is configured.
 
-**Export current packages:**
+Tailscale is enabled but must be connected manually with `sudo tailscale up`.
 
-- macOS: `./mac/dump.sh` → `mac/Brewfile`
-- Arch: `./linux/dump.sh` → `linux/pkglist.txt`
+## AUR
 
-Packages are automatically installed during `./install.sh`
+Install the remaining packages from `linux/packages/aur.txt` separately:
 
-## Notes
+```bash
+./linux/install-aur.sh
+```
 
-- **macOS:** Homebrew is auto-installed if not present
-- **Arch Linux:** Requires `sudo` configured (script will guide you if missing)
+Paru keeps its normal interactive review and confirmation. The configured
+launcher is Fuzzel; Walker is not installed.
+
+## Updates
+
+```bash
+update-system
+update-system --firmware
+```
+
+The firmware check is optional and may require a reboot.
+
+## Package Dump
+
+Refresh the package lists from the current Arch system:
+
+```bash
+./linux/dump.sh
+```
+
+- `official.txt`: explicitly installed official repository packages
+- `aur.txt`: explicitly installed foreign packages, normally from the AUR
+
+The regular installer never reads `aur.txt`; it only bootstraps Paru.
+
+## Uninstall
+
+```bash
+./linux/uninstall.sh
+```
+
+This only removes Stow links. It does not remove packages or disable services.

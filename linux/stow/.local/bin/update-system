@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+if command -v paru >/dev/null; then
+  paru -Syu
+else
+  sudo pacman -Syu
+fi
+
+if [[ "${1:-}" == "--firmware" ]]; then
+  fwupdmgr refresh || [[ $? -eq 2 ]]
+  fwupdmgr update || [[ $? -eq 2 ]]
+fi

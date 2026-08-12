@@ -6,7 +6,8 @@ local workspaces = require("workspaces")
 local worktrees = require("worktrees")
 local lazygit = require("lazygit")
 
-local mod = "SUPER"
+local is_macos = wezterm.target_triple:find("apple%-darwin") ~= nil
+local mod = is_macos and "SUPER" or "ALT"
 local leader_mod = "LEADER|" .. mod
 
 local bg = "#0a0c10"
