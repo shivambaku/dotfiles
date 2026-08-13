@@ -7,6 +7,10 @@ else
   sudo pacman -Syu
 fi
 
+if command -v flatpak >/dev/null; then
+  flatpak update --user --noninteractive
+fi
+
 if [[ "${1:-}" == "--firmware" ]]; then
   fwupdmgr refresh || [[ $? -eq 2 ]]
   fwupdmgr update || [[ $? -eq 2 ]]

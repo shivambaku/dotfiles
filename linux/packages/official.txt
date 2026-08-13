@@ -13,6 +13,7 @@ eza
 fastfetch
 fd
 ffmpeg
+flatpak
 framework-system
 fuzzel
 fwupd

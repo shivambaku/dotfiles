@@ -17,8 +17,11 @@ command -v pacman >/dev/null || die "pacman is required"
 command -v sudo >/dev/null || die "sudo is required"
 
 mapfile -t packages < "$SCRIPT_DIR/packages/official.txt"
+mapfile -t flatpaks < "$SCRIPT_DIR/packages/flatpak.txt"
 printf 'Official packages:\n'
 printf '  %s\n' "${packages[@]}"
+printf 'Flatpak applications (per-user):\n'
+printf '  %s\n' "${flatpaks[@]}"
 printf 'Services: NetworkManager, Bluetooth, TuneD, UFW, Tailscale\n'
 printf 'Configs: common, linux/stow\n'
 printf 'AUR helper: paru\n'
@@ -29,13 +32,16 @@ read -r -p 'Continue? [y/N] ' reply
 
 sudo pacman -Syu --needed -- "${packages[@]}"
 
-git -C "$DOTFILES_DIR" submodule update --init --recursive
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+if ((${#flatpaks[@]})); then
+  flatpak install --user --noninteractive --or-update flathub "${flatpaks[@]}"
+fi
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
 fi
 
-"$SCRIPT_DIR/stow.sh" --yes
+"$DOTFILES_DIR/stow-only.sh" --yes
 
 if [[ "${SHELL:-}" != */zsh ]]; then
   chsh -s "$(command -v zsh)"

@@ -53,20 +53,8 @@ else
   log "oh-my-zsh already installed"
 fi
 
-# Backup existing .zshrc if present (so stow can create symlink)
-if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
-  log "Backing up existing .zshrc to .zshrc.backup..."
-  mv "$HOME/.zshrc" "$HOME/.zshrc.backup"
-fi
-
-# Initialize git submodules
-log "Initializing git submodules..."
-git -C "$DOTFILES_DIR" submodule update --init --recursive
-
-# Stow common and mac configs
 log "Linking configs with stow..."
-stow -d "$DOTFILES_DIR" -t ~ common
-stow -d "$SCRIPT_DIR" -t ~ stow
+"$DOTFILES_DIR/stow-only.sh" --yes
 
 log "=== Installation complete ==="
 log ""
