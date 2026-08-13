@@ -29,6 +29,10 @@ export EDITOR='nvim'
 export XDG_CONFIG_HOME="$HOME/.config"
 export EZA_CONFIG_DIR="$HOME/.config/eza"
 
+if command -v fnm >/dev/null; then
+    eval "$(fnm env --use-on-cd --version-file-strategy=recursive --shell zsh)"
+fi
+
 # Hotkeys
 bindkey '^E' edit-command-line 
 

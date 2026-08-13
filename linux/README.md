@@ -1,36 +1,47 @@
 # Arch Linux Setup
 
-This setup expects a base Arch installation created with `archinstall`. The
-dotfile installer installs applications and user configuration; it does not
-replace the system network configuration selected during Archinstall.
+Target: Intel Framework laptop.
 
-## Archinstall Choices
+## 1. Install Arch
 
-Use these choices in the guided installer:
+Run `archinstall` with:
 
-- **Network configuration:** `Use standalone iwd`
-- **Audio:** `PipeWire`
-- **Bootloader:** `systemd-boot`
-- **Profile:** `Minimal`
-- **User account:** create a user with sudo access
+- Disk: default layout with LUKS encryption
+- Bootloader: `systemd-boot`
+- Profile: `Minimal`
+- Audio: `PipeWire`
+- Network: `NetworkManager`
+- User: sudo access
 
-The standalone iwd option configures Wi-Fi, DHCP, DNS, wired DHCP, and the
-required `iwd`, `systemd-networkd`, and `systemd-resolved` services. Connect to
-Wi-Fi in the installer environment before starting Archinstall.
+## 2. Install Dotfiles
 
-No display manager is required. Hyprland is started manually after installing
-the dotfiles.
-
-## Install Dotfiles
-
-After booting the installed system:
+Connect to the network with `nmtui` if required, then run:
 
 ```bash
+sudo pacman -Syu --needed git
 git clone https://github.com/shivambaku/dotfiles.git
 cd dotfiles
 ./install.sh
+reboot
 ```
 
-The installer adds the remaining packages, applies the Stow configuration,
-enables desktop-related services, and bootstraps Paru. It does not modify the
-network stack selected during Archinstall.
+The installer may prompt for package and AUR confirmation. Rerun it if an
+installation step is interrupted.
+
+## 3. Enroll Fingerprint
+
+Log in on TTY1. Hyprland starts automatically.
+
+```bash
+fprintd-enroll
+```
+
+Additional finger:
+
+```bash
+fprintd-enroll -f left-index-finger
+```
+
+## 4. Install 1Password
+
+Follow the [1Password Arch Linux installation instructions](https://support.1password.com/install-linux/#arch-linux).

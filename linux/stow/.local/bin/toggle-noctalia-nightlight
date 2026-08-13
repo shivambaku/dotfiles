@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+state_file="${XDG_RUNTIME_DIR:-/tmp}/noctalia-nightlight-force"
+
+case "${1:-toggle}" in
+  startup)
+    printf 'on\n' > "$state_file"
+    ;;
+  toggle)
+    noctalia msg nightlight-force-toggle >/dev/null
+    if [[ -f "$state_file" ]]; then
+      rm -f "$state_file"
+    else
+      printf 'on\n' > "$state_file"
+    fi
+    ;;
+  status)
+    if [[ -f "$state_file" ]]; then
+      printf 'on\n'
+    else
+      printf 'off\n'
+    fi
+    ;;
+  *)
+    printf 'Usage: toggle-noctalia-nightlight [startup|toggle|status]\n' >&2
+    exit 2
+    ;;
+esac

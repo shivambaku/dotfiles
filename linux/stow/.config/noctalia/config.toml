@@ -1,0 +1,329 @@
+[shell]
+font_family = "MesloLGS Nerd Font"
+corner_radius_scale = 1.2
+button_borders = false
+card_borders = false
+input_borders = false
+popup_borders = false
+popup_shadows = true
+polkit_agent = true
+settings_show_advanced = false
+setup_wizard_enabled = false
+screen_time_enabled = false
+clipboard_confirm_clear_history = false
+clipboard_history_max_entries = 25
+
+[shell.animation]
+enabled = true
+speed = 1.8
+
+[shell.launcher]
+categories = false
+show_icons = true
+compact = true
+app_grid = false
+sort_by_usage = false
+
+[shell.panel]
+borders = false
+shadow = true
+transparency_mode = "solid"
+launcher_placement = "floating"
+launcher_position = "center"
+clipboard_placement = "floating"
+clipboard_position = "center"
+control_center_placement = "floating"
+session_placement = "attached"
+
+[shell.screenshot]
+save_to_file = true
+copy_to_clipboard = true
+freeze_screen = true
+confirm_region = false
+show_cursor = false
+pipe_to_command = true
+pipe_command = "satty -f -"
+
+[keybinds]
+up = ["Up", "Ctrl+p"]
+down = ["Down", "Ctrl+n"]
+
+[theme]
+mode = "dark"
+source = "custom"
+custom_palette = "dogppuccin"
+pure_black_dark = false
+
+[theme.templates]
+enable_builtin_templates = false
+enable_community_templates = false
+
+[bar]
+order = ["main"]
+
+[bar.main]
+position = "top"
+enabled = true
+auto_hide = false
+smart_auto_hide = false
+reserve_space = true
+layer = "top"
+thickness = 34
+background_opacity = 1.0
+border_width = 0.0
+shadow = false
+contact_shadow = false
+radius = 0
+radius_top_left = 0
+radius_top_right = 0
+radius_bottom_left = 0
+radius_bottom_right = 0
+concave_edge_corners = false
+margin_ends = 0
+margin_edge = 0
+padding = 8
+widget_spacing = 10
+hover_highlight = true
+scale = 1.0
+font_weight = 400
+font_family = "MesloLGS Nerd Font"
+capsule = false
+start = ["workspaces"]
+center = ["media", "audio_visualizer"]
+end = ["tray", "bluetooth", "network", "volume", "battery", "clock"]
+
+[widget.workspaces]
+style = "regular"
+show_labels = true
+label_source = "id"
+hide_when_empty = false
+scale = 1.15
+font_weight = 500
+active_pill_size = 1.45
+inactive_pill_size = 1.45
+focused_color = "primary"
+occupied_color = "#13151d"
+empty_color = "surface_variant"
+urgent_color = "error"
+capsule_radius = 3
+
+[widget.clock]
+format = "{:%a %b %-d %I:%M %p}"
+scale = 0.9
+
+[widget.media]
+hide_when_no_media = true
+hide_album_art = true
+hide_artist = true
+min_length = 60
+max_length = 180
+scale = 0.9
+
+[widget.audio_visualizer]
+width = 42
+bands = 10
+mirrored = true
+centered = true
+show_when_idle = false
+color_1 = "primary"
+color_2 = "on_surface_variant"
+scale = 0.9
+
+[widget.tray]
+scale = 0.94
+
+[widget.network]
+show_label = false
+scale = 0.94
+
+[widget.bluetooth]
+show_label = false
+scale = 0.94
+
+[widget.volume]
+show_label = false
+scale = 0.94
+
+[widget.battery]
+display_mode = "glyph"
+show_label = false
+scale = 0.94
+
+[desktop_widgets]
+enabled = false
+
+[dock]
+enabled = false
+
+[wallpaper]
+enabled = false
+
+[weather]
+enabled = true
+unit = "imperial"
+
+[location]
+auto_locate = false
+address = "Bellevue, King County, Washington"
+
+[system.monitor]
+enabled = true
+
+[calendar]
+enabled = false
+
+[plugins]
+auto_update = true
+enabled = ["local/nightlight-force", "noctalia/screen_recorder"]
+
+[[plugins.source]]
+name = "official"
+kind = "git"
+location = "https://github.com/noctalia-dev/official-plugins.git"
+
+[control_center]
+hidden_tabs = []
+sidebar = "compact"
+sidebar_section = "compact"
+show_shortcut_labels = false
+show_session_button = true
+
+[[control_center.shortcuts]]
+type = "wifi"
+
+[[control_center.shortcuts]]
+type = "bluetooth"
+
+[[control_center.shortcuts]]
+type = "caffeine"
+
+[[control_center.shortcuts]]
+type = "local/nightlight-force:toggle"
+
+[[control_center.shortcuts]]
+type = "notification"
+
+[[control_center.shortcuts]]
+type = "noctalia/screen_recorder:toggle"
+
+[notification]
+enable_daemon = true
+position = "top_right"
+layer = "top"
+background_opacity = 0.93
+border = true
+offset_x = 20
+offset_y = 8
+max_visible = 4
+show_actions = true
+show_app_name = true
+
+[osd]
+enabled = true
+position = "top_center"
+orientation = "horizontal"
+background_opacity = 0.93
+border = false
+
+[osd.kinds]
+volume = true
+volume_output = true
+volume_input = true
+brightness = true
+wifi = true
+bluetooth = true
+power_profile = true
+caffeine = true
+nightlight = true
+dnd = true
+lock_keys = false
+keyboard_layout = false
+media = false
+privacy = true
+keyboard_backlight = true
+
+[lockscreen]
+enabled = true
+fingerprint = true
+lock_before_suspend = true
+blurred_desktop = false
+blur_intensity = 0.0
+tint_intensity = 0.0
+wallpaper = "color:#000000"
+
+[lockscreen_widgets]
+enabled = true
+schema_version = 2
+widget_order = ["lockscreen-clock@eDP-1", "lockscreen-login-box@eDP-1"]
+
+[lockscreen_widgets.widget."lockscreen-clock@eDP-1"]
+type = "clock"
+output = "eDP-1"
+cx = 720.0
+cy = 260.0
+box_width = 600.0
+box_height = 180.0
+rotation = 0.0
+enabled = true
+
+[lockscreen_widgets.widget."lockscreen-clock@eDP-1".settings]
+clock_style = "digital"
+format = "{:%I:%M %p}"
+center_text = true
+color = "on_surface"
+shadow = false
+background = false
+
+[lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+type = "login_box"
+output = "eDP-1"
+cx = 720.0
+cy = 480.0
+box_width = 400.0
+box_height = 70.0
+rotation = 0.0
+enabled = true
+
+[lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+layout = "compact"
+background_color = "surface_variant"
+background_opacity = 0.0
+background_radius = 0.0
+input_opacity = 1.0
+input_radius = 6.0
+center_password_text = true
+show_session_buttons = false
+show_media = false
+show_weather = false
+show_login_button = false
+show_caps_lock = false
+show_keyboard_layout = false
+show_unlock_hint = false
+
+[idle]
+behavior_order = ["lock", "screen-off", "suspend"]
+pre_action_fade_seconds = 0
+
+[idle.behavior.lock]
+timeout = 300
+action = "lock"
+enabled = true
+
+[idle.behavior.screen-off]
+timeout = 330
+action = "screen_off"
+enabled = true
+
+[idle.behavior.suspend]
+timeout = 1800
+action = "lock_and_suspend"
+enabled = true
+
+[nightlight]
+enabled = true
+force = true
+temperature_day = 6500
+temperature_night = 3500
+
+[hooks]
+started = "toggle-noctalia-nightlight startup"

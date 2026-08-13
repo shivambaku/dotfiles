@@ -17,12 +17,25 @@ command -v pacman >/dev/null || die "pacman is required"
 command -v sudo >/dev/null || die "sudo is required"
 
 mapfile -t packages < "$SCRIPT_DIR/packages/official.txt"
+mapfile -t aur_manifest < "$SCRIPT_DIR/packages/aur.txt"
 mapfile -t flatpaks < "$SCRIPT_DIR/packages/flatpak.txt"
+
+aur_packages=()
+for package in "${aur_manifest[@]}"; do
+  [[ -z "$package" || "$package" == "paru" ]] && continue
+  aur_packages+=("$package")
+done
+
 printf 'Official packages:\n'
 printf '  %s\n' "${packages[@]}"
+printf 'AUR packages:\n'
+printf '  paru\n'
+if ((${#aur_packages[@]})); then
+  printf '  %s\n' "${aur_packages[@]}"
+fi
 printf 'Flatpak applications (per-user):\n'
 printf '  %s\n' "${flatpaks[@]}"
-printf 'Services: Bluetooth, TuneD, UFW, Tailscale\n'
+printf 'Services: NetworkManager, systemd-resolved, Bluetooth, Docker, TuneD, UFW\n'
 printf 'Configs: common, linux/stow\n'
 printf 'AUR helper: paru\n'
 printf 'Boot menu: no timeout when using systemd-boot\n'
@@ -31,6 +44,9 @@ read -r -p 'Continue? [y/N] ' reply
 [[ "$reply" == "y" || "$reply" == "Y" ]] || exit 0
 
 sudo pacman -Syu --needed -- "${packages[@]}"
+
+rustup default nightly
+rustup component add rust-src rustfmt clippy rust-analyzer
 
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 if ((${#flatpaks[@]})); then
@@ -47,7 +63,9 @@ if [[ "${SHELL:-}" != */zsh ]]; then
   chsh -s "$(command -v zsh)"
 fi
 
-sudo systemctl enable --now bluetooth.service tuned.service tailscaled.service
+sudo systemctl enable --now NetworkManager.service systemd-resolved.service bluetooth.service docker.service tuned.service
+sudo usermod -aG docker "$USER"
+sudo ln -sfn /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 sudo ufw --force enable
 sudo systemctl enable --now ufw.service
 
@@ -55,6 +73,7 @@ if sudo bootctl --quiet is-installed; then
   sudo bootctl set-timeout 0
 fi
 
+bootstrapped_paru=false
 if ! command -v paru >/dev/null; then
   (
     build_dir="$(mktemp -d)"
@@ -68,14 +87,31 @@ if ! command -v paru >/dev/null; then
     [[ "$reply" == "y" || "$reply" == "Y" ]] || exit 1
 
     cd "$build_dir/paru"
-    makepkg -si
+    makepkg -sir
   )
+  bootstrapped_paru=true
 fi
 
 command -v paru >/dev/null || die "Paru was not installed"
 
+# makepkg can install a detached debug-symbol package for the bootstrap build.
+if [[ "$bootstrapped_paru" == true ]] && pacman -Q paru-debug >/dev/null 2>&1; then
+  sudo pacman -Rns --noconfirm paru-debug
+fi
+
+if ((${#aur_packages[@]})); then
+  paru -S --needed -- "${aur_packages[@]}"
+fi
+
+sudo voxtype setup onnx --enable
+voxtype setup --download --model parakeet-tdt-0.6b-v3-int8
+systemctl --user enable voxtype
+
+eval "$(fnm env --shell bash)"
+fnm install --lts --use
+fnm default "$(fnm current)"
+
 log "Installation complete"
 log "Start Hyprland with: start-hyprland"
-log "Connect Tailscale with: sudo tailscale up"
+log "After starting Hyprland, enroll a fingerprint with: fprintd-enroll"
 log "Check firmware with: update-system --firmware"
-log "Install remaining AUR packages with: ./linux/install-aur.sh"

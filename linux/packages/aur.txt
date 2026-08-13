@@ -1,2 +1,4 @@
+bruno-bin
 paru
+voxtype-bin
 wezterm-nightly-bin

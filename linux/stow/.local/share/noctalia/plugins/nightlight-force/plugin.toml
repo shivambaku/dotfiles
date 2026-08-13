@@ -1,0 +1,7 @@
+id = "local/nightlight-force"
+name = "Night Light"
+plugin_api = 3
+
+[[shortcut]]
+id = "toggle"
+entry = "shortcut.luau"

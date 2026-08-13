@@ -11,7 +11,7 @@ local mod = is_macos and "SUPER" or "ALT"
 local leader_mod = "LEADER|" .. mod
 
 local bg = "#0a0c10"
-local active_tab_bg = "#313244"
+local active_tab_bg = "#1f212d"
 
 -- Shows the project name and the assigned group on the bottom right
 wezterm.on("update-status", function(window, _)
@@ -35,14 +35,14 @@ wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
 		return {
 			{ Background = { Color = bg } },
 			{ Foreground = { Color = active_tab_bg } },
-			{ Text = "" },
+			{ Text = "" },
 			{ Background = { Color = active_tab_bg } },
-			{ Foreground = { Color = "#b4befe" } },
+			{ Foreground = { Color = "#89b4fa" } },
 			{ Attribute = { Intensity = "Bold" } },
 			{ Text = label },
 			{ Background = { Color = bg } },
 			{ Foreground = { Color = active_tab_bg } },
-			{ Text = "" },
+			{ Text = "" },
 		}
 	end
 
@@ -86,6 +86,7 @@ config.colors = {
 	background = bg,
 	tab_bar = {
 		background = bg,
+		inactive_tab_edge = bg,
 	},
 }
 
