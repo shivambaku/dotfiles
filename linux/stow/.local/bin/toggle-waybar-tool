@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+tool=${1:?Usage: toggle-waybar-tool <wiremix|impala|bluetui>}
+case "$tool" in
+  wiremix|impala|bluetui) ;;
+  *)
+    printf 'Unknown Waybar tool: %s\n' "$tool" >&2
+    exit 2
+    ;;
+esac
+
+class="waybar-tool-$tool"
+mapfile -t tool_windows < <(
+  hyprctl clients -j | python -c '
+import json
+import sys
+
+for client in json.load(sys.stdin):
+    if client.get("class", "").startswith("waybar-tool-"):
+        print(client["class"] + "\t" + str(client["pid"]))
+'
+)
+
+same_tool=false
+for tool_window in "${tool_windows[@]}"; do
+  window_class=${tool_window%%$'\t'*}
+  window_pid=${tool_window#*$'\t'}
+  kill "$window_pid" 2>/dev/null || true
+  [[ "$window_class" == "$class" ]] && same_tool=true
+done
+
+[[ "$same_tool" == true ]] && exit 0
+
+case "$tool" in
+  impala) rfkill unblock wifi ;;
+  bluetui) rfkill unblock bluetooth ;;
+esac
+
+setsid wezterm --config enable_tab_bar=false start \
+  --always-new-process \
+  --class "$class" \
+  -- "$tool" >/dev/null 2>&1 &

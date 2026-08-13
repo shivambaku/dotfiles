@@ -10,10 +10,13 @@ cd dotfiles
 ./install.sh
 ```
 
+For the recommended Archinstall choices, see `linux/README.md`.
+
 On Arch, this installs `linux/packages/official.txt`, configures per-user Flathub
 applications from `linux/packages/flatpak.txt`, applies the dotfiles, enables
-NetworkManager, Bluetooth, TuneD, UFW, and Tailscale, then installs Paru after showing
-its AUR build files for review. No display manager is configured.
+Bluetooth, TuneD, UFW, and Tailscale, then installs Paru after showing its AUR
+build files for review. It does not change the existing network configuration.
+No display manager is configured.
 
 Tailscale is enabled but must be connected manually with `sudo tailscale up`.
 

@@ -26,8 +26,11 @@ hyprland
 hyprlock
 hyprpicker
 hyprpolkitagent
+hyprsunset
+impala
 intel-media-driver
 intel-ucode
+iwd
 lazydocker
 lazygit
 libnotify
@@ -39,7 +42,6 @@ mesa
 mpv
 nautilus
 neovim
-networkmanager
 nodejs
 noto-fonts
 noto-fonts-emoji
@@ -47,7 +49,6 @@ npm
 obs-studio
 okular
 opencode
-pavucontrol
 pciutils
 pipewire
 pipewire-alsa
@@ -78,6 +79,7 @@ unzip
 usbutils
 vulkan-intel
 waybar
+wiremix
 wireplumber
 wl-clipboard
 xdg-desktop-portal

@@ -91,13 +91,23 @@ config.colors = {
 
 -- Fonts
 config.font = wezterm.font("MesloLGS Nerd Font")
-config.font_size = 15
+config.font_size = 12
 config.line_height = 1.2
 
 -- Keymapping
 config.leader = { key = "k", mods = mod, timeout_milliseconds = 2000 }
 config.keys = {
 	-- Wezterm
+	{
+		mods = mod,
+		key = "c",
+		action = act.CopyTo("Clipboard"),
+	},
+	{
+		mods = mod,
+		key = "v",
+		action = act.PasteFrom("Clipboard"),
+	},
 	-- Sessions
 	{
 		mods = mod,
@@ -133,6 +143,11 @@ config.keys = {
 	{
 		mods = leader_mod,
 		key = "n",
+		action = act.SpawnTab("CurrentPaneDomain"),
+	},
+	{
+		mods = leader_mod,
+		key = "t",
 		action = act.SpawnTab("CurrentPaneDomain"),
 	},
 

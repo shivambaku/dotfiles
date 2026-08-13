@@ -22,7 +22,7 @@ printf 'Official packages:\n'
 printf '  %s\n' "${packages[@]}"
 printf 'Flatpak applications (per-user):\n'
 printf '  %s\n' "${flatpaks[@]}"
-printf 'Services: NetworkManager, Bluetooth, TuneD, UFW, Tailscale\n'
+printf 'Services: Bluetooth, TuneD, UFW, Tailscale\n'
 printf 'Configs: common, linux/stow\n'
 printf 'AUR helper: paru\n'
 printf 'Boot menu: no timeout when using systemd-boot\n'
@@ -47,7 +47,7 @@ if [[ "${SHELL:-}" != */zsh ]]; then
   chsh -s "$(command -v zsh)"
 fi
 
-sudo systemctl enable --now NetworkManager.service bluetooth.service tuned.service tailscaled.service
+sudo systemctl enable --now bluetooth.service tuned.service tailscaled.service
 sudo ufw --force enable
 sudo systemctl enable --now ufw.service
 

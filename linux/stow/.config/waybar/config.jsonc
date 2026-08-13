@@ -2,64 +2,82 @@
   "layer": "top",
   "position": "top",
   "height": 34,
-  "spacing": 8,
+  "spacing": 0,
   "reload_style_on_change": true,
-  "modules-left": ["hyprland/workspaces", "hyprland/window"],
-  "modules-center": ["clock"],
-  "modules-right": ["tray", "pulseaudio", "network", "bluetooth", "backlight", "battery"],
-  "hyprland/workspaces": {
+  "modules-left": ["ext/workspaces"],
+  "modules-center": [],
+  "modules-right": ["privacy", "pulseaudio", "bluetooth", "network", "battery", "clock"],
+  "ext/workspaces": {
     "format": "{name}",
     "on-click": "activate",
-    "sort-by-number": true
-  },
-  "hyprland/window": {
-    "max-length": 60,
-    "separate-outputs": true
+    "sort-by-name": true
   },
   "clock": {
-    "format": "{:%a %b %d  %H:%M}",
+    "format": "{:%A %I:%M %p}",
     "tooltip-format": "<tt>{calendar}</tt>",
     "calendar": {
       "mode": "month",
-      "weeks-pos": "right"
+      "weeks-pos": "right",
+      "format": {
+        "today": "<span color='#89b4fa'><b><u>{}</u></b></span>"
+      }
     }
   },
-  "tray": {
-    "spacing": 10
-  },
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "󰖁 muted",
+    "format": "{icon}",
+    "format-muted": "󰖁",
     "format-icons": ["", "", ""],
-    "on-click": "pavucontrol"
+    "tooltip-format": "Volume: {volume}%",
+    "tooltip-format-muted": "Muted",
+    "scroll-step": 5,
+    "on-click": "toggle-waybar-tool wiremix",
+    "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+  "privacy": {
+    "icon-spacing": 8,
+    "icon-size": 14,
+    "transition-duration": 200,
+    "modules": [
+      {
+        "type": "screenshare",
+        "tooltip": true,
+        "tooltip-icon-size": 24
+      },
+      {
+        "type": "audio-in",
+        "tooltip": true,
+        "tooltip-icon-size": 24
+      }
+    ]
   },
   "network": {
-    "format-wifi": "󰖩 {signalStrength}%",
-    "format-ethernet": "󰈀 connected",
-    "format-disconnected": "󰖪 offline",
-    "tooltip-format-wifi": "{essid} ({ipaddr})",
-    "on-click": "wezterm start -- nmtui"
+    "format-wifi": "󰖩",
+    "format-ethernet": "󰈀",
+    "format-disconnected": "󰖪",
+    "tooltip-format-wifi": "{essid}\nSignal: {signalStrength}%\n{ipaddr}",
+    "tooltip-format-ethernet": "Ethernet\n{ipaddr}",
+    "tooltip-format-disconnected": "Disconnected",
+    "on-click": "toggle-waybar-tool impala"
   },
   "bluetooth": {
     "format": "󰂯",
     "format-disabled": "󰂲",
-    "format-connected": "󰂱 {num_connections}",
-    "on-click": "wezterm start -- bluetui"
-  },
-  "backlight": {
-    "format": "󰃠 {percent}%",
-    "on-scroll-up": "brightnessctl set 5%+",
-    "on-scroll-down": "brightnessctl set 5%-"
+    "format-connected": "󰂱",
+    "tooltip-format": "Bluetooth enabled",
+    "tooltip-format-disabled": "Bluetooth disabled",
+    "tooltip-format-connected": "{num_connections} connected\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}",
+    "on-click": "toggle-waybar-tool bluetui"
   },
   "battery": {
     "states": {
       "warning": 25,
       "critical": 10
     },
-    "format": "{icon} {capacity}%",
-    "format-charging": "󰂄 {capacity}%",
-    "format-plugged": "󰚥 {capacity}%",
+    "format": "{icon}",
+    "format-charging": "󰂄",
+    "format-plugged": "󰚥",
     "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-    "tooltip-format": "{timeTo}  {power:.1f} W"
+    "tooltip-format": "Battery: {capacity}%\n{timeTo}  {power:.1f} W"
   }
 }
