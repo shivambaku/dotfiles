@@ -5,7 +5,7 @@ hl.config({
 	general = {
 		gaps_in = 1,
 		gaps_out = 1,
-		border_size = 0,
+		border_size = 1,
 		["col.active_border"] = "rgb(89b4fa)",
 		["col.inactive_border"] = "rgb(313244)",
 		layout = "dwindle",

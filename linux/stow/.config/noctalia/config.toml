@@ -89,8 +89,8 @@ font_weight = 400
 font_family = "MesloLGS Nerd Font"
 capsule = false
 start = ["workspaces"]
-center = ["media", "audio_visualizer"]
-end = ["tray", "bluetooth", "network", "volume", "battery", "clock"]
+center = []
+end = ["media", "tray", "bluetooth", "network", "volume", "battery", "clock"]
 
 [widget.workspaces]
 style = "regular"
@@ -112,21 +112,9 @@ format = "{:%a %b %-d %I:%M %p}"
 scale = 0.9
 
 [widget.media]
+album_art_only = true
 hide_when_no_media = true
-hide_album_art = true
-hide_artist = true
-min_length = 60
-max_length = 180
-scale = 0.9
-
-[widget.audio_visualizer]
-width = 42
-bands = 10
-mirrored = true
-centered = true
-show_when_idle = false
-color_1 = "primary"
-color_2 = "on_surface_variant"
+art_size = 16
 scale = 0.9
 
 [widget.tray]

@@ -1,21 +1,22 @@
 # Arch Linux Setup
 
-Target: Intel Framework laptop.
-
 ## 1. Install Arch
 
 Run `archinstall` with:
 
+- Boot the installer in UEFI mode
 - Disk: default layout with LUKS encryption
 - Bootloader: `systemd-boot`
+- Unified kernel images: enabled
 - Profile: `Minimal`
 - Audio: `PipeWire`
 - Network: `NetworkManager`
-- User: sudo access
+- User: create a normal user with sudo access
 
 ## 2. Install Dotfiles
 
-Connect to the network with `nmtui` if required, then run:
+Log in as the normal user. Connect to the network with `nmtui` if required,
+then run:
 
 ```bash
 sudo pacman -Syu --needed git
@@ -28,9 +29,12 @@ reboot
 The installer may prompt for package and AUR confirmation. Rerun it if an
 installation step is interrupted.
 
-## 3. Enroll Fingerprint
+Individual setup steps can be rerun from `linux/scripts/`.
 
-Log in on TTY1. Hyprland starts automatically.
+After rebooting, log in on TTY1 to start Hyprland automatically. The reboot
+also applies the Zsh login shell and Docker group membership.
+
+## 3. Enroll Fingerprint
 
 ```bash
 fprintd-enroll

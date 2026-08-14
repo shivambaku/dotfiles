@@ -1,5 +1,5 @@
 local main_mod = "SUPER"
-local terminal = "wezterm"
+local terminal = "wezterm start --always-new-process"
 local noctalia = "noctalia msg "
 local launcher = noctalia .. "panel-toggle launcher"
 local file_manager = "nautilus"

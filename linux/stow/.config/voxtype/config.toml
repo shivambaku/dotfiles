@@ -5,7 +5,7 @@ state_file = "auto"
 enabled = false
 
 [parakeet]
-model = "parakeet-unified-en-0.6b"
+model = "parakeet-tdt-0.6b-v3-int8"
 on_demand_loading = false
 streaming = false
 

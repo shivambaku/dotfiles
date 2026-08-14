@@ -48,13 +48,16 @@ log "stow found: $(stow --version | head -n1)"
 # Install oh-my-zsh if not present
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   log "Installing oh-my-zsh..."
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
 else
   log "oh-my-zsh already installed"
 fi
 
 log "Linking configs with stow..."
-"$DOTFILES_DIR/stow-only.sh" --yes
+mkdir -p "$HOME/.config" "$HOME/.local/bin"
+git -C "$DOTFILES_DIR" submodule update --init --recursive
+stow -R -d "$DOTFILES_DIR" -t "$HOME" common
+stow -R -d "$SCRIPT_DIR" -t "$HOME" stow
 
 log "=== Installation complete ==="
 log ""
