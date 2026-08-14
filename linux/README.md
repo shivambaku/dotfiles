@@ -9,9 +9,13 @@ Run `archinstall` with:
 - Bootloader: `systemd-boot`
 - Unified kernel images: enabled
 - Profile: `Minimal`
+- Bluetooth: enabled
 - Audio: `PipeWire`
+- Power management: `tuned`
+- Firewall: `ufw`
 - Network: `NetworkManager`
 - User: create a normal user with sudo access
+- Additional packages: `git`
 
 ## 2. Install Dotfiles
 
@@ -19,7 +23,6 @@ Log in as the normal user. Connect to the network with `nmtui` if required,
 then run:
 
 ```bash
-sudo pacman -Syu --needed git
 git clone https://github.com/shivambaku/dotfiles.git
 cd dotfiles
 ./install.sh
@@ -32,7 +35,8 @@ installation step is interrupted.
 Individual setup steps can be rerun from `linux/scripts/`.
 
 After rebooting, log in on TTY1 to start Hyprland automatically. The reboot
-also applies the Zsh login shell and Docker group membership.
+also applies the larger console font, Zsh login shell, and Docker group
+membership.
 
 ## 3. Enroll Fingerprint
 

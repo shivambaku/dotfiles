@@ -3,8 +3,6 @@ set -euo pipefail
 source "$(dirname "$0")/_common.sh"
 
 log 'Configuring boot'
-sudo bootctl set-timeout 0
-
 cmdline="$(< /etc/kernel/cmdline)"
 for parameter in quiet systemd.show_status=auto udev.log_level=3; do
   [[ " $cmdline " == *" $parameter "* ]] || cmdline+=" $parameter"
@@ -24,3 +22,4 @@ for preset in /etc/mkinitcpio.d/*.preset; do
 done
 
 sudo mkinitcpio -P
+sudo bootctl set-timeout 0

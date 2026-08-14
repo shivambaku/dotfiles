@@ -8,14 +8,15 @@ read -r -p 'Install system packages and dotfiles? [y/N] ' reply
 
 scripts=(
   install-official-packages
+  configure-console
+  link-dotfiles
+  configure-services
+  configure-boot
+  configure-shell
   configure-development
   install-aur-packages
   install-flatpaks
-  configure-shell
-  link-dotfiles
   setup-voxtype
-  configure-services
-  configure-boot
 )
 
 for script in "${scripts[@]}"; do

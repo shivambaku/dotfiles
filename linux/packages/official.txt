@@ -1,8 +1,6 @@
 alsa-utils
 base-devel
 bat
-bluez
-bluez-utils
 btop
 curl
 dbeaver
@@ -19,7 +17,6 @@ fnm
 fprintd
 fwupd
 fzf
-git
 git-delta
 gpu-screen-recorder
 gtk4-layer-shell
@@ -50,14 +47,12 @@ satty
 signal-desktop
 stow
 sushi
+terminus-font
 thunderbird
 tree
 tree-sitter-cli
 ttf-liberation
 ttf-meslo-nerd
-tuned
-tuned-ppd
-ufw
 unzip
 upower
 usbutils
