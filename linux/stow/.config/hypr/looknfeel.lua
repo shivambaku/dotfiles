@@ -8,7 +8,7 @@ hl.config({
 		border_size = 1,
 		["col.active_border"] = "rgb(89b4fa)",
 		["col.inactive_border"] = "rgb(313244)",
-		layout = "dwindle",
+		layout = "scrolling",
 	},
 	decoration = {
 		rounding = 2,
@@ -22,9 +22,14 @@ hl.config({
 		force_default_wallpaper = 0,
 		background_color = "rgb(0a0c10)",
 	},
-	dwindle = {
-		preserve_split = true,
-		force_split = 2,
+	scrolling = {
+		fullscreen_on_one_column = true,
+		column_width = 0.5,
+		focus_fit_method = 1,
+		follow_focus = true,
+		explicit_column_widths = "0.5, 1.0",
+		wrap_focus = false,
+		wrap_swapcol = false,
 	},
 })
 

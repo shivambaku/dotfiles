@@ -65,15 +65,19 @@ hl.bind(main_mod .. " + S", hl.dsp.workspace.toggle_special("scratchpad"))
 hl.bind(main_mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:scratchpad" }))
 hl.bind(main_mod .. " + SHIFT + R", hl.dsp.exec_cmd(recorder))
 
-hl.bind(main_mod .. " + H", hl.dsp.focus({ direction = "left" }))
+hl.bind(main_mod .. " + H", hl.dsp.layout("focus l"))
 hl.bind(main_mod .. " + J", hl.dsp.focus({ direction = "down" }))
 hl.bind(main_mod .. " + K", hl.dsp.focus({ direction = "up" }))
-hl.bind(main_mod .. " + L", hl.dsp.focus({ direction = "right" }))
+hl.bind(main_mod .. " + L", hl.dsp.layout("focus r"))
 
-hl.bind(main_mod .. " + SHIFT + H", hl.dsp.window.swap({ direction = "left" }))
+hl.bind(main_mod .. " + SHIFT + H", hl.dsp.layout("swapcol l"))
 hl.bind(main_mod .. " + SHIFT + J", hl.dsp.window.swap({ direction = "down" }))
 hl.bind(main_mod .. " + SHIFT + K", hl.dsp.window.swap({ direction = "up" }))
-hl.bind(main_mod .. " + SHIFT + L", hl.dsp.window.swap({ direction = "right" }))
+hl.bind(main_mod .. " + SHIFT + L", hl.dsp.layout("swapcol r"))
+
+hl.bind(main_mod .. " + R", hl.dsp.layout("colresize +conf"))
+hl.bind(main_mod .. " + bracketleft", hl.dsp.window.move({ direction = "left" }))
+hl.bind(main_mod .. " + bracketright", hl.dsp.layout("promote"))
 
 for workspace = 1, 4 do
 	hl.bind(main_mod .. " + " .. workspace, hl.dsp.focus({ workspace = workspace }))
