@@ -37,3 +37,10 @@ hl.animation({ leaf = "workspaces", enabled = false })
 for workspace = 1, 4 do
 	hl.workspace_rule({ workspace = tostring(workspace), persistent = true })
 end
+
+hl.window_rule({ match = { class = "^org\\.satty\\.satty$" }, float = true })
+hl.window_rule({ match = { class = "^org\\.satty\\.satty$" }, center = true })
+
+hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, float = true })
+hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, center = true })
+hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, size = { 1000, 700 } })

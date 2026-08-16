@@ -23,7 +23,7 @@ local function add_command_binding(keys, output_mods, key, bindings)
 	table.insert(bindings, binding)
 end
 
-for _, key in ipairs({ "A", "C", "F", "L", "O", "Q", "R", "S", "T", "V", "W", "X", "Y", "Z" }) do
+for _, key in ipairs({ "A", "C", "F", "K", "L", "O", "R", "S", "T", "V", "W", "X", "Y", "Z" }) do
 	add_command_binding("ALT + " .. key, "CTRL", key, command_bindings)
 	add_command_binding("ALT + SHIFT + " .. key, "CTRL|SHIFT", key, command_bindings)
 end
@@ -83,17 +83,10 @@ end
 hl.bind(main_mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(main_mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind("PRINT", hl.dsp.exec_cmd(screenshot))
+hl.bind("ALT + SHIFT + 4", hl.dsp.exec_cmd(screenshot))
 
-hl.bind(
-	"XF86AudioRaiseVolume",
-	hl.dsp.exec_cmd(noctalia .. "volume-up"),
-	{ locked = true, repeating = true }
-)
-hl.bind(
-	"XF86AudioLowerVolume",
-	hl.dsp.exec_cmd(noctalia .. "volume-down"),
-	{ locked = true, repeating = true }
-)
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(noctalia .. "volume-up"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(noctalia .. "volume-down"), { locked = true, repeating = true })
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd(noctalia .. "volume-mute"), { locked = true })
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(noctalia .. "mic-mute"), { locked = true })
 

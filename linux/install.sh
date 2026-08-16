@@ -10,6 +10,7 @@ scripts=(
   install-official-packages
   configure-console
   link-dotfiles
+  configure-user-dirs
   configure-desktop
   configure-services
   configure-boot

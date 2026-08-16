@@ -36,13 +36,13 @@ control_center_placement = "floating"
 session_placement = "attached"
 
 [shell.screenshot]
-save_to_file = true
+save_to_file = false
 copy_to_clipboard = true
 freeze_screen = true
 confirm_region = false
 show_cursor = false
 pipe_to_command = true
-pipe_command = "satty -f -"
+pipe_command = "satty -f - --app-id org.satty.satty --resize smart --output-filename ~/Pictures/screenshot-%Y-%m-%d_%H-%M-%S.png --copy-command wl-copy --actions-on-enter save-to-clipboard,exit --disable-notifications"
 
 [keybinds]
 up = ["Up", "Ctrl+p"]
