@@ -154,6 +154,9 @@ unit = "imperial"
 auto_locate = false
 address = "Bellevue, King County, Washington"
 
+[brightness]
+enable_ddcutil = true
+
 [system.monitor]
 enabled = true
 

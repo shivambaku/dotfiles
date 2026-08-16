@@ -1,0 +1,218 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly QUAD9_DNS='9.9.9.9,149.112.112.112'
+readonly CLOUDFLARE_DNS='1.1.1.1,1.0.0.1'
+readonly GOOGLE_DNS='8.8.8.8,8.8.4.4'
+readonly CHECK_HOST='example.com'
+
+device=''
+connection=''
+
+die() {
+  printf 'pick-dns: %s\n' "$*" >&2
+  exit 1
+}
+
+usage() {
+  printf '%s\n' \
+    'Usage: pick-dns [status|automatic|quad9|cloudflare|google|custom ADDRESSES]' \
+    '' \
+    'Run without arguments to open the interactive picker.' \
+    'Custom DNS addresses must be IPv4 addresses separated by commas or spaces.'
+}
+
+require_commands() {
+  local command
+
+  for command in nmcli ip getent timeout; do
+    command -v "$command" >/dev/null || die "required command not found: $command"
+  done
+}
+
+find_active_connection() {
+  local -a fields
+  local candidate candidate_type index
+
+  while read -r -a fields; do
+    candidate=''
+    for ((index = 0; index < ${#fields[@]}; index++)); do
+      if [[ ${fields[index]} == 'dev' && -n ${fields[index + 1]:-} ]]; then
+        candidate=${fields[index + 1]}
+        break
+      fi
+    done
+
+    [[ -n $candidate ]] || continue
+    candidate_type=$(nmcli -g GENERAL.TYPE device show "$candidate" 2>/dev/null || true)
+    case "$candidate_type" in
+      wifi|ethernet|bridge)
+        device=$candidate
+        connection=$(nmcli -g GENERAL.CONNECTION device show "$device")
+        [[ -n $connection && $connection != '--' ]] || continue
+        return
+        ;;
+    esac
+  done < <(ip -4 route show default)
+
+  die 'no active Wi-Fi or Ethernet connection with an IPv4 default route'
+}
+
+normalize_dns() {
+  local value=${1//,/ }
+  local -a addresses
+
+  value=${value//|/ }
+  read -r -a addresses <<< "$value"
+  printf '%s' "${addresses[*]}"
+}
+
+configured_mode() {
+  local dns ignore_auto normalized
+
+  dns=$(nmcli -g ipv4.dns connection show "$connection")
+  ignore_auto=$(nmcli -g ipv4.ignore-auto-dns connection show "$connection")
+
+  if [[ $ignore_auto != 'yes' ]]; then
+    if [[ -n $dns ]]; then
+      printf 'Automatic + %s' "$dns"
+    else
+      printf 'Automatic (DHCP)'
+    fi
+    return
+  fi
+
+  normalized=$(normalize_dns "$dns")
+  case "$normalized" in
+    "$(normalize_dns "$QUAD9_DNS")") printf 'Quad9' ;;
+    "$(normalize_dns "$CLOUDFLARE_DNS")") printf 'Cloudflare' ;;
+    "$(normalize_dns "$GOOGLE_DNS")") printf 'Google' ;;
+    '') printf 'Custom (no addresses configured)' ;;
+    *) printf 'Custom (%s)' "$dns" ;;
+  esac
+}
+
+show_status() {
+  local -a effective_dns
+  local joined
+
+  find_active_connection
+  mapfile -t effective_dns < <(nmcli -g IP4.DNS device show "$device")
+
+  if ((${#effective_dns[@]})); then
+    printf -v joined '%s, ' "${effective_dns[@]}"
+    joined=${joined%, }
+    joined=${joined// | /, }
+  else
+    joined='none'
+  fi
+
+  printf 'Connection: %s (%s)\n' "$connection" "$device"
+  printf 'Mode:       %s\n' "$(configured_mode)"
+  printf 'DNS:        %s\n' "$joined"
+}
+
+restore_settings() {
+  local old_dns=$1
+  local old_ignore_auto=$2
+
+  nmcli connection modify "$connection" \
+    ipv4.ignore-auto-dns "$old_ignore_auto" \
+    ipv4.dns "$old_dns" >/dev/null 2>&1 || true
+  nmcli --wait 10 device reapply "$device" >/dev/null 2>&1 || true
+}
+
+apply_dns() {
+  local mode=$1
+  local dns=${2:-}
+  local old_dns old_ignore_auto
+
+  find_active_connection
+  old_dns=$(nmcli -g ipv4.dns connection show "$connection")
+  old_ignore_auto=$(nmcli -g ipv4.ignore-auto-dns connection show "$connection")
+
+  printf 'Applying %s to %s...\n' "$mode" "$connection"
+
+  if [[ $mode == 'Automatic (DHCP)' ]]; then
+    nmcli connection modify "$connection" \
+      ipv4.ignore-auto-dns no \
+      ipv4.dns '' || die 'NetworkManager rejected the DNS configuration'
+  else
+    nmcli connection modify "$connection" \
+      ipv4.ignore-auto-dns yes \
+      ipv4.dns "$dns" || die 'NetworkManager rejected the DNS configuration'
+  fi
+
+  if ! nmcli --wait 10 device reapply "$device" >/dev/null; then
+    restore_settings "$old_dns" "$old_ignore_auto"
+    die 'could not reapply the connection; the previous DNS settings were restored'
+  fi
+
+  if ! timeout 6 getent ahostsv4 "$CHECK_HOST" >/dev/null; then
+    restore_settings "$old_dns" "$old_ignore_auto"
+    die "DNS verification failed; the previous DNS settings were restored"
+  fi
+
+  printf 'DNS updated successfully.\n'
+  show_status
+}
+
+pick_custom_dns() {
+  local custom_dns=${1:-}
+
+  if [[ -z $custom_dns ]]; then
+    read -r -p 'IPv4 DNS addresses (comma or space separated): ' custom_dns
+  fi
+
+  [[ -n $custom_dns ]] || die 'no DNS addresses provided'
+  apply_dns 'Custom' "$custom_dns"
+}
+
+interactive_picker() {
+  local choice
+
+  show_status
+  printf '\n'
+  printf '%s\n' \
+    '1) Automatic (DHCP)' \
+    "2) Quad9      ($QUAD9_DNS)" \
+    "3) Cloudflare ($CLOUDFLARE_DNS)" \
+    "4) Google     ($GOOGLE_DNS)" \
+    '5) Custom' \
+    'q) Quit'
+
+  while true; do
+    read -r -p 'Select DNS: ' choice || exit 0
+    case "$choice" in
+      1) apply_dns 'Automatic (DHCP)'; return ;;
+      2) apply_dns 'Quad9' "$QUAD9_DNS"; return ;;
+      3) apply_dns 'Cloudflare' "$CLOUDFLARE_DNS"; return ;;
+      4) apply_dns 'Google' "$GOOGLE_DNS"; return ;;
+      5) pick_custom_dns; return ;;
+      q|Q) return ;;
+      *) printf 'Choose 1-5 or q.\n' >&2 ;;
+    esac
+  done
+}
+
+main() {
+  local action=${1:-}
+
+  require_commands
+  case "$action" in
+    '') interactive_picker ;;
+    status) show_status ;;
+    automatic|auto|dhcp) apply_dns 'Automatic (DHCP)' ;;
+    quad9) apply_dns 'Quad9' "$QUAD9_DNS" ;;
+    cloudflare) apply_dns 'Cloudflare' "$CLOUDFLARE_DNS" ;;
+    google) apply_dns 'Google' "$GOOGLE_DNS" ;;
+    custom)
+      shift
+      pick_custom_dns "$*"
+      ;;
+    -h|--help|help) usage ;;
+    *) usage >&2; exit 2 ;;
+  esac
+}
+
+main "$@"

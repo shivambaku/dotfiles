@@ -17,7 +17,7 @@ scripts=(
   configure-development
   install-aur-packages
   install-flatpaks
-  setup-voxtype
+  configure-voxtype
 )
 
 for script in "${scripts[@]}"; do

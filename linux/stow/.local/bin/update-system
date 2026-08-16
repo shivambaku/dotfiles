@@ -1,5 +1,29 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+
+lock_file="${XDG_RUNTIME_DIR:-/tmp}/update-system-${UID}.lock"
+exec 9>"$lock_file"
+if ! flock -n 9; then
+  printf 'Another system update is already running.\n' >&2
+  exit 1
+fi
+
+mapfile -t disk_space < <(df --output=avail --block-size=1 /)
+available_bytes="${disk_space[1]:-}"
+available_bytes="${available_bytes//[[:space:]]/}"
+if [[ ! "$available_bytes" =~ ^[0-9]+$ ]]; then
+  printf 'Unable to determine available disk space.\n' >&2
+  exit 1
+fi
+
+if [[ "${UPDATE_SYSTEM_FORCE:-0}" != "1" ]] && (( available_bytes < 10 * 1024 * 1024 * 1024 )); then
+  printf 'At least 10 GiB of free disk space is required. Set UPDATE_SYSTEM_FORCE=1 to override.\n' >&2
+  exit 1
+fi
+
+if ! sudo paccache -rk2; then
+  printf 'Warning: package cache pruning failed; continuing with the update.\n' >&2
+fi
 
 if command -v paru >/dev/null; then
   paru -Syu

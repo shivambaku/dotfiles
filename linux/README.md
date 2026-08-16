@@ -50,6 +50,12 @@ Additional finger:
 fprintd-enroll -f left-index-finger
 ```
 
+Verify fingerprint:
+
+```bash
+fprintd-verify
+```
+
 ## 4. Install 1Password
 
 Follow the [1Password Arch Linux installation instructions](https://support.1password.com/install-linux/#arch-linux).
