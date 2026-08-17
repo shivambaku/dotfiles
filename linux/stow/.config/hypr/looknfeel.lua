@@ -49,3 +49,7 @@ hl.window_rule({ match = { class = "^org\\.satty\\.satty$" }, center = true })
 hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, float = true })
 hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, center = true })
 hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, size = { 1000, 700 } })
+
+hl.window_rule({ match = { class = "^hyprland-share-picker$" }, float = true })
+hl.window_rule({ match = { class = "^hyprland-share-picker$" }, center = true })
+hl.window_rule({ match = { class = "^hyprland-share-picker$" }, size = { 800, 500 } })

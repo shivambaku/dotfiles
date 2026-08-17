@@ -7,6 +7,7 @@ read -r -p 'Install system packages and dotfiles? [y/N] ' reply
 [[ "$reply" == "y" || "$reply" == "Y" ]] || exit 0
 
 scripts=(
+  configure-pacman
   install-official-packages
   configure-console
   link-dotfiles

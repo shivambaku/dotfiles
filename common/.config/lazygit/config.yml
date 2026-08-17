@@ -1,4 +1,5 @@
 git:
+  autoFetch: false
   diffContextSize: 0
   diffRenderers:
     - colorArg: always

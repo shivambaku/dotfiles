@@ -21,12 +21,13 @@ fzf
 git-delta
 gpu-screen-recorder
 gtk4-layer-shell
-hl
 hyprland
 hyprpicker
 intel-media-driver
 lazydocker
 lazygit
+lib32-mesa
+lib32-vulkan-intel
 libnotify
 libva-utils
 mesa
@@ -37,6 +38,7 @@ neovim
 noctalia
 noto-fonts
 noto-fonts-emoji
+ntsync-autoload
 okular
 opencode
 pacman-contrib
@@ -48,10 +50,10 @@ rtkit
 rustup
 satty
 signal-desktop
+steam
 stow
 sushi
 terminus-font
-thunderbird
 tree
 tree-sitter-cli
 ttf-liberation
