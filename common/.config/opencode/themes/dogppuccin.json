@@ -64,7 +64,7 @@
     "info": { "dark": "darkTeal", "light": "lightTeal" },
     "text": { "dark": "darkText", "light": "lightText" },
     "textMuted": { "dark": "darkSubtext1", "light": "lightSubtext1" },
-    "background": { "dark": "darkBase", "light": "lightBase" },
+    "background": "none",
     "backgroundPanel": { "dark": "darkMantle", "light": "lightMantle" },
     "backgroundElement": { "dark": "darkCrust", "light": "lightCrust" },
     "border": { "dark": "darkSurface0", "light": "lightSurface0" },

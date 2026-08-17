@@ -33,21 +33,21 @@ wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
 			label = wezterm.truncate_right(label, available_width - 1) .. " "
 		end
 		return {
-			{ Background = { Color = bg } },
+			{ Background = { Color = "none" } },
 			{ Foreground = { Color = active_tab_bg } },
 			{ Text = "" },
 			{ Background = { Color = active_tab_bg } },
 			{ Foreground = { Color = "#89b4fa" } },
 			{ Attribute = { Intensity = "Bold" } },
 			{ Text = label },
-			{ Background = { Color = bg } },
+			{ Background = { Color = "none" } },
 			{ Foreground = { Color = active_tab_bg } },
 			{ Text = "" },
 		}
 	end
 
 	return {
-		{ Background = { Color = bg } },
+		{ Background = { Color = "none" } },
 		{ Foreground = { Color = "#cdd6f4" } },
 		{ Text = " " .. tab.tab_index + 1 .. " " },
 	}
@@ -61,6 +61,8 @@ config.animation_fps = 144
 
 -- Window
 config.window_decorations = "RESIZE"
+config.window_close_confirmation = "NeverPrompt"
+-- config.window_background_opacity = 0.50
 config.window_padding = {
 	top = 15,
 	left = 15,
@@ -72,6 +74,7 @@ config.window_padding = {
 config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
 config.show_new_tab_button_in_tab_bar = false
+config.hide_tab_bar_if_only_one_tab = true
 config.tab_max_width = 48
 
 -- Panes
@@ -85,8 +88,20 @@ config.color_scheme = "Catppuccin Mocha"
 config.colors = {
 	background = bg,
 	tab_bar = {
-		background = bg,
-		inactive_tab_edge = bg,
+		background = "none",
+		inactive_tab_edge = "none",
+		active_tab = {
+			bg_color = "none",
+			fg_color = "#89b4fa",
+		},
+		inactive_tab = {
+			bg_color = "none",
+			fg_color = "#cdd6f4",
+		},
+		inactive_tab_hover = {
+			bg_color = "none",
+			fg_color = "#cdd6f4",
+		},
 	},
 }
 
@@ -151,6 +166,16 @@ config.keys = {
 		key = "t",
 		action = act.SpawnTab("CurrentPaneDomain"),
 	},
+	{
+		mods = "CTRL|SHIFT",
+		key = "w",
+		action = act.CloseCurrentTab({ confirm = false }),
+	},
+	{
+		mods = "SUPER",
+		key = "w",
+		action = act.CloseCurrentTab({ confirm = false }),
+	},
 
 	-- OpenCode
 	{
@@ -186,7 +211,7 @@ config.keys = {
 			act.SendKey({ key = "w", mods = "CTRL" }),
 			act.SendKey({ key = "q" }),
 		}),
-		act.CloseCurrentPane({ confirm = true })
+		act.CloseCurrentPane({ confirm = false })
 	),
 	utils_vim.key_map_vim_mix(
 		leader_mod,

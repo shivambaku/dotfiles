@@ -6,6 +6,10 @@ return {
 		config = function()
 			require("catppuccin").setup({
 				no_italic = true,
+				transparent_background = true,
+				float = {
+					transparent = true,
+				},
 				color_overrides = {
 					mocha = {
 						base = "#0a0c10",

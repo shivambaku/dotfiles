@@ -13,7 +13,8 @@ local audio = noctalia .. "panel-toggle control-center audio"
 local window_search = noctalia .. "panel-open launcher /win"
 local recorder = noctalia .. "plugin noctalia/screen_recorder:service all toggle"
 local dictation = "voxtype record toggle"
-local todos = "wezterm --config 'enable_tab_bar=false' --config 'window_decorations=\"NONE\"' start --always-new-process --class lounge-todos -- fnm exec --using=default nvim ~/Documents/Todos/today.md"
+local todos =
+	"wezterm --config 'enable_tab_bar=false' --config 'window_decorations=\"NONE\"' start --always-new-process --class lounge-todos -- fnm exec --using=default nvim ~/Documents/Todos/todo.md"
 
 local command_bindings = {}
 local zen_command_bindings = {}
