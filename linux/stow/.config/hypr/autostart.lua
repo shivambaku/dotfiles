@@ -1,4 +1,4 @@
 hl.on("hyprland.start", function()
 	hl.exec_cmd("systemctl --user start voxtype.service")
-	hl.exec_cmd("noctalia --daemon")
+	hl.exec_cmd("sync-zen-profile-launchers && noctalia --daemon")
 end)

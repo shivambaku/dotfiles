@@ -6,6 +6,7 @@ git:
       command: delta --features="catppuccin-mocha"
     - colorArg: always
       command: delta --features="catppuccin-mocha" -s
+promptToReturnFromSubprocess: false
 gui:
   sidePanelWidth: 0.4
   expandFocusedSidePanel: true
@@ -15,9 +16,8 @@ gui:
   showCommandLog: false
   showFileTree: false
   showNumstatInFilesView: true
-  showPanelJumps: false
+  showPanelJumps: true
   showRandomTip: false
-  promptToReturnFromSubprocess: false
   theme:
     activeBorderColor:
       - '#f2cdcd'

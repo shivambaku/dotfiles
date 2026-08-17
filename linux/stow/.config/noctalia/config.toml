@@ -161,7 +161,7 @@ enable_ddcutil = true
 enabled = true
 
 [calendar]
-enabled = false
+enabled = true
 
 [plugins]
 auto_update = true
@@ -176,8 +176,15 @@ location = "https://github.com/noctalia-dev/official-plugins.git"
 hidden_tabs = []
 sidebar = "compact"
 sidebar_section = "compact"
+width = 900
 show_shortcut_labels = false
 show_session_button = true
+
+[control_center.calendar]
+show_events_card = true
+show_week_numbers = false
+event_date_format = "%A %e %B"
+event_time_format = "%I:%M %p"
 
 [[control_center.shortcuts]]
 type = "wifi"

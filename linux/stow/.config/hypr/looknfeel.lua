@@ -46,6 +46,10 @@ end
 hl.window_rule({ match = { class = "^org\\.satty\\.satty$" }, float = true })
 hl.window_rule({ match = { class = "^org\\.satty\\.satty$" }, center = true })
 
+hl.window_rule({ match = { class = "^lounge-todos$" }, float = true })
+hl.window_rule({ match = { class = "^lounge-todos$" }, center = true })
+hl.window_rule({ match = { class = "^lounge-todos$" }, size = { 900, 700 } })
+
 hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, float = true })
 hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, center = true })
 hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, size = { 1000, 700 } })

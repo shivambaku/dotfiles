@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app_id='app.zen_browser.zen'
+profile_root="$HOME/.var/app/$app_id/.zen"
+profiles_ini="$profile_root/profiles.ini"
+applications_dir="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+launcher_prefix='zen-flatpak-profile-'
+
+profile_name_for_section() {
+	local target_section=$1
+	local line section=''
+
+	while IFS= read -r line || [[ -n $line ]]; do
+		line=${line%$'\r'}
+		if [[ $line =~ ^\[([^]]+)\]$ ]]; then
+			section=${BASH_REMATCH[1]}
+		elif [[ $section == "$target_section" && $line == Name=* ]]; then
+			printf '%s\n' "${line#Name=}"
+			return 0
+		fi
+	done < "$profiles_ini"
+
+	return 1
+}
+
+if [[ ${1:-} == '--launch' ]]; then
+	[[ -f $profiles_ini ]] || { printf 'Zen profiles not found: %s\n' "$profiles_ini" >&2; exit 1; }
+	[[ -n ${2:-} ]] || { printf 'Usage: %s --launch PROFILE_SECTION [URL]\n' "${0##*/}" >&2; exit 2; }
+
+	section=$2
+	shift 2
+	profile_name=$(profile_name_for_section "$section") || {
+		printf 'Zen profile section not found: %s\n' "$section" >&2
+		exit 1
+	}
+	exec /usr/bin/flatpak run "$app_id" -P "$profile_name" "$@"
+fi
+
+[[ -f $profiles_ini ]] || exit 0
+mkdir -p "$applications_dir"
+
+generated=0
+skipped=0
+section=''
+profile_name=''
+profile_path=''
+
+write_launcher() {
+	local times
+	local launcher
+
+	[[ $section == Profile* && -n $profile_name && -n $profile_path ]] || return 0
+
+	if [[ -f $profile_root/$profile_path/times.json ]]; then
+		times=$(<"$profile_root/$profile_path/times.json")
+		if [[ $times =~ \"firstUse\"[[:space:]]*:[[:space:]]*null ]]; then
+			((skipped += 1))
+			return 0
+		fi
+	fi
+
+	launcher="$applications_dir/$launcher_prefix${section,,}.desktop"
+	printf '%s\n' \
+		'[Desktop Entry]' \
+		'Type=Application' \
+		"Name=Zen - $profile_name" \
+		"Comment=Launch Zen with the $profile_name profile" \
+		"Exec=sync-zen-profile-launchers --launch $section %u" \
+		'TryExec=sync-zen-profile-launchers' \
+		"Icon=$app_id" \
+		'Terminal=false' \
+		'Categories=Network;WebBrowser;' \
+		'StartupNotify=true' \
+		'StartupWMClass=zen' \
+		"X-Zen-Profile=$section" \
+		> "$launcher"
+	((generated += 1))
+}
+
+rm -f "$applications_dir"/"$launcher_prefix"*.desktop
+
+while IFS= read -r line || [[ -n $line ]]; do
+	line=${line%$'\r'}
+	if [[ $line =~ ^\[([^]]+)\]$ ]]; then
+		new_section=${BASH_REMATCH[1]}
+		write_launcher
+		section=$new_section
+		profile_name=''
+		profile_path=''
+	elif [[ $section == Profile* ]]; then
+		case $line in
+			Name=*) profile_name=${line#Name=} ;;
+			Path=*) profile_path=${line#Path=} ;;
+		esac
+	fi
+done < "$profiles_ini"
+write_launcher
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+	update-desktop-database "$applications_dir" >/dev/null 2>&1 || true
+fi
+
+printf 'Generated %d Zen profile launcher(s)' "$generated"
+if ((skipped)); then
+	printf '; skipped %d unused profile(s)' "$skipped"
+fi
+printf '\n'
