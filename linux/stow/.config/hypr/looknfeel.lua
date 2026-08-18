@@ -3,15 +3,15 @@ hl.env("HYPRCURSOR_SIZE", "24")
 
 hl.config({
 	general = {
-		gaps_in = 1,
-		gaps_out = 1,
-		border_size = 1,
+		gaps_in = 2,
+		gaps_out = 2,
+		border_size = 2,
 		["col.active_border"] = "rgb(89b4fa)",
 		["col.inactive_border"] = "rgb(313244)",
 		layout = "scrolling",
 	},
 	decoration = {
-		rounding = 2,
+		rounding = 4,
 	},
 	animations = {
 		enabled = true,
