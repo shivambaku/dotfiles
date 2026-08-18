@@ -32,7 +32,7 @@ launcher_placement = "floating"
 launcher_position = "center"
 clipboard_placement = "floating"
 clipboard_position = "center"
-control_center_placement = "floating"
+control_center_placement = "attached"
 session_placement = "attached"
 
 [shell.screenshot]
@@ -88,7 +88,7 @@ scale = 1.0
 font_weight = 400
 font_family = "MesloLGS Nerd Font"
 capsule = false
-start = ["workspaces"]
+start = ["workspaces", "taskbar"]
 center = []
 end = ["media", "tray", "bluetooth", "network", "volume", "battery", "clock"]
 
@@ -106,6 +106,13 @@ occupied_color = "#13151d"
 empty_color = "surface_variant"
 urgent_color = "error"
 capsule_radius = 3
+
+[widget.taskbar]
+only_active_workspace = true
+scale = 0.8
+show_active_indicator = true
+active_indicator_color = "primary"
+inactive_opacity = 0.7
 
 [widget.clock]
 format = "{:%a %b %-d %I:%M %p}"
@@ -133,9 +140,10 @@ show_label = false
 scale = 0.94
 
 [widget.battery]
-display_mode = "glyph"
+display_mode = "graphic"
 show_label = false
-scale = 0.94
+scale = 0.75
+color = "on_surface_variant"
 
 [desktop_widgets]
 enabled = false
@@ -174,9 +182,9 @@ location = "https://github.com/noctalia-dev/official-plugins.git"
 
 [control_center]
 hidden_tabs = []
-sidebar = "compact"
-sidebar_section = "compact"
-width = 900
+sidebar = "full"
+sidebar_section = "full"
+width = 1200
 show_shortcut_labels = false
 show_session_button = true
 

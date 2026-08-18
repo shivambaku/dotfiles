@@ -10,11 +10,14 @@ local system_monitor = noctalia .. "panel-toggle control-center system"
 local calendar = noctalia .. "panel-toggle control-center calendar"
 local media = noctalia .. "panel-toggle control-center media"
 local audio = noctalia .. "panel-toggle control-center audio"
+local bar = noctalia .. "bar-toggle main"
 local window_search = noctalia .. "panel-open launcher /win"
 local recorder = noctalia .. "plugin noctalia/screen_recorder:service all toggle"
 local dictation = "voxtype record toggle"
 local todos =
 	"wezterm --config 'enable_tab_bar=false' --config 'window_decorations=\"NONE\"' start --always-new-process --class lounge-todos -- fnm exec --using=default nvim ~/Documents/Todos/todo.md"
+
+hl.workspace_rule({ workspace = "special:notes", on_created_empty = todos })
 
 local command_bindings = {}
 local zen_command_bindings = {}
@@ -62,10 +65,11 @@ hl.bind(main_mod .. " + V", hl.dsp.exec_cmd(clipboard))
 hl.bind(main_mod .. " + C", hl.dsp.exec_cmd(control_center))
 hl.bind(main_mod .. " + M", hl.dsp.exec_cmd(system_monitor))
 hl.bind(main_mod .. " + A", hl.dsp.exec_cmd(calendar))
+hl.bind(main_mod .. " + B", hl.dsp.exec_cmd(bar))
 hl.bind(main_mod .. " + P", hl.dsp.exec_cmd(media))
 hl.bind(main_mod .. " + O", hl.dsp.exec_cmd(audio))
 hl.bind(main_mod .. " + D", hl.dsp.exec_cmd(dictation))
-hl.bind(main_mod .. " + N", hl.dsp.exec_cmd(todos))
+hl.bind(main_mod .. " + N", hl.dsp.workspace.toggle_special("notes"))
 hl.bind(main_mod .. " + Q", hl.dsp.window.close())
 hl.bind(main_mod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(main_mod .. " + T", hl.dsp.window.float({ action = "toggle" }))
