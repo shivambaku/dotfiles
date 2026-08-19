@@ -8,7 +8,7 @@ local function render()
 end
 
 local function syncState()
-  noctalia.runAsync("toggle-noctalia-nightlight status", function(result)
+  noctalia.runAsync("auto-noctalia-nightlight status", function(result)
     if result.exitCode == 0 and not result.timedOut then
       active = string.find(result.stdout, "on", 1, true) ~= nil
       render()
@@ -20,7 +20,7 @@ render()
 syncState()
 
 function onClick()
-  noctalia.runAsync("toggle-noctalia-nightlight toggle", function(result)
+  noctalia.runAsync("auto-noctalia-nightlight toggle", function(result)
     if result.exitCode == 0 and not result.timedOut then
       syncState()
     end

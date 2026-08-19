@@ -10,7 +10,7 @@ scripts=(
   configure-pacman
   install-official-packages
   configure-console
-  link-dotfiles
+  configure-dotfiles
   configure-user-dirs
   configure-desktop
   configure-services

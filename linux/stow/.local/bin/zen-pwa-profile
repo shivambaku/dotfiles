@@ -1,0 +1,266 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app_id='app.zen_browser.zen'
+profile_root="$HOME/.var/app/$app_id/.zen"
+profiles_ini="$profile_root/profiles.ini"
+bindings_file="$HOME/.config/hypr/bindings.lua"
+bin_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+userjs_prefs=(
+	'browser.startup.page|1'
+	'browser.tabs.closeWindowWithLastTab|false'
+	'zen.view.compact.show-sidebar-and-toolbar-on-hover|false'
+	'toolkit.legacyUserProfileCustomizations.stylesheets|true'
+)
+
+userchrome_css='#navigator-toolbox, #zen-sidebar-splitter, #zen-sidebar {
+  display: none !important;
+  visibility: collapse !important;
+}'
+
+die() {
+	printf 'zen-pwa-profile: %s\n' "$*" >&2
+	exit 1
+}
+
+usage() {
+	printf '%s\n' \
+		'Usage: zen-pwa-profile create <name> <url> [--workspace N]' \
+		'       zen-pwa-profile unlock <name>' \
+		'       zen-pwa-profile lock <name>' \
+		'       zen-pwa-profile remove <name>' \
+		'       zen-pwa-profile list' \
+		'' \
+		'Creates a dedicated, app-locked Zen profile for a website:' \
+		'  - opens on the given URL at startup' \
+		'  - hides the tab sidebar and toolbar via userChrome.css' \
+		'  - pins the tab so it cannot be closed accidentally' \
+		'  - generates a .desktop launcher via auto-zen-sync-launchers' \
+		'  - optionally routes Hyprland workspace N to the app on creation' \
+		'' \
+		'Close Zen before running create or remove.'
+}
+
+profile_section_for_name() {
+	local target_name=$1
+	local line section=''
+
+	while IFS= read -r line || [[ -n $line ]]; do
+		line=${line%$'\r'}
+		if [[ $line =~ ^\[([^]]+)\]$ ]]; then
+			section=${BASH_REMATCH[1]}
+		elif [[ $section == Profile* && $line == "Name=$target_name" ]]; then
+			printf '%s\n' "$section"
+			return 0
+		fi
+	done < "$profiles_ini"
+
+	return 1
+}
+
+path_for_section() {
+	local target_section=$1
+	local line section=''
+
+	while IFS= read -r line || [[ -n $line ]]; do
+		line=${line%$'\r'}
+		if [[ $line =~ ^\[([^]]+)\]$ ]]; then
+			section=${BASH_REMATCH[1]}
+		elif [[ $section == "$target_section" && $line == Path=* ]]; then
+			printf '%s\n' "${line#Path=}"
+			return 0
+		fi
+	done < "$profiles_ini"
+
+	return 1
+}
+
+profile_dir_for_name() {
+	local name=$1 section path
+
+	section=$(profile_section_for_name "$name") || return 1
+	path=$(path_for_section "$section") || return 1
+	printf '%s/%s\n' "$profile_root" "$path"
+}
+
+write_userjs() {
+	local profile_dir=$1 url=$2
+	local pref
+
+	{
+		for pref in "${userjs_prefs[@]}"; do
+			printf 'user_pref("%s", %s);\n' "${pref%%|*}" "${pref#*|}"
+		done
+		printf 'user_pref("browser.startup.homepage", "%s");\n' "$url"
+	} > "$profile_dir/user.js"
+}
+
+write_userchrome() {
+	local profile_dir=$1
+
+	mkdir -p "$profile_dir/chrome"
+	printf '%s\n' "$userchrome_css" > "$profile_dir/chrome/userChrome.css"
+}
+
+append_workspace_rule() {
+	local workspace=$1 section=$2 url=$3
+	local line
+
+	[[ -f $bindings_file ]] || die "bindings file not found: $bindings_file"
+	line="hl.workspace_rule({ workspace = \"$workspace\", on_created_empty = \"auto-zen-sync-launchers --launch $section $url\" })"
+
+	if grep -qF "$line" "$bindings_file"; then
+		printf 'Workspace rule for %s already exists; skipping.\n' "$workspace"
+		return 0
+	fi
+
+	printf '\n%s\n' "$line" >> "$bindings_file"
+	printf 'Appended to %s: %s\n' "$bindings_file" "$line"
+}
+
+remove_workspace_rule() {
+	local section=$1
+	local matches
+
+	[[ -f $bindings_file ]] || return 0
+	mapfile -t matches < <(grep -n "auto-zen-sync-launchers --launch $section " "$bindings_file" 2>/dev/null || true)
+	((${#matches[@]})) || return 0
+
+	cp "$bindings_file" "$bindings_file.bak"
+	grep -v "auto-zen-sync-launchers --launch $section " "$bindings_file" > "$bindings_file.tmp" &&
+		mv "$bindings_file.tmp" "$bindings_file"
+	printf 'Removed workspace rule(s) from %s (backup at %s.bak)\n' "$bindings_file" "$bindings_file"
+}
+
+cmd_create() {
+	local name=$1 url=$2 workspace=${3:-}
+	local section path profile_dir
+
+	[[ $name =~ ^[A-Za-z0-9._-]+$ ]] || die "invalid profile name: $name"
+	command -v flatpak >/dev/null || die 'flatpak not found'
+
+	[[ -f $profiles_ini ]] || die "Zen profiles not found: $profiles_ini"
+	if profile_section_for_name "$name" >/dev/null; then
+		die "profile already exists: $name"
+	fi
+
+	if ! flatpak run "$app_id" --CreateProfile "$name"; then
+		die 'could not create profile; make sure Zen is closed'
+	fi
+
+	section=$(profile_section_for_name "$name") || die "created profile not found in $profiles_ini"
+	path=$(path_for_section "$section") || die 'created profile path not found'
+	profile_dir="$profile_root/$path"
+	[[ -d $profile_dir ]] || die "profile directory missing: $profile_dir"
+
+	write_userjs "$profile_dir" "$url"
+	write_userchrome "$profile_dir"
+
+	"$bin_dir/auto-zen-sync-launchers"
+
+	if [[ -n $workspace ]]; then
+		append_workspace_rule "$workspace" "$section" "$url"
+	fi
+
+	printf 'Profile %q created (section %s).\n' "$name" "$section"
+	printf 'Launching for first login and tab pinning...\n'
+	setsid flatpak run "$app_id" -P "$name" "$url" >/dev/null 2>&1 &
+
+	printf 'Done. After logging in, pin the tab (drag it to the top of the sidebar).\n'
+}
+
+cmd_unlock() {
+	local name=$1 profile_dir
+
+	profile_dir=$(profile_dir_for_name "$name") || die "profile not found: $name"
+	if [[ -f "$profile_dir/chrome/userChrome.css" ]]; then
+		mv "$profile_dir/chrome/userChrome.css" "$profile_dir/chrome/userChrome.css.bak"
+	fi
+	printf 'Chrome UI restored for %q. Restart Zen to apply.\n' "$name"
+}
+
+cmd_lock() {
+	local name=$1 profile_dir
+
+	profile_dir=$(profile_dir_for_name "$name") || die "profile not found: $name"
+	if [[ -f "$profile_dir/chrome/userChrome.css.bak" ]]; then
+		mv "$profile_dir/chrome/userChrome.css.bak" "$profile_dir/chrome/userChrome.css"
+	fi
+	if [[ ! -f "$profile_dir/chrome/userChrome.css" ]]; then
+		write_userchrome "$profile_dir"
+	fi
+	printf 'Chrome UI locked for %q. Restart Zen to apply.\n' "$name"
+}
+
+cmd_remove() {
+	local name=$1
+	local section path profile_dir
+
+	section=$(profile_section_for_name "$name") || die "profile not found: $name"
+	path=$(path_for_section "$section") || die "profile path not found: $name"
+	profile_dir="$profile_root/$path"
+
+	[[ $path != /* && $path != *..* ]] || die 'refusing to remove an unsafe profile path'
+	[[ -d $profile_dir ]] && rm -rf "$profile_dir"
+
+	awk -v section="$section" '
+		/^\[/ { if (in_section) in_section = 0 }
+		$0 == "[" section "]" { in_section = 1; next }
+		!in_section { print }
+	' "$profiles_ini" > "$profiles_ini.tmp" && mv "$profiles_ini.tmp" "$profiles_ini"
+
+	remove_workspace_rule "$section"
+	"$bin_dir/auto-zen-sync-launchers"
+
+	printf 'Removed profile %q (section %s).\n' "$name" "$section"
+}
+
+cmd_list() {
+	local line section='' name='' path=''
+
+	[[ -f $profiles_ini ]] || die "Zen profiles not found: $profiles_ini"
+	printf '%-12s %-24s %s\n' 'SECTION' 'NAME' 'PATH'
+	while IFS= read -r line || [[ -n $line ]]; do
+		line=${line%$'\r'}
+		if [[ $line =~ ^\[([^]]+)\]$ ]]; then
+			section=${BASH_REMATCH[1]}
+			name=''
+			path=''
+		elif [[ $section == Profile* ]]; then
+			case $line in
+				Name=*) name=${line#Name=} ;;
+				Path=*) path=${line#Path=} ;;
+			esac
+		fi
+		if [[ $section == Profile* && -n $name && -n $path ]]; then
+			printf '%-12s %-24s %s\n' "$section" "$name" "$path"
+			name=''
+			path=''
+		fi
+	done < "$profiles_ini"
+}
+
+main() {
+	local action=${1:-}
+
+	case "$action" in
+		create)
+			(($# >= 3)) || { usage >&2; exit 2; }
+			local workspace=''
+			if [[ ${4:-} == '--workspace' ]]; then
+				(($# >= 5)) || { usage >&2; exit 2; }
+				workspace=$5
+			fi
+			cmd_create "$2" "$3" "$workspace"
+			;;
+		unlock) (($# >= 2)) || { usage >&2; exit 2; }; cmd_unlock "$2" ;;
+		lock) (($# >= 2)) || { usage >&2; exit 2; }; cmd_lock "$2" ;;
+		remove) (($# >= 2)) || { usage >&2; exit 2; }; cmd_remove "$2" ;;
+		list) cmd_list ;;
+		-h|--help|help) usage ;;
+		*) usage >&2; exit 2 ;;
+	esac
+}
+
+main "$@"

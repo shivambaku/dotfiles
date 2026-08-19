@@ -23,7 +23,7 @@ case "${1:-toggle}" in
     fi
     ;;
   *)
-    printf 'Usage: toggle-noctalia-nightlight [startup|toggle|status]\n' >&2
+    printf 'Usage: auto-noctalia-nightlight [startup|toggle|status]\n' >&2
     exit 2
     ;;
 esac

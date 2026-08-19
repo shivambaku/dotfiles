@@ -66,8 +66,8 @@ write_launcher() {
 		'Type=Application' \
 		"Name=Zen - $profile_name" \
 		"Comment=Launch Zen with the $profile_name profile" \
-		"Exec=sync-zen-profile-launchers --launch $section %u" \
-		'TryExec=sync-zen-profile-launchers' \
+		"Exec=auto-zen-sync-launchers --launch $section %u" \
+		'TryExec=auto-zen-sync-launchers' \
 		"Icon=$app_id" \
 		'Terminal=false' \
 		'Categories=Network;WebBrowser;' \
