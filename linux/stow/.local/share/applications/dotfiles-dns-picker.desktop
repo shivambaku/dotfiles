@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=DNS Picker
+Comment=Choose the system DNS provider
+Icon=text-x-script
+Exec=wezterm start --always-new-process -- auto-launcher-terminal pick-dns
+Terminal=false
+Categories=Settings;
+Keywords=Script;DNS;Network;Quad9;Cloudflare;

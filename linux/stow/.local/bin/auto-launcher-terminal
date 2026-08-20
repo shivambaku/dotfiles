@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -u
+
+if (( $# == 0 )); then
+	printf 'Usage: auto-launcher-terminal COMMAND [ARG ...]\n' >&2
+	exit 2
+fi
+
+"$@"
+status=$?
+
+printf '\n'
+if (( status == 0 )); then
+	printf 'Finished successfully.\n'
+else
+	printf 'Command exited with status %d.\n' "$status" >&2
+fi
+read -r -p 'Press Enter to close...'
+exit "$status"

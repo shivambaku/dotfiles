@@ -1,0 +1,11 @@
+:root[taskbartab] #navigator-toolbox,
+:root[taskbartab] #zen-sidebar-splitter,
+:root[taskbartab] #zen-appcontent-navbar-wrapper {
+  display: none !important;
+  visibility: collapse !important;
+  pointer-events: none !important;
+}
+
+:root[taskbartab] #zen-tabbox-wrapper {
+  margin-right: 0 !important;
+}

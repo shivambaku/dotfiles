@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Fastfetch
+GenericName=System Information
+Comment=Display a summary of system information
+Icon=utilities-terminal
+Exec=wezterm start --always-new-process -- auto-launcher-terminal fastfetch
+Terminal=false
+Categories=System;ConsoleOnly;
+Keywords=TUI;System;Information;

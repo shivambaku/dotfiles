@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=LazyDocker
+GenericName=Docker Manager
+Comment=Manage Docker containers, images, volumes, and logs
+Icon=utilities-terminal
+Exec=wezterm start --always-new-process -- lazydocker
+Terminal=false
+Categories=Development;ConsoleOnly;
+Keywords=TUI;Docker;Container;

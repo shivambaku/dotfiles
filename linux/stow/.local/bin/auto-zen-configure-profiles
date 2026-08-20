@@ -4,9 +4,9 @@ set -euo pipefail
 app_id='app.zen_browser.zen'
 profile_root=${ZEN_PROFILE_ROOT:-"$HOME/.var/app/$app_id/.zen"}
 profiles_ini="$profile_root/profiles.ini"
-style_source=${ZEN_STYLE_SOURCE:-"${XDG_CONFIG_HOME:-$HOME/.config}/zen/dogppuccin.css"}
-style_name='dogppuccin.css'
-import_line='@import url("dogppuccin.css");'
+config_dir=${ZEN_CONFIG_DIR:-"${XDG_CONFIG_HOME:-$HOME/.config}/zen"}
+style_names=('dogppuccin.css' 'taskbar-tabs.css')
+import_lines=('@import url("dogppuccin.css");' '@import url("taskbar-tabs.css");')
 preference_names=(
 	'browser.taskbarTabs.enabled'
 	'toolkit.legacyUserProfileCustomizations.stylesheets'
@@ -16,10 +16,12 @@ preference_names=(
 preference_values=('true' 'true' 'false' '0')
 
 [[ -f $profiles_ini ]] || exit 0
-[[ -f $style_source ]] || {
-	printf 'Zen stylesheet not found: %s\n' "$style_source" >&2
-	exit 1
-}
+for style_name in "${style_names[@]}"; do
+	[[ -f $config_dir/$style_name ]] || {
+		printf 'Zen stylesheet not found: %s\n' "$config_dir/$style_name" >&2
+		exit 1
+	}
+done
 
 replace_if_changed() {
 	local temporary=$1
@@ -42,8 +44,8 @@ profile_path=''
 is_relative='1'
 
 configure_profile() {
-	local profile_dir chrome_dir managed_css user_chrome user_js temporary line trimmed pref
-	local preference_index first_line=1 import_written=0 managed=0 changed=0
+	local profile_dir chrome_dir managed_css user_chrome user_js temporary line trimmed pref import_line style_name
+	local preference_index first_line=1 imports_written=0 managed=0 changed=0
 
 	[[ $section == Profile* && -n $profile_path ]] || return 0
 
@@ -60,16 +62,18 @@ configure_profile() {
 	fi
 
 	chrome_dir="$profile_dir/chrome"
-	managed_css="$chrome_dir/$style_name"
 	user_chrome="$chrome_dir/userChrome.css"
 	user_js="$profile_dir/user.js"
 	mkdir -p "$chrome_dir"
 
-	temporary=$(mktemp "$managed_css.tmp.XXXXXX")
-	install -m 0644 "$style_source" "$temporary"
-	if replace_if_changed "$temporary" "$managed_css"; then
-		changed=1
-	fi
+	for style_name in "${style_names[@]}"; do
+		managed_css="$chrome_dir/$style_name"
+		temporary=$(mktemp "$managed_css.tmp.XXXXXX")
+		install -m 0644 "$config_dir/$style_name" "$temporary"
+		if replace_if_changed "$temporary" "$managed_css"; then
+			changed=1
+		fi
+	done
 
 	temporary=$(mktemp "$user_chrome.tmp.XXXXXX")
 	{
@@ -78,17 +82,25 @@ configure_profile() {
 				if ((first_line)); then
 					first_line=0
 					if [[ $line == @charset* ]]; then
-						printf '%s\n%s\n' "$line" "$import_line"
-						import_written=1
+						printf '%s\n' "$line"
+						printf '%s\n' "${import_lines[@]}"
+						imports_written=1
 						continue
 					fi
-					printf '%s\n' "$import_line"
-					import_written=1
+					printf '%s\n' "${import_lines[@]}"
+					imports_written=1
 				fi
-				[[ $line == "$import_line" ]] || printf '%s\n' "$line"
+				managed=0
+				for import_line in "${import_lines[@]}"; do
+					if [[ $line == "$import_line" ]]; then
+						managed=1
+						break
+					fi
+				done
+				((managed)) || printf '%s\n' "$line"
 			done < "$user_chrome"
 		fi
-		((import_written)) || printf '%s\n' "$import_line"
+		((imports_written)) || printf '%s\n' "${import_lines[@]}"
 	} > "$temporary"
 	if replace_if_changed "$temporary" "$user_chrome"; then
 		changed=1
