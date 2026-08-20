@@ -19,6 +19,7 @@ fprintd
 fwupd
 fzf
 git-delta
+gnome-keyring
 gpu-screen-recorder
 gtk4-layer-shell
 hyprland
