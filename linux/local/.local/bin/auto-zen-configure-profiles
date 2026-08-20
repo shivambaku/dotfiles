@@ -40,22 +40,33 @@ replace_if_changed() {
 }
 
 configure_shortcuts() {
-	local target=$1 content temporary
+	local target=$1 content temporary changed=0
 
 	[[ -f $target ]] || return 1
 	content=$(<"$target")
-	[[ $content == *'"id":"dotfiles-open-location-f6"'* ]] && return 1
-	if [[ $content == *'"keycode":"VK_F6"'* ]]; then
-		printf 'F6 is already assigned in %s\n' "$target" >&2
-		return 2
-	fi
 	if [[ $content == *$'\n'* || $content != '{"shortcuts":['* || $content != *']}' || $content == '{"shortcuts":[]}' ]]; then
 		printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
 		return 2
 	fi
 
+	if [[ $content == *'"action":"cmd_toggleCompactModeIgnoreHover","disabled":false,"reserved":false'* ]]; then
+		content=${content/'"action":"cmd_toggleCompactModeIgnoreHover","disabled":false,"reserved":false'/'"action":"cmd_toggleCompactModeIgnoreHover","disabled":false,"reserved":true'}
+		changed=1
+	fi
+
+	if [[ $content != *'"id":"dotfiles-open-location-f6"'* ]]; then
+		if [[ $content == *'"keycode":"VK_F6"'* ]]; then
+			printf 'F6 is already assigned in %s\n' "$target" >&2
+			return 2
+		fi
+		content="${content::-2},$f6_shortcut]}"
+		changed=1
+	fi
+
+	((changed)) || return 1
+
 	temporary=$(mktemp "$target.tmp.XXXXXX")
-	printf '%s,%s]}' "${content::-2}" "$f6_shortcut" > "$temporary"
+	printf '%s' "$content" > "$temporary"
 	replace_if_changed "$temporary" "$target"
 }
 

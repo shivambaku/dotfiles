@@ -11,7 +11,8 @@ hl.config({
 		layout = "scrolling",
 	},
 	decoration = {
-		rounding = 4,
+		rounding = 0,
+		rounding_power = 2.4,
 	},
 	animations = {
 		enabled = true,

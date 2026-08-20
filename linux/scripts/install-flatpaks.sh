@@ -9,3 +9,5 @@ flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flath
 if ((${#packages[@]})); then
   flatpak install --user --noninteractive --or-update flathub "${packages[@]}"
 fi
+
+flatpak override --user --filesystem=xdg-documents/Projects:ro app.zen_browser.zen
