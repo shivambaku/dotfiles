@@ -6,4 +6,8 @@ log 'Linking dotfiles'
 mkdir -p "$HOME/.config" "$HOME/.local/bin" "$HOME/.local/share"
 git -C "$DOTFILES_DIR" submodule update --init --recursive
 stow -R -d "$DOTFILES_DIR" -t "$HOME" common
-stow --no-folding -R -d "$LINUX_DIR" -t "$HOME" stow
+stow -R -d "$LINUX_DIR" -t "$HOME" stow
+stow --no-folding -R -d "$LINUX_DIR" -t "$HOME" local
+
+log 'Refreshing desktop application database'
+update-desktop-database "$HOME/.local/share/applications"

@@ -5,6 +5,7 @@ btop
 curl
 dbeaver
 ddcutil
+desktop-file-utils
 discord
 docker
 docker-buildx

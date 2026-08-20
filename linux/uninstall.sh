@@ -6,6 +6,7 @@ DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 command -v stow >/dev/null || { printf 'stow is not installed\n'; exit 0; }
 
+stow --no-folding -D -d "$SCRIPT_DIR" -t "$HOME" local
 stow -D -d "$SCRIPT_DIR" -t "$HOME" stow
 stow -D -d "$DOTFILES_DIR" -t "$HOME" common
 
