@@ -24,6 +24,9 @@ compact = true
 app_grid = false
 sort_by_usage = false
 
+[shell.launcher.providers.calculator]
+global = false
+
 [shell.panel]
 borders = false
 shadow = true

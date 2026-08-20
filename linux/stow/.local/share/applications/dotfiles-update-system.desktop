@@ -8,8 +8,3 @@ Exec=wezterm start --always-new-process -- auto-launcher-terminal update-system
 Terminal=false
 Categories=System;
 Keywords=Script;Update;Packages;Pacman;Paru;Flatpak;Firmware;
-Actions=Firmware;
-
-[Desktop Action Firmware]
-Name=Update Including Firmware
-Exec=wezterm start --always-new-process -- auto-launcher-terminal update-system --firmware

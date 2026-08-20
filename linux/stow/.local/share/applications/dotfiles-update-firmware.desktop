@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=System Update + Firmware
+Comment=Update system packages, Flatpaks, and device firmware
+Icon=text-x-script
+Exec=wezterm start --always-new-process -- auto-launcher-terminal update-system --firmware
+Terminal=false
+Categories=System;
+Keywords=Script;Update;Packages;Pacman;Paru;Flatpak;Firmware;
