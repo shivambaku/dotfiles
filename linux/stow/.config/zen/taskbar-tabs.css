@@ -1,9 +1,25 @@
 :root[taskbartab] #navigator-toolbox,
-:root[taskbartab] #zen-sidebar-splitter,
-:root[taskbartab] #zen-appcontent-navbar-wrapper {
+:root[taskbartab] #zen-sidebar-splitter {
   display: none !important;
   visibility: collapse !important;
   pointer-events: none !important;
+}
+
+:root[taskbartab] #zen-appcontent-navbar-wrapper {
+  position: absolute !important;
+  inset: 0 0 auto !important;
+  z-index: 1000 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-100%) !important;
+  transition: none !important;
+}
+
+:root[taskbartab]:has(#urlbar[focused]) #zen-appcontent-navbar-wrapper,
+:root[taskbartab] #zen-appcontent-navbar-wrapper:is(:focus-within, :hover) {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateY(0) !important;
 }
 
 :root[taskbartab] #zen-tabbox-wrapper {

@@ -14,6 +14,9 @@ preference_names=(
 	'full-screen-api.warning.timeout'
 )
 preference_values=('true' 'true' 'false' '0')
+f6_shortcut='{"id":"dotfiles-open-location-f6","key":"","keycode":"VK_F6","group":"pageOperations"'
+f6_shortcut+=',"l10nId":"zen-location-open-shortcut","modifiers":{"control":false,"alt":false,"shift":false,"meta":false,"accel":false}'
+f6_shortcut+=',"action":"Browser:OpenLocation","disabled":false,"reserved":true,"internal":false}'
 
 [[ -f $profiles_ini ]] || exit 0
 for style_name in "${style_names[@]}"; do
@@ -36,6 +39,32 @@ replace_if_changed() {
 	mv -f "$temporary" "$target"
 }
 
+configure_shortcuts() {
+	local target=$1 content temporary
+
+	[[ -f $target ]] || return 1
+	content=$(<"$target")
+	[[ $content == *'"id":"dotfiles-open-location-f6"'* ]] && return 1
+	if [[ $content == *'"keycode":"VK_F6"'* ]]; then
+		printf 'F6 is already assigned in %s\n' "$target" >&2
+		return 2
+	fi
+	if [[ $content == *$'\n'* || $content != '{"shortcuts":['* || $content != *']}' || $content == '{"shortcuts":[]}' ]]; then
+		printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
+		return 2
+	fi
+
+	temporary=$(mktemp "$target.tmp.XXXXXX")
+	printf '%s,%s]}' "${content::-2}" "$f6_shortcut" > "$temporary"
+	replace_if_changed "$temporary" "$target"
+}
+
+manage_shortcuts=1
+if pgrep -x zen >/dev/null 2>&1; then
+	manage_shortcuts=0
+	printf 'Zen is running; skipping keyboard shortcut configuration\n' >&2
+fi
+
 updated=0
 unchanged=0
 skipped=0
@@ -44,7 +73,8 @@ profile_path=''
 is_relative='1'
 
 configure_profile() {
-	local profile_dir chrome_dir managed_css user_chrome user_js temporary line trimmed pref import_line style_name
+	local profile_dir chrome_dir managed_css user_chrome user_js shortcuts_file temporary line trimmed pref import_line style_name
+	local shortcut_status
 	local preference_index first_line=1 imports_written=0 managed=0 changed=0
 
 	[[ $section == Profile* && -n $profile_path ]] || return 0
@@ -130,6 +160,16 @@ configure_profile() {
 	} > "$temporary"
 	if replace_if_changed "$temporary" "$user_js"; then
 		changed=1
+	fi
+
+	if ((manage_shortcuts)); then
+		shortcuts_file="$profile_dir/zen-keyboard-shortcuts.json"
+		if configure_shortcuts "$shortcuts_file"; then
+			changed=1
+		else
+			shortcut_status=$?
+			((shortcut_status == 1)) || return "$shortcut_status"
+		fi
 	fi
 
 	if ((changed)); then
