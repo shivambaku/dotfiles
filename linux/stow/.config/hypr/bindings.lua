@@ -22,12 +22,12 @@ hl.workspace_rule({ workspace = "special:notes", on_created_empty = todos })
 local command_bindings = {}
 local zen_command_bindings = {}
 
-local function add_command_binding(keys, output_mods, key, bindings)
+local function add_command_binding(keys, output_mods, key, bindings, options)
 	local target = "activewindow"
 	local binding = hl.bind(keys, function()
 		hl.dispatch(hl.dsp.send_key_state({ mods = output_mods, key = key, state = "down", window = target }))
 		hl.dispatch(hl.dsp.send_key_state({ mods = output_mods, key = key, state = "up", window = target }))
-	end)
+	end, options)
 
 	table.insert(bindings, binding)
 end
@@ -35,6 +35,11 @@ end
 for _, key in ipairs({ "A", "C", "F", "K", "L", "O", "R", "S", "T", "V", "W", "X", "Y", "Z" }) do
 	add_command_binding("ALT + " .. key, "CTRL", key, command_bindings)
 	add_command_binding("ALT + SHIFT + " .. key, "CTRL|SHIFT", key, command_bindings)
+end
+
+for _, key in ipairs({ "LEFT", "RIGHT" }) do
+	add_command_binding("ALT + " .. key, "CTRL", key, command_bindings, { repeating = true })
+	add_command_binding("ALT + SHIFT + " .. key, "CTRL|SHIFT", key, command_bindings, { repeating = true })
 end
 
 for _, key in ipairs({ "N", "P" }) do
