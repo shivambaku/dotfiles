@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app_id='app.zen_browser.zen'
+profile_root=${ZEN_PROFILE_ROOT:-"$HOME/.var/app/$app_id/.zen"}
+profiles_ini="$profile_root/profiles.ini"
+style_source=${ZEN_STYLE_SOURCE:-"${XDG_CONFIG_HOME:-$HOME/.config}/zen/dogppuccin.css"}
+style_name='dogppuccin.css'
+import_line='@import url("dogppuccin.css");'
+preference_names=(
+	'browser.taskbarTabs.enabled'
+	'toolkit.legacyUserProfileCustomizations.stylesheets'
+	'zen.view.compact.show-sidebar-and-toolbar-on-hover'
+	'full-screen-api.warning.timeout'
+)
+preference_values=('true' 'true' 'false' '0')
+
+[[ -f $profiles_ini ]] || exit 0
+[[ -f $style_source ]] || {
+	printf 'Zen stylesheet not found: %s\n' "$style_source" >&2
+	exit 1
+}
+
+replace_if_changed() {
+	local temporary=$1
+	local target=$2
+
+	if cmp -s "$temporary" "$target"; then
+		rm -f "$temporary"
+		return 1
+	fi
+
+	chmod 0644 "$temporary"
+	mv -f "$temporary" "$target"
+}
+
+updated=0
+unchanged=0
+skipped=0
+section=''
+profile_path=''
+is_relative='1'
+
+configure_profile() {
+	local profile_dir chrome_dir managed_css user_chrome user_js temporary line trimmed pref
+	local preference_index first_line=1 import_written=0 managed=0 changed=0
+
+	[[ $section == Profile* && -n $profile_path ]] || return 0
+
+	if [[ $is_relative == 0 ]]; then
+		profile_dir=$profile_path
+	else
+		profile_dir="$profile_root/$profile_path"
+	fi
+
+	if [[ ! -d $profile_dir ]]; then
+		printf 'Skipping missing Zen profile: %s\n' "$profile_dir" >&2
+		((skipped += 1))
+		return 0
+	fi
+
+	chrome_dir="$profile_dir/chrome"
+	managed_css="$chrome_dir/$style_name"
+	user_chrome="$chrome_dir/userChrome.css"
+	user_js="$profile_dir/user.js"
+	mkdir -p "$chrome_dir"
+
+	temporary=$(mktemp "$managed_css.tmp.XXXXXX")
+	install -m 0644 "$style_source" "$temporary"
+	if replace_if_changed "$temporary" "$managed_css"; then
+		changed=1
+	fi
+
+	temporary=$(mktemp "$user_chrome.tmp.XXXXXX")
+	{
+		if [[ -f $user_chrome ]]; then
+			while IFS= read -r line || [[ -n $line ]]; do
+				if ((first_line)); then
+					first_line=0
+					if [[ $line == @charset* ]]; then
+						printf '%s\n%s\n' "$line" "$import_line"
+						import_written=1
+						continue
+					fi
+					printf '%s\n' "$import_line"
+					import_written=1
+				fi
+				[[ $line == "$import_line" ]] || printf '%s\n' "$line"
+			done < "$user_chrome"
+		fi
+		((import_written)) || printf '%s\n' "$import_line"
+	} > "$temporary"
+	if replace_if_changed "$temporary" "$user_chrome"; then
+		changed=1
+	fi
+
+	temporary=$(mktemp "$user_js.tmp.XXXXXX")
+	{
+		if [[ -f $user_js ]]; then
+			while IFS= read -r line || [[ -n $line ]]; do
+				trimmed=${line#"${line%%[![:space:]]*}"}
+				managed=0
+				for pref in "${preference_names[@]}"; do
+					if [[ $trimmed == user_pref* && $trimmed == *"\"$pref\""* ]]; then
+						managed=1
+						break
+					fi
+				done
+				((managed)) && continue
+				printf '%s\n' "$line"
+			done < "$user_js"
+		fi
+		for preference_index in "${!preference_names[@]}"; do
+			printf 'user_pref("%s", %s);\n' \
+				"${preference_names[$preference_index]}" \
+				"${preference_values[$preference_index]}"
+		done
+	} > "$temporary"
+	if replace_if_changed "$temporary" "$user_js"; then
+		changed=1
+	fi
+
+	if ((changed)); then
+		((updated += 1))
+	else
+		((unchanged += 1))
+	fi
+}
+
+while IFS= read -r line || [[ -n $line ]]; do
+	line=${line%$'\r'}
+	if [[ $line =~ ^\[([^]]+)\]$ ]]; then
+		new_section=${BASH_REMATCH[1]}
+		configure_profile
+		section=$new_section
+		profile_path=''
+		is_relative='1'
+	elif [[ $section == Profile* ]]; then
+		case $line in
+			Path=*) profile_path=${line#Path=} ;;
+			IsRelative=*) is_relative=${line#IsRelative=} ;;
+		esac
+	fi
+done < "$profiles_ini"
+configure_profile
+
+printf 'Configured %d Zen profile(s); %d unchanged' "$updated" "$unchanged"
+if ((skipped)); then
+	printf '; skipped %d missing profile(s)' "$skipped"
+fi
+printf '\n'

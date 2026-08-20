@@ -59,3 +59,12 @@ fprintd-verify
 ## 4. Install 1Password
 
 Follow the [1Password Arch Linux installation instructions](https://support.1password.com/install-linux/#arch-linux).
+
+## 5. Set Up Noctalia Calendar
+
+1. Create an Apple app-specific password under **Sign-In and Security >
+   App-Specific Passwords** on the Apple Account website.
+2. In **Noctalia Settings > Services > Calendar**, add an iCloud account using
+   the Apple Account email and app-specific password.
+3. If prompted to create a keyring, use the Linux login password and enable
+   automatic unlocking.
