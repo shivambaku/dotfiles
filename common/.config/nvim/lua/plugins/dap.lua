@@ -11,6 +11,7 @@ return {
 	config = function()
 		local dap = require("dap")
 		local dapui = require("dapui")
+		local theme = require("theme")
 		dapui.setup()
 
 		dap.listeners.before.event_terminated["dapui_config"] = dapui.close
@@ -29,8 +30,8 @@ return {
 		vim.keymap.set("n", "<F59>", dap.step_into, { desc = "Step into" }) -- Option-F11
 		vim.keymap.set("n", "<s-F11>", dap.step_out, { desc = "Step out" }) -- Shift-F11
 
-		vim.api.nvim_set_hl(0, "DapBreakpoint", { ctermbg = 0, fg = "#993939" })
-		vim.api.nvim_set_hl(0, "DapStopped", { ctermbg = 0, fg = "#98c379", bg = "#31353f" })
+		vim.api.nvim_set_hl(0, "DapBreakpoint", theme.highlights.dap_breakpoint)
+		vim.api.nvim_set_hl(0, "DapStopped", theme.highlights.dap_stopped)
 		vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DapBreakpoint" })
 		vim.fn.sign_define(
 			"DapStopped",

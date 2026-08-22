@@ -1,0 +1,1 @@
+../../../dotfiles/theme/zsh.zsh-theme

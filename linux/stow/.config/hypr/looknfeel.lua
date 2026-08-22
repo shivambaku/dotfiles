@@ -1,3 +1,6 @@
+local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+local theme = require(config_home .. "/dotfiles/theme/hyprland")
+
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 
@@ -6,8 +9,8 @@ hl.config({
 		gaps_in = 2,
 		gaps_out = 2,
 		border_size = 2,
-		["col.active_border"] = "rgb(89b4fa)",
-		["col.inactive_border"] = "rgb(313244)",
+		["col.active_border"] = theme.active_border,
+		["col.inactive_border"] = theme.inactive_border,
 		layout = "scrolling",
 	},
 	decoration = {
@@ -21,7 +24,7 @@ hl.config({
 		disable_hyprland_logo = true,
 		disable_splash_rendering = true,
 		force_default_wallpaper = 0,
-		background_color = "rgb(0a0c10)",
+		background_color = theme.background,
 	},
 	scrolling = {
 		fullscreen_on_one_column = true,

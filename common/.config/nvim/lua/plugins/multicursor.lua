@@ -3,9 +3,10 @@ return {
 	event = "VeryLazy",
 	config = function()
 		local mc = require("multicursor-nvim")
+		local theme = require("theme")
 		mc.setup()
 
-		vim.api.nvim_set_hl(0, "MultiCursorCursor", { fg = "#12131b", bg = "#868dac" })
+		vim.api.nvim_set_hl(0, "MultiCursorCursor", theme.highlights.multicursor)
 
 		vim.keymap.set("n", "<esc>", function()
 			if not mc.cursorsEnabled() then

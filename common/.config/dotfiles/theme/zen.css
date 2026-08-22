@@ -1,0 +1,90 @@
+:root {
+  --theme-base: #0a0c10;
+  --theme-surface: #1b1d27;
+  --theme-outline: #303341;
+  --theme-highlight: #45475a;
+  --theme-text: #cdd6f4;
+  --theme-subtle: #a6adc8;
+  --theme-primary: #89b4fa;
+  --theme-error: #f38ba8;
+
+  --zen-primary-color: var(--theme-primary) !important;
+  --zen-colors-primary: var(--theme-base) !important;
+  --zen-colors-secondary: var(--theme-surface) !important;
+  --zen-colors-tertiary: var(--theme-base) !important;
+  --zen-colors-border: var(--theme-outline) !important;
+
+  --toolbar-bgcolor: var(--theme-base) !important;
+  --zen-themed-toolbar-bg: var(--theme-base) !important;
+  --zen-main-browser-background: var(--theme-base) !important;
+  --toolbox-bgcolor-inactive: var(--theme-base) !important;
+  --zen-urlbar-background: var(--theme-surface) !important;
+  --zen-colors-input-bg: var(--theme-surface) !important;
+
+  --lwt-text-color: var(--theme-text) !important;
+  --toolbar-color: var(--theme-text) !important;
+  --toolbox-textcolor: var(--theme-text) !important;
+  --toolbox-textcolor-inactive: var(--theme-subtle) !important;
+  --toolbar-field-color: var(--theme-text) !important;
+  --toolbar-field-focus-color: var(--theme-text) !important;
+  --toolbarbutton-icon-fill: var(--theme-primary) !important;
+  --tab-selected-textcolor: var(--theme-primary) !important;
+
+  --arrowpanel-background: var(--theme-surface) !important;
+  --arrowpanel-color: var(--theme-text) !important;
+  --sidebar-text-color: var(--theme-text) !important;
+  --lwt-sidebar-text-color: var(--theme-text) !important;
+  --lwt-sidebar-background-color: var(--theme-base) !important;
+}
+
+#zen-browser-background {
+  --zen-main-browser-background: var(--theme-base) !important;
+}
+
+#navigator-toolbox,
+#zen-tabbox-wrapper,
+#zen-appcontent-navbar-container,
+.sidebar-panel {
+  background-color: var(--theme-base) !important;
+}
+
+#zen-sidebar-splitter {
+  background-color: var(--theme-base) !important;
+  opacity: 1 !important;
+}
+
+.sidebar-placesTree,
+.urlbar-background,
+#urlbar-results,
+#zen-workspaces-button {
+  background-color: var(--theme-surface) !important;
+}
+
+.tab-text,
+.urlbarView-row:not([selected]) :is(.urlbarView-title, .urlbarView-action) {
+  color: var(--theme-text) !important;
+}
+
+.tab-background[selected] {
+  background: var(--theme-surface) !important;
+}
+
+.tabbrowser-tab:hover > .tab-stack > .tab-background {
+  background-color: var(--theme-outline) !important;
+}
+
+.urlbarView-url {
+  color: var(--theme-primary) !important;
+}
+
+#urlbar-input::selection,
+::selection {
+  background-color: var(--theme-primary) !important;
+  color: var(--theme-base) !important;
+}
+
+menu:where([_moz-menuactive="true"]:not([disabled="true"])),
+menuitem:where([_moz-menuactive="true"]:not([disabled="true"])) {
+  background-color: var(--theme-primary) !important;
+  color: var(--theme-base) !important;
+}

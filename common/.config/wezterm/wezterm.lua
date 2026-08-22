@@ -1,6 +1,10 @@
 -- https://wezfurlong.org/wezterm/config/lua/general.html
 local wezterm = require("wezterm")
 local act = wezterm.action
+local config_home = os.getenv("XDG_CONFIG_HOME") or (wezterm.home_dir .. "/.config")
+local theme_path = config_home .. "/dotfiles/theme/wezterm.lua"
+wezterm.add_to_config_reload_watch_list(theme_path)
+local theme = dofile(theme_path)
 local utils_vim = require("utils-vim")
 local workspaces = require("workspaces")
 local worktrees = require("worktrees")
@@ -9,9 +13,6 @@ local lazygit = require("lazygit")
 local is_macos = wezterm.target_triple:find("apple%-darwin") ~= nil
 local mod = is_macos and "SUPER" or "ALT"
 local leader_mod = "LEADER|" .. mod
-
-local bg = "#0a0c10"
-local active_tab_bg = "#1f212d"
 
 -- Shows the project name and the assigned group on the bottom right
 wezterm.on("update-status", function(window, _)
@@ -34,21 +35,21 @@ wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
 		end
 		return {
 			{ Background = { Color = "none" } },
-			{ Foreground = { Color = active_tab_bg } },
+			{ Foreground = { Color = theme.active_tab_background } },
 			{ Text = "" },
-			{ Background = { Color = active_tab_bg } },
-			{ Foreground = { Color = "#89b4fa" } },
+			{ Background = { Color = theme.active_tab_background } },
+			{ Foreground = { Color = theme.blue } },
 			{ Attribute = { Intensity = "Bold" } },
 			{ Text = label },
 			{ Background = { Color = "none" } },
-			{ Foreground = { Color = active_tab_bg } },
+			{ Foreground = { Color = theme.active_tab_background } },
 			{ Text = "" },
 		}
 	end
 
 	return {
 		{ Background = { Color = "none" } },
-		{ Foreground = { Color = "#cdd6f4" } },
+		{ Foreground = { Color = theme.text } },
 		{ Text = " " .. tab.tab_index + 1 .. " " },
 	}
 end)
@@ -84,26 +85,8 @@ config.inactive_pane_hsb = {
 }
 
 -- Styling
-config.color_scheme = "Catppuccin Mocha"
-config.colors = {
-	background = bg,
-	tab_bar = {
-		background = "none",
-		inactive_tab_edge = "none",
-		active_tab = {
-			bg_color = "none",
-			fg_color = "#89b4fa",
-		},
-		inactive_tab = {
-			bg_color = "none",
-			fg_color = "#cdd6f4",
-		},
-		inactive_tab_hover = {
-			bg_color = "none",
-			fg_color = "#cdd6f4",
-		},
-	},
-}
+config.color_scheme = theme.color_scheme
+config.colors = theme.colors
 
 -- Fonts
 config.font = wezterm.font("MesloLGS Nerd Font")

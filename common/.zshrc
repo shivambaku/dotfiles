@@ -2,7 +2,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_CUSTOM=$HOME/.config/zsh/custom
-ZSH_THEME="catppuccin"
+ZSH_THEME="dotfiles"
 DISABLE_AUTO_TITLE="true"
 DISABLE_LS_COLORS="true"
 VI_MODE_SET_CURSOR=false
@@ -18,7 +18,7 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
-source $ZSH_CUSTOM/fzf-theme.sh
+source "${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/theme/fzf.zsh"
 
 # Clear vi-mode right prompt (mode indicator handled by theme)
 RPS1=''

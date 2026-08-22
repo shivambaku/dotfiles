@@ -3,9 +3,9 @@ git:
   diffContextSize: 0
   diffRenderers:
     - colorArg: always
-      command: delta --features="catppuccin-mocha"
+      command: delta --config "${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/theme/delta.gitconfig" --features="dotfiles"
     - colorArg: always
-      command: delta --features="catppuccin-mocha" -s
+      command: delta --config "${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/theme/delta.gitconfig" --features="dotfiles" -s
 promptToReturnFromSubprocess: false
 gui:
   sidePanelWidth: 0.4

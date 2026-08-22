@@ -1,4 +1,4 @@
-[delta "catppuccin-mocha"]
+[delta "dotfiles"]
     navigate = true
 	syntax-theme = Catppuccin Mocha
     paging = never

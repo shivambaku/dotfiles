@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-stylesheet="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland-share-picker.qss"
+stylesheet="${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/theme/hyprland-share-picker.qss"
 
 exec /usr/bin/hyprland-share-picker -style Fusion -stylesheet "$stylesheet" "$@"

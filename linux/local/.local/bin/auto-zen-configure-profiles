@@ -5,8 +5,8 @@ app_id='app.zen_browser.zen'
 profile_root=${ZEN_PROFILE_ROOT:-"$HOME/.var/app/$app_id/.zen"}
 profiles_ini="$profile_root/profiles.ini"
 config_dir=${ZEN_CONFIG_DIR:-"${XDG_CONFIG_HOME:-$HOME/.config}/zen"}
-style_names=('dogppuccin.css' 'taskbar-tabs.css')
-import_lines=('@import url("dogppuccin.css");' '@import url("taskbar-tabs.css");')
+style_names=('dotfiles.css' 'taskbar-tabs.css')
+import_lines=('@import url("dotfiles.css");' '@import url("taskbar-tabs.css");')
 preference_names=(
 	'browser.taskbarTabs.enabled'
 	'toolkit.legacyUserProfileCustomizations.stylesheets'

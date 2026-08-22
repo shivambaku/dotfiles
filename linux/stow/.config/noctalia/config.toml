@@ -54,7 +54,7 @@ down = ["Down", "Ctrl+n"]
 [theme]
 mode = "dark"
 source = "custom"
-custom_palette = "dogppuccin"
+custom_palette = "dotfiles"
 pure_black_dark = false
 
 [theme.templates]
