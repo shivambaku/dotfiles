@@ -60,6 +60,10 @@
   background-color: var(--theme-surface) !important;
 }
 
+#navigator-toolbox #urlbar[breakout-extend] .urlbar-background {
+  background-color: var(--theme-surface) !important;
+}
+
 .tab-text,
 .urlbarView-row:not([selected]) :is(.urlbarView-title, .urlbarView-action) {
   color: var(--theme-text) !important;
@@ -75,6 +79,11 @@
 
 .urlbarView-url {
   color: var(--theme-primary) !important;
+}
+
+.urlbarView .urlbarView-row[selected] *,
+.urlbarView .urlbarView-row[selected] .urlbarView-title-separator::before {
+  color: var(--theme-base) !important;
 }
 
 #urlbar-input::selection,
