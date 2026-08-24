@@ -94,29 +94,18 @@
   background-color: var(--theme-selection) !important;
 }
 
-#navigator-toolbox toolbarbutton:not(:hover):not([open="true"]):not([checked="true"]) {
-  color: var(--theme-muted) !important;
-}
-
-#navigator-toolbox toolbarbutton:not(:hover):not([open="true"]):not([checked="true"]) .toolbarbutton-icon {
-  fill: var(--theme-muted) !important;
-}
-
-#navigator-toolbox toolbarbutton:is(:hover, [open="true"], [checked="true"]) {
-  color: var(--theme-text) !important;
-}
-
-#navigator-toolbox toolbarbutton:is(:hover, [open="true"], [checked="true"]) .toolbarbutton-icon {
-  fill: var(--theme-text) !important;
-}
-
 .urlbarView-url {
   color: var(--theme-primary) !important;
 }
 
-.urlbarView .urlbarView-row[selected] *,
+.urlbarView .urlbarView-row[selected] :is(.urlbarView-title, .urlbarView-action, .urlbarView-url),
 .urlbarView .urlbarView-row[selected] .urlbarView-title-separator::before {
   color: var(--theme-text) !important;
+}
+
+.urlbarView-row[selected] > .urlbarView-row-inner {
+  background: var(--theme-selection) !important;
+  border-radius: 5px !important;
 }
 
 #urlbar-input::selection,
@@ -135,67 +124,10 @@ menuitem:where([_moz-menuactive="true"]:not([disabled="true"])) {
   color: var(--theme-text) !important;
 }
 
-@media (-moz-platform: linux) {
-  :root#main-window[windowtype="navigator:browser"][zen-single-toolbar="true"][zen-right-side="true"][zen-sidebar-expanded="true"]:not([taskbartab], [customizing], [inDOMFullscreen="true"]):not([chromehidden~="toolbar"], [chromehidden~="location"]) {
-    &:not(:has(#urlbar:is([focused], [open], [breakout-extend], [zen-floating-urlbar="true"], :focus-within))) #urlbar-container {
-      flex: 0 0 0 !important;
-      width: 0 !important;
-      min-width: 0 !important;
-      max-width: 0 !important;
-      height: 0 !important;
-      min-height: 0 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      overflow: visible !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    &:not(:has(#urlbar:is([focused], [open], [breakout-extend], [zen-floating-urlbar="true"], :focus-within))) #nav-bar {
-      min-height: 0 !important;
-      height: 0 !important;
-      max-height: 0 !important;
-      margin-block: 0 !important;
-      padding-block: 0 !important;
-      overflow: visible !important;
-    }
-
-    & .titlebar-close[command="cmd_closeWindow"] {
-      display: none !important;
-    }
-  }
-}
-
-#urlbar[open][zen-floating-urlbar="true"] {
-  --urlbar-container-height: 48px !important;
-  width: min(42rem, calc(100vw - 2rem)) !important;
-  min-width: 0 !important;
-  font-size: 1em !important;
-}
-
 #urlbar[open][zen-floating-urlbar="true"] > .urlbar-background {
   background: var(--theme-surface) !important;
   border: 1px solid var(--theme-border) !important;
   border-radius: 10px !important;
   box-shadow: 0 20px 55px rgba(0, 0, 0, 0.55) !important;
   backdrop-filter: none !important;
-}
-
-#urlbar[open][zen-floating-urlbar="true"] #urlbar-input {
-  color: var(--theme-text) !important;
-  opacity: 1 !important;
-}
-
-#urlbar[open][zen-floating-urlbar="true"] .urlbarView-row:not([selected]) :is(.urlbarView-title, .urlbarView-action, .urlbarView-url) {
-  color: var(--theme-muted) !important;
-  opacity: 1 !important;
-}
-
-#urlbar[open][zen-floating-urlbar="true"] .urlbarView-row[selected] > .urlbarView-row-inner {
-  background: var(--theme-selection) !important;
-  border-radius: 5px !important;
-}
-
-#urlbar[open][zen-floating-urlbar="true"] .urlbarView-row-inner {
-  padding-block: 6px !important;
 }
