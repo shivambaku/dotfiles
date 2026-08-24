@@ -19,38 +19,16 @@ wezterm.on("update-status", function(window, _)
 	window:set_right_status(" " .. workspaces.status_text(window:active_workspace()) .. " ")
 end)
 
--- Customize the tab bar so inactive tabs stay compact and the active tab keeps context.
-wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
-	local title = tab.tab_title
-	if title == "" then
-		title = tab.active_pane.title
-	end
-
-	local label = " " .. tab.tab_index + 1 .. " " .. title .. " "
-
-	if tab.is_active then
-		local available_width = math.max(1, max_width - 2)
-		if #label > available_width then
-			label = wezterm.truncate_right(label, available_width - 1) .. " "
-		end
-		return {
-			{ Background = { Color = "none" } },
-			{ Foreground = { Color = theme.active_tab_background } },
-			{ Text = "" },
-			{ Background = { Color = theme.active_tab_background } },
-			{ Foreground = { Color = theme.blue } },
-			{ Attribute = { Intensity = "Bold" } },
-			{ Text = label },
-			{ Background = { Color = "none" } },
-			{ Foreground = { Color = theme.active_tab_background } },
-			{ Text = "" },
-		}
-	end
-
+-- Keep terminal tabs visually related to workspaces without duplicating their pills.
+wezterm.on("format-tab-title", function(tab, _, _, _, is_hover)
+	local highlighted = tab.is_active or is_hover
 	return {
+		{ Background = { Color = highlighted and theme.active_tab_background or "none" } },
+		{ Foreground = { Color = highlighted and theme.text or theme.muted } },
+		{ Attribute = { Intensity = tab.is_active and "Bold" or "Normal" } },
+		{ Text = "  " .. tab.tab_index + 1 .. "  " },
 		{ Background = { Color = "none" } },
-		{ Foreground = { Color = theme.text } },
-		{ Text = " " .. tab.tab_index + 1 .. " " },
+		{ Text = " " },
 	}
 end)
 
@@ -77,7 +55,7 @@ config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
 config.show_new_tab_button_in_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
-config.tab_max_width = 48
+config.tab_max_width = 7
 
 -- Panes
 config.inactive_pane_hsb = {

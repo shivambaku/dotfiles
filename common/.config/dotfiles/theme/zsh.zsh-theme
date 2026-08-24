@@ -1,22 +1,22 @@
-# Hokkaido Snow color palette
-hokkaido_snow_base="#05070A"
-hokkaido_snow_deep="#0A0D11"
-hokkaido_snow_surface="#13181E"
-hokkaido_snow_raised="#1B232B"
-hokkaido_snow_selection="#223246"
-hokkaido_snow_border="#3A4652"
-hokkaido_snow_text="#E1E8EC"
-hokkaido_snow_secondary="#B8C3CA"
-hokkaido_snow_muted="#7D8992"
-hokkaido_snow_blue="#7FB5E5"
-hokkaido_snow_ice="#A9CCE8"
-hokkaido_snow_distant_blue="#6F9FD0"
-hokkaido_snow_cyan="#78BBC4"
-hokkaido_snow_green="#9CB68E"
-hokkaido_snow_violet="#B3A1D6"
-hokkaido_snow_peach="#D0A17E"
-hokkaido_snow_warning="#D3B26F"
-hokkaido_snow_error="#D9858B"
+# Biei color palette
+biei_base="#05070A"
+biei_deep="#0A0D11"
+biei_surface="#13181E"
+biei_raised="#1B232B"
+biei_selection="#223246"
+biei_border="#3A4652"
+biei_text="#E1E8EC"
+biei_secondary="#B8C3CA"
+biei_muted="#7D8992"
+biei_blue="#7FB5E5"
+biei_ice="#A9CCE8"
+biei_distant_blue="#6F9FD0"
+biei_cyan="#78BBC4"
+biei_green="#9CB68E"
+biei_violet="#B3A1D6"
+biei_peach="#D0A17E"
+biei_warning="#D3B26F"
+biei_error="#D9858B"
 
 # Cursor shapes
 _beam_cursor=$'\e[6 q'
@@ -26,23 +26,23 @@ _block_cursor=$'\e[2 q'
 # Note: visual|viopp won't trigger - zsh vi-mode stays 'vicmd' during visual selection
 function vim_mode_indicator() {
   case $KEYMAP in
-    vicmd) print -r -- "%F{${hokkaido_snow_violet}}❯%f " ;;
-    viins|main) print -r -- "%F{${hokkaido_snow_green}}❯%f " ;;
-    visual|viopp) print -r -- "%F{${hokkaido_snow_warning}}❯%f " ;;
-    *) print -r -- "%F{${hokkaido_snow_green}}❯%f " ;;
+    vicmd) print -r -- "%F{${biei_violet}}❯%f " ;;
+    viins|main) print -r -- "%F{${biei_green}}❯%f " ;;
+    visual|viopp) print -r -- "%F{${biei_warning}}❯%f " ;;
+    *) print -r -- "%F{${biei_green}}❯%f " ;;
   esac
 }
 
 # Build the full prompt
 function _build_prompt() {
   PROMPT='$(vim_mode_indicator)'
-  if [[ "$HOKKAIDO_SNOW_SHOW_TIME" == true ]]; then
-    PROMPT+="%F{${hokkaido_snow_violet}}%T  "
+  if [[ "$BIEI_SHOW_TIME" == true ]]; then
+    PROMPT+="%F{${biei_violet}}%T  "
   fi
   if [[ -n "$SSH_CONNECTION" || $EUID -eq 0 ]]; then
-    PROMPT+="%F{${hokkaido_snow_ice}}%n@%m  "
+    PROMPT+="%F{${biei_ice}}%n@%m  "
   fi
-  PROMPT+="%F{${hokkaido_snow_blue}}%~%{$reset_color%}"
+  PROMPT+="%F{${biei_blue}}%~%{$reset_color%}"
   PROMPT+=' $(git_prompt_info)'
 }
 
@@ -72,10 +72,10 @@ zle -N zle-line-init
 _build_prompt
 
 # Git prompt settings
-ZSH_THEME_GIT_PROMPT_PREFIX="%F{${hokkaido_snow_cyan}}("
+ZSH_THEME_GIT_PROMPT_PREFIX="%F{${biei_cyan}}("
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
-ZSH_THEME_GIT_PROMPT_DIRTY="%F{${hokkaido_snow_cyan}}) %F{${hokkaido_snow_warning}}%1{✗%}"
-ZSH_THEME_GIT_PROMPT_CLEAN="%F{${hokkaido_snow_cyan}}) %F{${hokkaido_snow_green}}%1{✔%}"
+ZSH_THEME_GIT_PROMPT_DIRTY="%F{${biei_cyan}}) %F{${biei_warning}}%1{✗%}"
+ZSH_THEME_GIT_PROMPT_CLEAN="%F{${biei_cyan}}) %F{${biei_green}}%1{✔%}"
 
 # ==============================================================================
 # TRANSIENT PROMPT (optional)
@@ -87,7 +87,7 @@ ZSH_THEME_GIT_PROMPT_CLEAN="%F{${hokkaido_snow_cyan}}) %F{${hokkaido_snow_green}
 
 function _set_transient_prompt() {
   if (( _transient_prompt_compact )); then
-    PROMPT="%F{${hokkaido_snow_muted}}❯%f "
+    PROMPT="%F{${biei_muted}}❯%f "
   else
     _build_prompt
   fi

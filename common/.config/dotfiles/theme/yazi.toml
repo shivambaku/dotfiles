@@ -23,8 +23,8 @@ border_style = { fg = "#7D8992" }
 
 
 [tabs]
-active = { fg = "#05070A", bg = "#E1E8EC", bold = true }
-inactive = { fg = "#E1E8EC", bg = "#1B232B" }
+active = { fg = "#E1E8EC", bg = "#223246", bold = true }
+inactive = { fg = "#7D8992", bg = "#1B232B" }
 
 [mode]
 normal_main = { fg = "#05070A", bg = "#7FB5E5", bold = true }
@@ -59,28 +59,30 @@ perm_sep = { fg = "#7D8992" }
 border = { fg = "#7FB5E5" }
 title = {}
 value = {}
-selected = { reversed = true }
+selected = { fg = "#E1E8EC", bg = "#223246" }
 
 [pick]
 border = { fg = "#7FB5E5" }
-active = { fg = "#B3A1D6" }
-inactive = {}
+active = { fg = "#E1E8EC", bg = "#223246", bold = true }
+inactive = { fg = "#7D8992" }
 
 [confirm]
 border = { fg = "#7FB5E5" }
 title = { fg = "#7FB5E5" }
 body = {}
-list = {}
-btn_yes = { reversed = true }
-btn_no = {}
+list = { fg = "#7D8992" }
+btn_yes = { fg = "#E1E8EC", bg = "#223246", bold = true }
+btn_no = { fg = "#7D8992", bg = "#1B232B" }
 
 [cmp]
 border = { fg = "#7FB5E5" }
+active = { fg = "#E1E8EC", bg = "#223246", bold = true }
+inactive = { fg = "#7D8992" }
 
 [tasks]
 border = { fg = "#7FB5E5" }
 title = {}
-hovered = { fg = "#B3A1D6", bold = true }
+hovered = { fg = "#E1E8EC", bg = "#223246", bold = true }
 
 [which]
 mask = { bg = "#13181E" }
@@ -94,7 +96,7 @@ separator_style = { fg = "#223246" }
 on = { fg = "#78BBC4" }
 run = { fg = "#B3A1D6" }
 desc = { fg = "#7D8992" }
-hovered = { bg = "#223246", bold = true }
+hovered = { fg = "#E1E8EC", bg = "#223246", bold = true }
 footer = { fg = "#E1E8EC", bg = "#1B232B" }
 
 [notify]
@@ -133,7 +135,7 @@ rules = [
 [spot]
 border = { fg = "#7FB5E5" }
 title = { fg = "#7FB5E5" }
-tbl_cell = { fg = "#7FB5E5", reversed = true }
+tbl_cell = { fg = "#E1E8EC", bg = "#223246", bold = true }
 tbl_col = { bold = true }
 
 [icon]

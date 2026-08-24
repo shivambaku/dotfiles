@@ -81,10 +81,13 @@ return {
 						return {
 							PmenuSel = { fg = colors.text, bg = colors.selection, style = { "bold" } },
 							PmenuKindSel = { fg = colors.text, bg = colors.selection, style = { "bold" } },
-							PmenuExtraSel = { fg = colors.muted, bg = colors.selection, style = { "bold" } },
+							PmenuExtraSel = { fg = colors.text, bg = colors.selection, style = { "bold" } },
+							BlinkCmpMenuSelection = { fg = colors.text, bg = colors.selection, style = { "bold" } },
 							TelescopeResultsNormal = { fg = colors.muted },
 							TelescopeSelection = { fg = colors.text, bg = colors.selection, style = { "bold" } },
 							TelescopeSelectionCaret = { fg = colors.text, bg = colors.selection },
+							HarpoonNormal = { fg = colors.muted },
+							HarpoonSelection = { fg = colors.text, bg = colors.selection, style = { "bold" } },
 						}
 					end,
 					color_overrides = {

@@ -31,10 +31,10 @@
   --toolbox-textcolor-inactive: var(--theme-muted) !important;
   --toolbar-field-color: var(--theme-text) !important;
   --toolbar-field-focus-color: var(--theme-text) !important;
-  --toolbarbutton-icon-fill: var(--theme-primary) !important;
-  --tab-selected-textcolor: var(--theme-primary) !important;
+  --toolbarbutton-icon-fill: var(--theme-muted) !important;
+  --tab-selected-textcolor: var(--theme-text) !important;
   --toolbarbutton-hover-background: var(--theme-selection) !important;
-  --toolbarbutton-active-background: var(--theme-raised) !important;
+  --toolbarbutton-active-background: var(--theme-selection) !important;
 
   --arrowpanel-background: var(--theme-raised) !important;
   --arrowpanel-color: var(--theme-text) !important;
@@ -75,6 +75,10 @@
 }
 
 .tab-text {
+  color: var(--theme-muted) !important;
+}
+
+.tabbrowser-tab:is([selected], :hover) .tab-text {
   color: var(--theme-text) !important;
 }
 
@@ -87,7 +91,23 @@
 }
 
 .tabbrowser-tab:hover > .tab-stack > .tab-background {
-  background-color: var(--theme-raised) !important;
+  background-color: var(--theme-selection) !important;
+}
+
+#navigator-toolbox toolbarbutton:not(:hover):not([open="true"]):not([checked="true"]) {
+  color: var(--theme-muted) !important;
+}
+
+#navigator-toolbox toolbarbutton:not(:hover):not([open="true"]):not([checked="true"]) .toolbarbutton-icon {
+  fill: var(--theme-muted) !important;
+}
+
+#navigator-toolbox toolbarbutton:is(:hover, [open="true"], [checked="true"]) {
+  color: var(--theme-text) !important;
+}
+
+#navigator-toolbox toolbarbutton:is(:hover, [open="true"], [checked="true"]) .toolbarbutton-icon {
+  fill: var(--theme-text) !important;
 }
 
 .urlbarView-url {
@@ -105,10 +125,14 @@
   color: var(--theme-base) !important;
 }
 
+menupopup > :is(menu, menuitem):not([_moz-menuactive="true"]) {
+  color: var(--theme-muted) !important;
+}
+
 menu:where([_moz-menuactive="true"]:not([disabled="true"])),
 menuitem:where([_moz-menuactive="true"]:not([disabled="true"])) {
-  background-color: var(--theme-primary) !important;
-  color: var(--theme-base) !important;
+  background-color: var(--theme-selection) !important;
+  color: var(--theme-text) !important;
 }
 
 @media (-moz-platform: linux) {

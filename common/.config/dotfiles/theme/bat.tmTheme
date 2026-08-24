@@ -3,13 +3,13 @@
 <plist version="1.0">
   <dict>
     <key>name</key>
-    <string>Hokkaido Snow</string>
+    <string>Biei</string>
     <key>semanticClass</key>
-    <string>theme.dark.hokkaido-snow</string>
+    <string>theme.dark.biei</string>
     <key>uuid</key>
     <string>627ce890-fabb-4d39-9819-7be71f4bdca7</string>
     <key>author</key>
-    <string>Hokkaido Snow</string>
+    <string>Biei</string>
     <key>colorSpaceName</key>
     <string>sRGB</string>
     <key>settings</key>

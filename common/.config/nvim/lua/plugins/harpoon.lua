@@ -18,6 +18,17 @@ return {
 	config = function()
 		local harpoon = require("harpoon")
 		harpoon:setup()
+		harpoon:extend({
+			UI_CREATE = function(context)
+				vim.api.nvim_set_option_value("cursorline", true, { win = context.win_id })
+				vim.api.nvim_set_option_value("cursorlineopt", "both", { win = context.win_id })
+				vim.api.nvim_set_option_value(
+					"winhighlight",
+					"Normal:HarpoonNormal,NormalNC:HarpoonNormal,LineNr:HarpoonNormal,CursorLine:HarpoonSelection,CursorLineNr:HarpoonSelection",
+					{ win = context.win_id }
+				)
+			end,
+		})
 
 		vim.keymap.set("n", "<C-h>", function()
 			harpoon.ui:toggle_quick_menu(harpoon:list())

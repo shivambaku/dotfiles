@@ -1,17 +1,18 @@
-# Hokkaido Snow Theme
+# Biei
 
-Hokkaido Snow uses neutral-black application surfaces against a blue-hour Biei
-snowfield. Lists use `Muted` for inactive labels and `Text` on `Selection` for
-the active row. Desktop UI, terminals, and editors use Commit Mono Nerd Font.
+Biei is a cool, low-chroma dark theme inspired by the snow-covered fields of
+Biei, Hokkaido at blue hour. Lists use `Muted` for inactive labels and `Text` on
+`Selection` for the active row. Desktop UI, terminals, and editors use Commit
+Mono Nerd Font.
 
 ## Palette
 
 ```text
 Base       #05070A    Surface    #13181E    Selection  #223246
 Border     #3A4652    Text       #E1E8EC    Muted      #7D8992
-Blue       #7FB5E5    Ice        #A9CCE8    Cyan       #78BBC4
-Green      #9CB68E    Violet     #B3A1D6    Number     #D0A17E
-Warning    #D3B26F    Error      #D9858B
+Secondary  #B8C3CA    Blue       #7FB5E5    Ice        #A9CCE8
+Cyan       #78BBC4    Green      #9CB68E    Violet     #B3A1D6
+Number     #D0A17E    Warning    #D3B26F    Error      #D9858B
 ```
 
 Theme files are linked into place by the dotfiles installer. Wallpaper exports
