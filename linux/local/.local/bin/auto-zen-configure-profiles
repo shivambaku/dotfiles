@@ -9,11 +9,22 @@ style_names=('dotfiles.css' 'taskbar-tabs.css')
 import_lines=('@import url("dotfiles.css");' '@import url("taskbar-tabs.css");')
 preference_names=(
 	'browser.taskbarTabs.enabled'
-	'toolkit.legacyUserProfileCustomizations.stylesheets'
-	'zen.view.compact.show-sidebar-and-toolbar-on-hover'
 	'full-screen-api.warning.timeout'
+	'toolkit.legacyUserProfileCustomizations.stylesheets'
+	'zen.tabs.vertical'
+	'zen.tabs.vertical.right-side'
+	'zen.view.use-single-toolbar'
+	'zen.view.sidebar-expanded'
+	'zen.view.compact.enable-at-startup'
+	'zen.view.compact.hide-tabbar'
+	'zen.view.compact.hide-toolbar'
+	'zen.view.compact.show-sidebar-and-toolbar-on-hover'
+	'zen.tabs.show-newtab-vertical'
+	'zen.view.show-newtab-button-top'
+	'zen.urlbar.behavior'
 )
-preference_values=('true' 'true' 'false' '0')
+preference_values=('true' '0' 'true' 'true' 'true' 'true' 'true' 'false' 'true' 'false' 'false' 'false' 'false' '"float"')
+removed_preference_names=('zen.workspaces.show-workspace-indicator' 'browser.download.autohideButton')
 f6_shortcut='{"id":"dotfiles-open-location-f6","key":"","keycode":"VK_F6","group":"pageOperations"'
 f6_shortcut+=',"l10nId":"zen-location-open-shortcut","modifiers":{"control":false,"alt":false,"shift":false,"meta":false,"accel":false}'
 f6_shortcut+=',"action":"Browser:OpenLocation","disabled":false,"reserved":true,"internal":false}'
@@ -84,8 +95,8 @@ profile_path=''
 is_relative='1'
 
 configure_profile() {
-	local profile_dir chrome_dir managed_css user_chrome user_js shortcuts_file temporary line trimmed pref import_line style_name
-	local shortcut_status
+	local profile_dir chrome_dir managed_css user_chrome user_js temporary line trimmed pref import_line style_name
+	local shortcuts_file shortcut_status
 	local preference_index first_line=1 imports_written=0 managed=0 changed=0
 
 	[[ $section == Profile* && -n $profile_path ]] || return 0
@@ -153,7 +164,7 @@ configure_profile() {
 			while IFS= read -r line || [[ -n $line ]]; do
 				trimmed=${line#"${line%%[![:space:]]*}"}
 				managed=0
-				for pref in "${preference_names[@]}"; do
+				for pref in "${preference_names[@]}" "${removed_preference_names[@]}"; do
 					if [[ $trimmed == user_pref* && $trimmed == *"\"$pref\""* ]]; then
 						managed=1
 						break

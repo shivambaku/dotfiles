@@ -1,6 +1,8 @@
 return {
 	"nvim-lualine/lualine.nvim",
 	config = function()
+		local theme = require("theme")
+
 		require("lualine").setup({
 			sections = {
 				lualine_a = { "mode" },
@@ -15,6 +17,7 @@ return {
 				},
 			},
 			options = {
+				theme = theme.lualine,
 				icons_enabled = false,
 				section_separators = "",
 				component_separators = "",

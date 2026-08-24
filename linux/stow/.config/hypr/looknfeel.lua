@@ -6,16 +6,24 @@ hl.env("HYPRCURSOR_SIZE", "24")
 
 hl.config({
 	general = {
-		gaps_in = 2,
-		gaps_out = 2,
-		border_size = 2,
+		gaps_in = 3,
+		gaps_out = 3,
+		border_size = 3,
 		["col.active_border"] = theme.active_border,
 		["col.inactive_border"] = theme.inactive_border,
 		layout = "scrolling",
 	},
 	decoration = {
-		rounding = 0,
+		rounding = 5,
 		rounding_power = 2.4,
+		active_opacity = 1.0,
+		inactive_opacity = 1.0,
+		fullscreen_opacity = 1.0,
+		-- blur = {
+		-- 	enabled = true,
+		-- 	size = 8,
+		-- 	passes = 3,
+		-- },
 	},
 	animations = {
 		enabled = true,

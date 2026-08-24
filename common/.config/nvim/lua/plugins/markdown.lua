@@ -8,6 +8,11 @@ return {
 			win_options = {
 				wrap = { default = false, rendered = false },
 			},
+			code = {
+				disable_background = true,
+				highlight_border = false,
+				inline = false,
+			},
 			sign = {
 				enabled = false,
 			},

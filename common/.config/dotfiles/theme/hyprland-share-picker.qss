@@ -1,7 +1,7 @@
 * {
-	font-family: "MesloLGS Nerd Font";
+	font-family: "CommitMono Nerd Font Mono";
 	font-size: 14px;
-	color: #cdd6f4;
+	color: #e1e8ec;
 }
 
 QMainWindow,
@@ -9,18 +9,18 @@ QMainWindow > QWidget,
 QTabWidget::pane,
 QScrollArea,
 QScrollArea > QWidget > QWidget {
-	background-color: #0a0c10;
+	background-color: #05070a;
 }
 
 QTabWidget::pane {
-	border: 1px solid #303341;
+	border: 1px solid #3a4652;
 	border-radius: 5px;
 	top: -1px;
 }
 
 QTabBar::tab {
 	background-color: transparent;
-	color: #a6adc8;
+	color: #b8c3ca;
 	border: none;
 	border-bottom: 2px solid transparent;
 	padding: 10px 18px;
@@ -28,13 +28,13 @@ QTabBar::tab {
 }
 
 QTabBar::tab:hover {
-	color: #cdd6f4;
-	background-color: #13151d;
+	color: #e1e8ec;
+	background-color: #13181e;
 }
 
 QTabBar::tab:selected {
-	color: #89b4fa;
-	border-bottom-color: #89b4fa;
+	color: #7fb5e5;
+	border-bottom-color: #7fb5e5;
 }
 
 QScrollArea {
@@ -42,33 +42,33 @@ QScrollArea {
 }
 
 QPushButton {
-	background-color: #1b1d27;
-	color: #cdd6f4;
-	border: 1px solid #303341;
+	background-color: #1b232b;
+	color: #e1e8ec;
+	border: 1px solid #3a4652;
 	border-radius: 5px;
 	padding: 10px 14px;
 }
 
 QPushButton:hover,
 QPushButton:focus {
-	background-color: #252836;
-	border-color: #89b4fa;
+	background-color: #223246;
+	border-color: #7fb5e5;
 }
 
 QPushButton:pressed {
-	background-color: #89b4fa;
-	color: #0a0c10;
+	background-color: #7fb5e5;
+	color: #05070a;
 }
 
 QCheckBox {
-	color: #a6adc8;
+	color: #b8c3ca;
 	spacing: 8px;
 	padding: 8px 2px 2px 2px;
 }
 
 QCheckBox:hover,
 QCheckBox:focus {
-	color: #cdd6f4;
+	color: #e1e8ec;
 }
 
 QScrollBar:vertical {
@@ -78,13 +78,13 @@ QScrollBar:vertical {
 }
 
 QScrollBar::handle:vertical {
-	background-color: #45475a;
+	background-color: #223246;
 	border-radius: 4px;
 	min-height: 30px;
 }
 
 QScrollBar::handle:vertical:hover {
-	background-color: #585b70;
+	background-color: #3a4652;
 }
 
 QScrollBar::add-line:vertical,
@@ -96,8 +96,8 @@ QScrollBar::sub-page:vertical {
 }
 
 QToolTip {
-	background-color: #1b1d27;
-	color: #cdd6f4;
-	border: 1px solid #303341;
+	background-color: #1b232b;
+	color: #e1e8ec;
+	border: 1px solid #3a4652;
 	padding: 6px;
 }

@@ -6,11 +6,11 @@ gui:
   returnImmediately: true
   theme:
     activeBorderColor:
-      - '#f2cdcd'
+      - '#a9cce8'
       - bold
     inactiveBorderColor:
-      - '#a6adc8'
+      - '#3a4652'
     optionsTextColor:
-      - '#89b4fa'
+      - '#7fb5e5'
     selectedLineBgColor:
-      - '#313244'
+      - '#223246'

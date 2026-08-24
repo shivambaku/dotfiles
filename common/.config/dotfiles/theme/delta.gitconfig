@@ -1,6 +1,6 @@
 [delta "dotfiles"]
     navigate = true
-	syntax-theme = Catppuccin Mocha
+	syntax-theme = dotfiles
     paging = never
     dark = true
     tabs = 4
@@ -11,17 +11,17 @@
     hunk-header-style = omit
     # hunk-header-decoration-style = ul
 	# hunk-header-file-style = bold
-	# hunk-header-line-number-style = bold "#a6adc8"
+	# hunk-header-line-number-style = bold "#B8C3CA"
 
-    plus-style = syntax "#112715"
-    plus-emph-style = syntax "#112715"
-    minus-style = syntax "#2b1217"
-    minus-emph-style = syntax "#2b1217"
+    plus-style = syntax "#162620"
+    plus-emph-style = syntax "#162620"
+    minus-style = syntax "#2B1C23"
+    minus-emph-style = syntax "#2B1C23"
 
-	blame-palette = "#1e1e2e #181825 #11111b #313244 #45475a"
-	file-style = "#cdd6f4"
+	blame-palette = "#05070A #0A0D11 #13181E #1B232B #223246"
+	file-style = "#E1E8EC"
 	map-styles = \
-		bold purple => syntax "#5b4e74", \
-		bold blue => syntax "#445375", \
-		bold cyan => syntax "#446170", \
-		bold yellow => syntax "#6b635b"
+		bold purple => syntax "#1B232B", \
+		bold blue => syntax "#223246", \
+		bold cyan => syntax "#13181E", \
+		bold yellow => syntax "#1B232B"

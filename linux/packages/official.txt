@@ -43,6 +43,7 @@ noto-fonts-emoji
 ntsync-autoload
 okular
 opencode
+otf-commit-mono-nerd
 pacman-contrib
 pciutils
 polkit

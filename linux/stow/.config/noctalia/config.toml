@@ -1,5 +1,5 @@
 [shell]
-font_family = "MesloLGS Nerd Font"
+font_family = "CommitMono Nerd Font Mono"
 corner_radius_scale = 1.2
 button_borders = false
 card_borders = false
@@ -71,8 +71,8 @@ auto_hide = false
 smart_auto_hide = false
 reserve_space = true
 layer = "top"
-thickness = 34
-background_opacity = 1.0
+thickness = 32
+background_opacity = 0.94
 border_width = 0.0
 shadow = false
 contact_shadow = false
@@ -89,11 +89,11 @@ widget_spacing = 10
 hover_highlight = true
 scale = 1.0
 font_weight = 400
-font_family = "MesloLGS Nerd Font"
+font_family = "CommitMono Nerd Font Mono"
 capsule = false
 start = ["workspaces", "taskbar"]
-center = []
-end = ["media", "tray", "bluetooth", "network", "volume", "battery", "clock"]
+center = ["clock"]
+end = ["media", "tray", "bluetooth", "network", "volume", "battery"]
 
 [widget.workspaces]
 style = "regular"
@@ -105,9 +105,10 @@ font_weight = 500
 active_pill_size = 1.45
 inactive_pill_size = 1.45
 focused_color = "primary"
-occupied_color = "#13151d"
-empty_color = "surface_variant"
-urgent_color = "error"
+occupied_color = "#13181E84"
+empty_color = "#13181EF0"
+urgent_color = "#13181E84"
+change_color_on_hover = false
 capsule_radius = 3
 
 [widget.taskbar]
@@ -118,7 +119,7 @@ active_indicator_color = "primary"
 inactive_opacity = 0.7
 
 [widget.clock]
-format = "{:%a %b %-d %I:%M %p}"
+format = "{:%a, %b %-d, %I:%M %p}"
 scale = 0.9
 
 [widget.media]
@@ -155,7 +156,9 @@ enabled = false
 enabled = false
 
 [wallpaper]
-enabled = false
+enabled = true
+directory = "~/.local/share/backgrounds/hokkaido-snow"
+fill_mode = "crop"
 
 [weather]
 enabled = true
@@ -256,9 +259,9 @@ enabled = true
 fingerprint = true
 lock_before_suspend = true
 blurred_desktop = false
-blur_intensity = 0.0
-tint_intensity = 0.0
-wallpaper = "color:#000000"
+blur_intensity = 0.4
+tint_intensity = 0.25
+wallpaper = "~/.local/share/backgrounds/hokkaido-snow/hokkaido-biei-lone-tree-2880x1920.png"
 
 [lockscreen_widgets]
 enabled = true
@@ -269,16 +272,17 @@ widget_order = ["lockscreen-clock@eDP-1", "lockscreen-login-box@eDP-1"]
 type = "clock"
 output = "eDP-1"
 cx = 720.0
-cy = 260.0
-box_width = 600.0
-box_height = 180.0
+cy = 374.0
+box_width = 400.0
+box_height = 112.0
 rotation = 0.0
 enabled = true
 
 [lockscreen_widgets.widget."lockscreen-clock@eDP-1".settings]
 clock_style = "digital"
-format = "{:%I:%M %p}"
+format = "{:%H:%M}"
 center_text = true
+font_family = "CommitMono Nerd Font Mono"
 color = "on_surface"
 shadow = false
 background = false

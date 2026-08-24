@@ -63,7 +63,8 @@ config.animation_fps = 144
 -- Window
 config.window_decorations = "RESIZE"
 config.window_close_confirmation = "NeverPrompt"
--- config.window_background_opacity = 0.50
+config.window_background_opacity = 0.95
+config.text_background_opacity = 1.0
 config.window_padding = {
 	top = 15,
 	left = 15,
@@ -81,15 +82,14 @@ config.tab_max_width = 48
 -- Panes
 config.inactive_pane_hsb = {
 	saturation = 1.0,
-	brightness = 0.5,
+	brightness = 1.0,
 }
 
 -- Styling
-config.color_scheme = theme.color_scheme
 config.colors = theme.colors
 
 -- Fonts
-config.font = wezterm.font("MesloLGS Nerd Font")
+config.font = wezterm.font_with_fallback({ "CommitMono Nerd Font Mono", "MesloLGS Nerd Font" })
 config.font_size = 12
 config.line_height = 1.2
 
