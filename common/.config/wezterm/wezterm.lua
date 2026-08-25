@@ -23,6 +23,8 @@ end)
 wezterm.on("format-tab-title", function(tab, _, _, _, is_hover)
 	local highlighted = tab.is_active or is_hover
 	return {
+		{ Background = { Color = "none" } },
+		{ Text = tab.tab_index == 0 and " " or "" },
 		{ Background = { Color = highlighted and theme.active_tab_background or "none" } },
 		{ Foreground = { Color = highlighted and theme.text or theme.muted } },
 		{ Attribute = { Intensity = tab.is_active and "Bold" or "Normal" } },
