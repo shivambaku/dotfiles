@@ -67,7 +67,7 @@ config.inactive_pane_hsb = {
 config.colors = theme.colors
 
 -- Fonts
-config.font = wezterm.font_with_fallback({ "CommitMono Nerd Font Mono", "MesloLGS Nerd Font" })
+config.font = wezterm.font_with_fallback({ "CommitMono Nerd Font Mono", "Noto Sans Mono CJK JP" })
 config.font_size = 12
 config.line_height = 1.2
 
