@@ -43,8 +43,8 @@
     "darkDiffRemovedBg": "#2B1C23"
   },
   "theme": {
-    "primary": { "dark": "darkSelection", "light": "lightSelection" },
-    "secondary": { "dark": "darkViolet", "light": "lightViolet" },
+    "primary": { "dark": "darkBlue", "light": "lightBlue" },
+    "secondary": { "dark": "darkDistantBlue", "light": "lightDistantBlue" },
     "accent": { "dark": "darkIce", "light": "lightIce" },
     "error": { "dark": "darkError", "light": "lightError" },
     "warning": { "dark": "darkWarning", "light": "lightWarning" },
@@ -75,30 +75,30 @@
     "diffAddedLineNumberBg": { "dark": "darkDiffAddedBg", "light": "lightDiffAddedBg" },
     "diffRemovedLineNumberBg": { "dark": "darkDiffRemovedBg", "light": "lightDiffRemovedBg" },
     "markdownText": { "dark": "darkText", "light": "lightText" },
-    "markdownHeading": { "dark": "darkViolet", "light": "lightViolet" },
+    "markdownHeading": { "dark": "darkIce", "light": "lightIce" },
     "markdownLink": { "dark": "darkBlue", "light": "lightBlue" },
     "markdownLinkText": { "dark": "darkIce", "light": "lightIce" },
     "markdownCode": { "dark": "darkGreen", "light": "lightGreen" },
-    "markdownBlockQuote": { "dark": "darkWarning", "light": "lightWarning" },
-    "markdownEmph": { "dark": "darkWarning", "light": "lightWarning" },
-    "markdownStrong": { "dark": "darkPeach", "light": "lightPeach" },
+    "markdownBlockQuote": { "dark": "darkMuted", "light": "lightMuted" },
+    "markdownEmph": { "dark": "darkIce", "light": "lightIce" },
+    "markdownStrong": { "dark": "darkIce", "light": "lightIce" },
     "markdownHorizontalRule": {
-      "dark": "darkSecondary",
-      "light": "lightSecondary"
+      "dark": "darkBorder",
+      "light": "lightBorder"
     },
     "markdownListItem": { "dark": "darkBlue", "light": "lightBlue" },
-    "markdownListEnumeration": { "dark": "darkIce", "light": "lightIce" },
+    "markdownListEnumeration": { "dark": "darkDistantBlue", "light": "lightDistantBlue" },
     "markdownImage": { "dark": "darkBlue", "light": "lightBlue" },
     "markdownImageText": { "dark": "darkIce", "light": "lightIce" },
     "markdownCodeBlock": { "dark": "darkText", "light": "lightText" },
     "syntaxComment": { "dark": "darkMuted", "light": "lightMuted" },
     "syntaxKeyword": { "dark": "darkViolet", "light": "lightViolet" },
     "syntaxFunction": { "dark": "darkBlue", "light": "lightBlue" },
-    "syntaxVariable": { "dark": "darkError", "light": "lightError" },
+    "syntaxVariable": { "dark": "darkText", "light": "lightText" },
     "syntaxString": { "dark": "darkGreen", "light": "lightGreen" },
     "syntaxNumber": { "dark": "darkPeach", "light": "lightPeach" },
-    "syntaxType": { "dark": "darkWarning", "light": "lightWarning" },
+    "syntaxType": { "dark": "darkIce", "light": "lightIce" },
     "syntaxOperator": { "dark": "darkCyan", "light": "lightCyan" },
-    "syntaxPunctuation": { "dark": "darkText", "light": "lightText" }
+    "syntaxPunctuation": { "dark": "darkMuted", "light": "lightMuted" }
   }
 }

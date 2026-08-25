@@ -128,6 +128,6 @@ menuitem:where([_moz-menuactive="true"]:not([disabled="true"])) {
   background: var(--theme-surface) !important;
   border: 1px solid var(--theme-border) !important;
   border-radius: 10px !important;
-  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.55) !important;
+  box-shadow: 0 20px 55px rgba(5, 7, 10, 0.55) !important;
   backdrop-filter: none !important;
 }

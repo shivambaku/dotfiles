@@ -5,9 +5,9 @@ filekinds:
   directory: {foreground: "#7FB5E5"}
   symlink: {foreground: "#A9CCE8"}
   pipe: {foreground: "#7D8992"}
-  block_device: {foreground: "#D9858B"}
-  char_device: {foreground: "#D9858B"}
-  socket: {foreground: "#3A4652"}
+  block_device: {foreground: "#B3A1D6"}
+  char_device: {foreground: "#B3A1D6"}
+  socket: {foreground: "#78BBC4"}
   special: {foreground: "#B3A1D6"}
   executable: {foreground: "#9CB68E"}
   mount_point: {foreground: "#6F9FD0"}
@@ -24,27 +24,27 @@ perms:
   other_write: {foreground: "#D3B26F"}
   other_execute: {foreground: "#9CB68E"}
   special_user_file: {foreground: "#B3A1D6"}
-  special_other: {foreground: "#3A4652"}
+  special_other: {foreground: "#B3A1D6"}
   attribute: {foreground: "#B8C3CA"}
 
 size:
   major: {foreground: "#B8C3CA"}
   minor: {foreground: "#A9CCE8"}
-  number_byte: {foreground: "#E1E8EC"}
+  number_byte: {foreground: "#7D8992"}
   number_kilo: {foreground: "#B8C3CA"}
-  number_mega: {foreground: "#7FB5E5"}
-  number_giga: {foreground: "#B3A1D6"}
-  number_huge: {foreground: "#B3A1D6"}
-  unit_byte: {foreground: "#B8C3CA"}
-  unit_kilo: {foreground: "#7FB5E5"}
-  unit_mega: {foreground: "#B3A1D6"}
-  unit_giga: {foreground: "#B3A1D6"}
-  unit_huge: {foreground: "#6F9FD0"}
+  number_mega: {foreground: "#6F9FD0"}
+  number_giga: {foreground: "#7FB5E5"}
+  number_huge: {foreground: "#A9CCE8"}
+  unit_byte: {foreground: "#7D8992"}
+  unit_kilo: {foreground: "#7D8992"}
+  unit_mega: {foreground: "#B8C3CA"}
+  unit_giga: {foreground: "#B8C3CA"}
+  unit_huge: {foreground: "#A9CCE8"}
 
 users:
   user_you: {foreground: "#E1E8EC"}
   user_root: {foreground: "#D9858B"}
-  user_other: {foreground: "#B3A1D6"}
+  user_other: {foreground: "#B8C3CA"}
   group_yours: {foreground: "#B8C3CA"}
   group_other: {foreground: "#7D8992"}
   group_root: {foreground: "#D9858B"}
@@ -72,24 +72,24 @@ security_context:
   colon: {foreground: "#7D8992"}
   user: {foreground: "#B8C3CA"}
   role: {foreground: "#B3A1D6"}
-  typ: {foreground: "#3A4652"}
+  typ: {foreground: "#A9CCE8"}
   range: {foreground: "#B3A1D6"}
 
 file_type:
-  image: {foreground: "#D3B26F"}
-  video: {foreground: "#D9858B"}
+  image: {foreground: "#78BBC4"}
+  video: {foreground: "#6F9FD0"}
   music: {foreground: "#9CB68E"}
   lossless: {foreground: "#78BBC4"}
-  crypto: {foreground: "#3A4652"}
-  document: {foreground: "#E1E8EC"}
+  crypto: {foreground: "#D0A17E"}
+  document: {foreground: "#B8C3CA"}
   compressed: {foreground: "#B3A1D6"}
-  temp: {foreground: "#D9858B"}
-  compiled: {foreground: "#6F9FD0"}
-  build: {foreground: "#3A4652"}
+  temp: {foreground: "#7D8992"}
+  compiled: {foreground: "#B3A1D6"}
+  build: {foreground: "#B8C3CA"}
   source: {foreground: "#7FB5E5"}
 
 punctuation: {foreground: "#7D8992"}
-date: {foreground: "#D3B26F"}
+date: {foreground: "#6F9FD0"}
 inode: {foreground: "#B8C3CA"}
 blocks: {foreground: "#7D8992"}
 header: {foreground: "#E1E8EC"}
@@ -99,4 +99,4 @@ flags: {foreground: "#B3A1D6"}
 symlink_path: {foreground: "#A9CCE8"}
 control_char: {foreground: "#6F9FD0"}
 broken_symlink: {foreground: "#D9858B"}
-broken_path_overlay: {foreground: "#3A4652"}
+broken_path_overlay: {foreground: "#D9858B"}

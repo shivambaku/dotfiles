@@ -107,7 +107,7 @@ inactive_pill_size = 1.45
 focused_color = "primary"
 occupied_color = "#13181E84"
 empty_color = "#13181EF0"
-urgent_color = "#13181E84"
+urgent_color = "#D9858B"
 change_color_on_hover = false
 capsule_radius = 3
 
