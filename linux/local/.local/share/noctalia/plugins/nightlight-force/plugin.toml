@@ -1,5 +1,6 @@
 id = "local/nightlight-force"
 name = "Night Light"
+version = "1.0.0"
 plugin_api = 3
 
 [[shortcut]]

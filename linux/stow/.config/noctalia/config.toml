@@ -178,7 +178,7 @@ enabled = true
 enabled = true
 
 [plugins]
-auto_update = true
+auto_update = "all"
 enabled = ["local/nightlight-force", "noctalia/screen_recorder"]
 
 [[plugins.source]]
