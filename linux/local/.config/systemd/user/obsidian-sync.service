@@ -1,0 +1,14 @@
+[Unit]
+Description=Obsidian Headless Sync
+Documentation=https://help.obsidian.md/sync/headless
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/fnm exec --using=default ob sync --path %h/Documents/Notes --continuous
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

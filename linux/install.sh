@@ -18,6 +18,7 @@ scripts=(
   configure-boot
   configure-shell
   configure-development
+  install-npm-packages
   install-aur-packages
   install-flatpaks
   configure-voxtype
