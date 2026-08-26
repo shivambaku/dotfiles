@@ -4,8 +4,6 @@
     "messages_half_page_down": "ctrl+d",
     "messages_half_page_up": "ctrl+u"
   },
-  "plugin": [
-    "file:///Users/shivambaku/Documents/Projects/Personal/opencode-ledger/src/tui.tsx"
-  ],
+  "plugin": ["../../Documents/Projects/Personal/opencode-ledger/src/tui.tsx"],
   "theme": "dotfiles"
 }
