@@ -5,6 +5,22 @@ return {
 	config = function()
 		require("render-markdown").setup({
 			file_types = { "markdown" },
+			render_modes = true,
+			anti_conceal = {
+				enabled = false,
+			},
+			checkbox = {
+				unchecked = {
+					icon = "[ ]",
+				},
+				checked = {
+					icon = "[✓]",
+				},
+			},
+			pipe_table = {
+				cell = "trimmed",
+				min_width = 5,
+			},
 			win_options = {
 				wrap = { default = false, rendered = false },
 			},
