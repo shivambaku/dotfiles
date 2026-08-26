@@ -114,6 +114,10 @@
   color: var(--theme-base) !important;
 }
 
+menupopup[placespopup="true"] {
+  --panel-background-color: var(--theme-raised) !important;
+}
+
 menupopup > :is(menu, menuitem):not([_moz-menuactive="true"]) {
   color: var(--theme-muted) !important;
 }

@@ -32,7 +32,7 @@ local function add_command_binding(keys, output_mods, key, bindings, options)
 	table.insert(bindings, binding)
 end
 
-for _, key in ipairs({ "A", "C", "F", "K", "L", "O", "R", "S", "T", "V", "W", "X", "Y", "Z" }) do
+for _, key in ipairs({ "A", "B", "C", "F", "K", "L", "O", "R", "S", "T", "V", "W", "X", "Y", "Z" }) do
 	add_command_binding("ALT + " .. key, "CTRL", key, command_bindings)
 	add_command_binding("ALT + SHIFT + " .. key, "CTRL|SHIFT", key, command_bindings)
 end
