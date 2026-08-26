@@ -20,14 +20,21 @@ local function on_init_project(client, project_files)
 end
 
 local function refresh_diagnostics(client)
-	for buf, _ in pairs(vim.lsp.get_client_by_id(client.id).attached_buffers) do
+	local capabilities = vim
+		.iter(client.dynamic_capabilities.capabilities.diagnosticProvider or {})
+		:map(function(cap)
+			return cap.registerOptions.identifier
+		end)
+		:totable()
+
+	for buf, _ in pairs(client.attached_buffers) do
 		if vim.api.nvim_buf_is_loaded(buf) then
-			client:request(
-				vim.lsp.protocol.Methods.textDocument_diagnostic,
-				{ textDocument = vim.lsp.util.make_text_document_params(buf) },
-				nil,
-				buf
-			)
+			for _, cap in pairs(capabilities) do
+				client:request(vim.lsp.protocol.Methods.textDocument_diagnostic, {
+					identifier = cap,
+					textDocument = vim.lsp.util.make_text_document_params(buf),
+				}, nil, buf)
+			end
 		end
 	end
 end
@@ -40,25 +47,9 @@ local function roslyn_handlers()
 			refresh_diagnostics(client)
 			return vim.NIL
 		end,
-		["workspace/_roslyn_projectNeedsRestore"] = function(_, result, ctx)
-			local client = assert(vim.lsp.get_client_by_id(ctx.client_id))
-
-			client:request("workspace/_roslyn_restore", result, function(err, response)
-				if err then
-					vim.notify(err.message, vim.log.levels.ERROR, { title = "roslyn_ls" })
-				end
-				if response then
-					for _, v in ipairs(response) do
-						vim.notify(v.message, vim.log.levels.INFO, { title = "roslyn_ls" })
-					end
-				end
-			end)
-
-			return vim.NIL
-		end,
 		["razor/provideDynamicFileInfo"] = function(_, _, _)
 			vim.notify(
-				"Razor is not supported.\nPlease use https://github.com/tris203/rzls.nvim",
+				"Razor is not supported.\nPlease use https://github.com/seblyng/roslyn.nvim",
 				vim.log.levels.WARN,
 				{ title = "roslyn_ls" }
 			)

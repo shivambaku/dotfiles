@@ -19,43 +19,30 @@ Run `archinstall` with:
 
 ## 2. Install Dotfiles
 
-Log in as the normal user. Connect to the network with `nmtui` if required,
-then run:
+As the normal user, connect with `nmtui` if needed, then run:
 
-```bash
+```sh
 git clone https://github.com/shivambaku/dotfiles.git
-cd dotfiles
-./install.sh
+./dotfiles/install.sh
 reboot
 ```
 
-The installer may prompt for package and AUR confirmation. Rerun it if an
-installation step is interrupted.
-
-Individual setup steps can be rerun from `linux/scripts/`.
-
-After rebooting, log in on TTY1 to start Hyprland automatically. The reboot
-also applies the larger console font, Zsh login shell, and Docker group
-membership.
+After rebooting, log in on TTY1.
 
 ## 3. Enroll Fingerprint
 
-```bash
+```sh
 fprintd-enroll
 ```
 
 Additional finger:
 
-```bash
+```sh
 fprintd-enroll -f left-index-finger
 ```
 
 Verify fingerprint:
 
-```bash
+```sh
 fprintd-verify
 ```
-
-## 4. Install 1Password
-
-Follow the [1Password Arch Linux installation instructions](https://support.1password.com/install-linux/#arch-linux).

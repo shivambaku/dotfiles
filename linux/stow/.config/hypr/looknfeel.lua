@@ -6,15 +6,15 @@ hl.env("HYPRCURSOR_SIZE", "24")
 
 hl.config({
 	general = {
-		gaps_in = 3,
-		gaps_out = 3,
-		border_size = 2,
+		gaps_in = 1,
+		gaps_out = 1,
+		border_size = 0,
 		["col.active_border"] = theme.active_border,
 		["col.inactive_border"] = theme.inactive_border,
 		layout = "scrolling",
 	},
 	decoration = {
-		rounding = 5,
+		rounding = 0,
 		rounding_power = 2.4,
 		active_opacity = 1.0,
 		inactive_opacity = 1.0,
