@@ -7,11 +7,10 @@ return {
 		flash.setup({
 			highlight = {
 				backdrop = false,
-				current = false,
 				matches = false,
 				groups = {
 					match = "FlashMatch",
-					eurrent = "FlashMatch",
+					current = "FlashCurrent",
 					label = "FlashCurrent",
 				},
 			},
