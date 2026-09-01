@@ -30,6 +30,7 @@ vim.opt.wrap = false
 -- Keymapping
 vim.keymap.set("n", "<Esc>", "<CMD>noh<CR>")
 vim.keymap.set("n", "<leader>w", "<CMD>w<CR>", { desc = "Save buffer" })
+vim.keymap.set("i", "<C-v>", "<C-r>+", { desc = "Paste from system clipboard" })
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "n", "nzzzv")

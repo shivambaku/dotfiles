@@ -15,7 +15,7 @@ local window_search = noctalia .. "panel-open launcher /win"
 local recorder = noctalia .. "plugin noctalia/screen_recorder:service all toggle"
 local dictation = "voxtype record toggle"
 local todos =
-	"wezterm --config 'enable_tab_bar=false' --config 'window_decorations=\"NONE\"' start --always-new-process --class lounge-todos -- fnm exec --using=default nvim ~/Documents/Todos/todo.md"
+	"wezterm --config 'enable_tab_bar=false' --config 'window_decorations=\"NONE\"' start --always-new-process --cwd ~/Documents/Notes --class lounge-todos -- env PATH=\"$HOME/.local/share/fnm/aliases/default/bin:$PATH\" nvim ~/Documents/Notes/Todos/Shivam.md"
 
 hl.workspace_rule({ workspace = "special:notes", on_created_empty = todos })
 
