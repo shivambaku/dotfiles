@@ -95,14 +95,68 @@ hl.bind(main_mod .. " + SHIFT + J", hl.dsp.window.swap({ direction = "down" }))
 hl.bind(main_mod .. " + SHIFT + K", hl.dsp.window.swap({ direction = "up" }))
 hl.bind(main_mod .. " + SHIFT + L", hl.dsp.layout("swapcol r"))
 
+local function resize_from_top_left(x, y)
+	return function()
+		local window = hl.get_active_window()
+		if not window then
+			return
+		end
+
+		local old_size = window.size
+		hl.dispatch(hl.dsp.window.resize({ x = x, y = y, relative = true, window = window }))
+
+		if window.floating then
+			local new_size = window.size
+			hl.dispatch(hl.dsp.window.move({
+				x = (new_size.x - old_size.x) / 2,
+				y = (new_size.y - old_size.y) / 2,
+				relative = true,
+				window = window,
+			}))
+		end
+	end
+end
+
+local function move_floating_window(x, y)
+	return function()
+		local window = hl.get_active_window()
+		if not window or not window.floating then
+			return
+		end
+
+		hl.dispatch(hl.dsp.window.move({ x = x, y = y, relative = true, window = window }))
+	end
+end
+
 hl.bind(main_mod .. " + R", hl.dsp.layout("colresize +conf"))
+hl.bind(main_mod .. " + LEFT", resize_from_top_left(-50, 0), { repeating = true })
+hl.bind(main_mod .. " + RIGHT", resize_from_top_left(50, 0), { repeating = true })
+hl.bind(main_mod .. " + UP", resize_from_top_left(0, -50), { repeating = true })
+hl.bind(main_mod .. " + DOWN", resize_from_top_left(0, 50), { repeating = true })
+hl.bind(main_mod .. " + SHIFT + LEFT", move_floating_window(-50, 0), { repeating = true })
+hl.bind(main_mod .. " + SHIFT + RIGHT", move_floating_window(50, 0), { repeating = true })
+hl.bind(main_mod .. " + SHIFT + UP", move_floating_window(0, -50), { repeating = true })
+hl.bind(main_mod .. " + SHIFT + DOWN", move_floating_window(0, 50), { repeating = true })
 hl.bind(main_mod .. " + bracketleft", hl.dsp.window.move({ direction = "left" }))
 hl.bind(main_mod .. " + bracketright", hl.dsp.layout("promote"))
 
-for workspace = 1, 4 do
+for workspace = 1, 5 do
 	hl.bind(main_mod .. " + " .. workspace, hl.dsp.focus({ workspace = workspace }))
 	hl.bind(main_mod .. " + SHIFT + " .. workspace, hl.dsp.window.move({ workspace = workspace }))
 end
+
+hl.bind(main_mod .. " + grave", function()
+	local active = hl.get_active_workspace()
+	if active and active.id == 5 then
+		local previous = hl.get_last_workspace()
+		if previous then
+			hl.dispatch(hl.dsp.focus({ workspace = previous.id }))
+		end
+		return
+	end
+
+	hl.dispatch(hl.dsp.focus({ workspace = 5 }))
+end)
 
 hl.bind(main_mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(main_mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })

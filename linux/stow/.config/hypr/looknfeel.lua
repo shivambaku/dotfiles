@@ -46,7 +46,7 @@ hl.animation({ leaf = "fadeIn", enabled = true, speed = 1, bezier = "quickFade" 
 hl.animation({ leaf = "fadeOut", enabled = true, speed = 1, bezier = "quickFade" })
 hl.animation({ leaf = "workspaces", enabled = false })
 
-for workspace = 1, 4 do
+for workspace = 1, 5 do
 	hl.workspace_rule({ workspace = tostring(workspace), persistent = true })
 end
 
