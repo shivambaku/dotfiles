@@ -196,6 +196,8 @@ enabled = true
 
 [calendar]
 enabled = true
+event_date_format = "%A %e %B"
+event_time_format = "%I:%M %p"
 
 [plugins]
 auto_update = "all"
@@ -217,8 +219,6 @@ show_session_button = true
 [control_center.calendar]
 show_events_card = true
 show_week_numbers = false
-event_date_format = "%A %e %B"
-event_time_format = "%I:%M %p"
 
 [[control_center.shortcuts]]
 type = "wifi"

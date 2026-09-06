@@ -25,11 +25,9 @@ preference_names=(
 )
 preference_values=('true' '0' 'true' 'true' 'true' 'true' 'true' 'false' 'true' 'false' 'false' 'false' 'false' '"float"')
 removed_preference_names=('zen.workspaces.show-workspace-indicator' 'browser.download.autohideButton')
-f6_shortcut='{"id":"dotfiles-open-location-f6","key":"","keycode":"VK_F6","group":"pageOperations"'
-f6_shortcut+=',"l10nId":"zen-location-open-shortcut","modifiers":{"control":false,"alt":false,"shift":false,"meta":false,"accel":false}'
-f6_shortcut+=',"action":"Browser:OpenLocation","disabled":false,"reserved":true,"internal":false}'
 
 [[ -f $profiles_ini ]] || exit 0
+command -v jq >/dev/null || { printf 'Required command not found: jq\n' >&2; exit 1; }
 for style_name in "${style_names[@]}"; do
 	[[ -f $config_dir/$style_name ]] || {
 		printf 'Zen stylesheet not found: %s\n' "$config_dir/$style_name" >&2
@@ -51,33 +49,71 @@ replace_if_changed() {
 }
 
 configure_shortcuts() {
-	local target=$1 content temporary changed=0
+	local target=$1 temporary status has_id=0
+	local shortcut_id='dotfiles-open-location-f6'
+	local compact_action='cmd_toggleCompactModeIgnoreHover'
 
 	[[ -f $target ]] || return 1
-	content=$(<"$target")
-	if [[ $content == *$'\n'* || $content != '{"shortcuts":['* || $content != *']}' || $content == '{"shortcuts":[]}' ]]; then
+	if ! jq -s -e 'length == 1 and (.[0] | type == "object" and (.shortcuts | type == "array"))' "$target" >/dev/null 2>&1; then
 		printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
 		return 2
 	fi
 
-	if [[ $content == *'"action":"cmd_toggleCompactModeIgnoreHover","disabled":false,"reserved":false'* ]]; then
-		content=${content/'"action":"cmd_toggleCompactModeIgnoreHover","disabled":false,"reserved":false'/'"action":"cmd_toggleCompactModeIgnoreHover","disabled":false,"reserved":true'}
-		changed=1
-	fi
-
-	if [[ $content != *'"id":"dotfiles-open-location-f6"'* ]]; then
-		if [[ $content == *'"keycode":"VK_F6"'* ]]; then
-			printf 'F6 is already assigned in %s\n' "$target" >&2
+	if jq -e --arg id "$shortcut_id" 'any(.shortcuts[]; .id == $id)' "$target" >/dev/null; then
+		has_id=1
+	else
+		status=$?
+		if ((status != 1)); then
+			printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
 			return 2
 		fi
-		content="${content::-2},$f6_shortcut]}"
-		changed=1
 	fi
 
-	((changed)) || return 1
+	if ((!has_id)) && jq -e 'any(.shortcuts[]; .keycode == "VK_F6")' "$target" >/dev/null; then
+		printf 'F6 is already assigned in %s\n' "$target" >&2
+		return 2
+	fi
+
+	if ((has_id)); then
+		if jq -e --arg action "$compact_action" '
+			any(.shortcuts[]; .action == $action and .disabled == false and .reserved == false)
+		' "$target" >/dev/null; then
+			:
+		else
+			status=$?
+			((status == 1)) && return 1
+			printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
+			return 2
+		fi
+	fi
 
 	temporary=$(mktemp "$target.tmp.XXXXXX")
-	printf '%s' "$content" > "$temporary"
+	if ! jq --arg id "$shortcut_id" --arg action "$compact_action" '
+		.shortcuts |= (
+			map(
+				if .action == $action and .disabled == false and .reserved == false then
+					.reserved = true
+				else .
+				end
+			)
+			| if any(.[]; .id == $id) then . else . + [{
+				id: $id,
+				key: "",
+				keycode: "VK_F6",
+				group: "pageOperations",
+				l10nId: "zen-location-open-shortcut",
+				modifiers: {control: false, alt: false, shift: false, meta: false, accel: false},
+				action: "Browser:OpenLocation",
+				disabled: false,
+				reserved: true,
+				internal: false
+			}] end
+		)
+	' "$target" > "$temporary"; then
+		rm -f "$temporary"
+		printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
+		return 2
+	fi
 	replace_if_changed "$temporary" "$target"
 }
 

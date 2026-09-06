@@ -46,3 +46,22 @@ Verify fingerprint:
 ```sh
 fprintd-verify
 ```
+
+## System Maintenance
+
+Open the local system report from the application launcher or run:
+
+```sh
+report-system
+```
+
+The report combines warnings and errors from the current and previous boots,
+Noctalia warnings, crashes, failed services, pending `.pacnew`/`.pacsave` files,
+and kernel update status. It is regenerated at
+`${XDG_RUNTIME_DIR}/system-report/index.html` and removed at logout or reboot.
+
+To generate the report without opening a browser:
+
+```sh
+report-system --no-open
+```

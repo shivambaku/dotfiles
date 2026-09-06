@@ -25,25 +25,22 @@ usage() {
 require_commands() {
   local command
 
-  for command in nmcli ip getent timeout; do
+  for command in nmcli ip jq getent timeout; do
     command -v "$command" >/dev/null || die "required command not found: $command"
   done
 }
 
 find_active_connection() {
-  local -a fields
-  local candidate candidate_type index
+  local routes candidate candidate_type
+  local -a candidates=()
 
-  while read -r -a fields; do
-    candidate=''
-    for ((index = 0; index < ${#fields[@]}; index++)); do
-      if [[ ${fields[index]} == 'dev' && -n ${fields[index + 1]:-} ]]; then
-        candidate=${fields[index + 1]}
-        break
-      fi
-    done
+  routes=$(ip -4 -j route show default) || die 'could not read IPv4 default routes'
+  jq -s -e 'length == 1 and (.[0] | type == "array")' <<< "$routes" >/dev/null 2>&1 || die 'ip returned invalid route data'
+  mapfile -t candidates < <(
+    jq -r '.[] | (.dev?, .nexthops[]?.dev?) | select(type == "string" and length > 0)' <<< "$routes"
+  )
 
-    [[ -n $candidate ]] || continue
+  for candidate in "${candidates[@]}"; do
     candidate_type=$(nmcli -g GENERAL.TYPE device show "$candidate" 2>/dev/null || true)
     case "$candidate_type" in
       wifi|ethernet|bridge)
@@ -53,7 +50,7 @@ find_active_connection() {
         return
         ;;
     esac
-  done < <(ip -4 route show default)
+  done
 
   die 'no active Wi-Fi or Ethernet connection with an IPv4 default route'
 }
@@ -93,11 +90,14 @@ configured_mode() {
 }
 
 show_status() {
-  local -a effective_dns
-  local joined
+  local -a effective_dns=()
+  local effective_output joined
 
   find_active_connection
-  mapfile -t effective_dns < <(nmcli -g IP4.DNS device show "$device")
+  effective_output=$(nmcli -g IP4.DNS device show "$device") || die "could not read effective DNS for $device"
+  if [[ -n $effective_output ]]; then
+    mapfile -t effective_dns <<< "$effective_output"
+  fi
 
   if ((${#effective_dns[@]})); then
     printf -v joined '%s, ' "${effective_dns[@]}"

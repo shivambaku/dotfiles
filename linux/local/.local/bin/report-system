@@ -1,0 +1,400 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+umask 077
+
+program=${0##*/}
+open_report=true
+runtime_dir=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
+report_dir="$runtime_dir/system-report"
+report_file="$report_dir/index.html"
+script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+template="$script_dir/../share/dotfiles/report-system.html"
+journal_limit=5000
+journal_current_available=true
+journal_previous_available=true
+noctalia_available=true
+failed_system_available=true
+failed_user_available=true
+config_updates_available=true
+declare -a collection_errors=()
+
+die() {
+  local message=$*
+
+  printf '%s: %s\n' "$program" "$message" >&2
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a 'System Report' -i 'dialog-error' 'System report failed' "$message" >/dev/null 2>&1 || true
+  fi
+  exit 1
+}
+
+unexpected_failure() {
+  local status=$?
+  local line=$1
+  local message="unexpected failure near line $line"
+
+  trap - ERR
+  printf '%s: %s\n' "$program" "$message" >&2
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -a 'System Report' -i 'dialog-error' 'System report failed' "$message" >/dev/null 2>&1 || true
+  fi
+  exit "$status"
+}
+
+trap 'unexpected_failure "$LINENO"' ERR
+
+usage() {
+  printf 'Usage: %s [--no-open]\n' "$program"
+}
+
+add_error() {
+  collection_errors+=("$1")
+}
+
+require_commands() {
+  local command
+
+  for command in date journalctl jq pacdiff pacman readlink systemctl uname; do
+    command -v "$command" >/dev/null || die "required command not found: $command"
+  done
+  if [[ $open_report == true ]]; then
+    command -v xdg-open >/dev/null || die 'required command not found: xdg-open'
+  fi
+}
+
+collect_journal() {
+  local boot_index=$1 boot_label=$2 output=$3
+  local raw="$build_dir/journal-$boot_label.raw"
+
+  if ! journalctl -b "$boot_index" --priority=warning --lines="$journal_limit" --output=json --no-pager \
+    --output-fields=__REALTIME_TIMESTAMP,PRIORITY,MESSAGE,_BOOT_ID,_SYSTEMD_UNIT,_SYSTEMD_USER_UNIT,SYSLOG_IDENTIFIER,_COMM,_EXE,_PID,_TRANSPORT,MESSAGE_ID,COREDUMP_EXE,COREDUMP_SIGNAL_NAME \
+    > "$raw"; then
+    add_error "Could not read the $boot_label boot journal."
+    printf -v "journal_${boot_label}_available" '%s' false
+    : > "$raw"
+  fi
+
+  if ! jq -s --arg boot "$boot_label" '
+    def text:
+      if . == null then ""
+      elif type == "array" then "<binary data>"
+      else tostring
+      end;
+    [
+      .[]
+      | . as $event
+      | (.PRIORITY | tonumber? // 4) as $priority
+      | ([._SYSTEMD_USER_UNIT, ._SYSTEMD_UNIT, .SYSLOG_IDENTIFIER, ._COMM]
+          | map(text)
+          | map(select(length > 0))
+          | first // "journal") as $source
+      | (.MESSAGE | text) as $message
+      | {
+          time_us: (.__REALTIME_TIMESTAMP | tonumber? // 0),
+          priority: $priority,
+          level: (["Emergency", "Alert", "Critical", "Error", "Warning"][$priority] // "Warning"),
+          origin: "Journal",
+          source: $source,
+          message: (
+            if $message != "" then $message
+            elif ($event.COREDUMP_EXE | text) != "" then
+              "Process \($event.COREDUMP_EXE | text) received \($event.COREDUMP_SIGNAL_NAME | text)"
+            else "(no message)"
+            end
+          ),
+          boot: $boot,
+          details: {
+            unit: ($event._SYSTEMD_USER_UNIT // $event._SYSTEMD_UNIT | text),
+            pid: ($event._PID | text),
+            command: ($event._COMM | text),
+            executable: ($event._EXE | text),
+            transport: ($event._TRANSPORT | text),
+            message_id: ($event.MESSAGE_ID | text),
+            coredump_executable: ($event.COREDUMP_EXE | text),
+            signal: ($event.COREDUMP_SIGNAL_NAME | text)
+          } | with_entries(select(.value != ""))
+        }
+    ]
+  ' "$raw" > "$output"; then
+    add_error "Could not parse the $boot_label boot journal."
+    printf -v "journal_${boot_label}_available" '%s' false
+    printf '[]\n' > "$output"
+  fi
+}
+
+collect_noctalia() {
+  local output=$1 lower_bound current_start log_file log_name
+  local raw="$build_dir/noctalia-events.raw"
+
+  : > "$raw"
+  current_start=$(date --date="@$(jq -r 'map(select(.index == 0))[0].first_entry / 1000000' "$build_dir/boots.json")" '+%F %T')
+  lower_bound=$current_start
+  if jq -e 'any(.[]; .index == -1)' "$build_dir/boots.json" >/dev/null; then
+    lower_bound=$(date --date="@$(jq -r 'map(select(.index == -1))[0].first_entry / 1000000' "$build_dir/boots.json")" '+%F %T')
+  fi
+
+  for log_file in \
+    "${XDG_CACHE_HOME:-$HOME/.cache}/noctalia/noctalia.log.1" \
+    "${XDG_CACHE_HOME:-$HOME/.cache}/noctalia/noctalia.log"; do
+    if [[ -e $log_file && ! -r $log_file ]]; then
+      add_error "Could not read ${log_file##*/}."
+      noctalia_available=false
+      continue
+    fi
+    [[ -r $log_file ]] || continue
+    log_name=${log_file##*/}
+    if ! jq -Rn --arg lower "$lower_bound" --arg current "$current_start" --arg file "$log_name" '
+      inputs
+      | try capture("^(?<time>[0-9-]+ [0-9:.]+) \\[(?<code>WRN|ERR|CRT|FTL)\\] \\[(?<component>[^]]+)\\] (?<message>.*)$") catch empty
+      | select(.time >= $lower)
+      | {
+          time_local: .time,
+          priority: (if .code == "WRN" then 4 elif .code == "ERR" then 3 else 2 end),
+          level: (if .code == "WRN" then "Warning" elif .code == "ERR" then "Error" else "Critical" end),
+          origin: "Noctalia",
+          source: ("noctalia/" + .component),
+          message: .message,
+          boot: (if .time >= $current then "current" else "previous" end),
+          details: {component: .component, log_file: $file}
+        }
+    ' "$log_file" >> "$raw"; then
+      add_error "Could not parse $log_name."
+      noctalia_available=false
+    fi
+  done
+
+  jq -s '.' "$raw" > "$output"
+}
+
+collect_units() {
+  local scope=$1 output=$2
+  local raw="$build_dir/failed-$scope.raw"
+  local -a command=(systemctl)
+
+  [[ $scope == user ]] && command+=(--user)
+  command+=(list-units --state=failed --output=json)
+  if ! "${command[@]}" > "$raw"; then
+    add_error "Could not read failed $scope units."
+    printf -v "failed_${scope}_available" '%s' false
+    printf '[]\n' > "$output"
+    return
+  fi
+
+  if ! jq '
+    if type == "array" then
+      map({unit, load, active, sub, description})
+    else
+      error("expected an array")
+    end
+  ' "$raw" > "$output"; then
+    add_error "Could not parse failed $scope units."
+    printf -v "failed_${scope}_available" '%s' false
+    printf '[]\n' > "$output"
+  fi
+}
+
+collect_config_updates() {
+  local output=$1
+  local database_raw="$build_dir/pacdiff-database.raw"
+  local filesystem_raw="$build_dir/pacdiff-filesystem.raw"
+
+  if ! pacdiff --pacmandb --nocolor --output > "$database_raw"; then
+    add_error 'Could not check package-managed pacnew and pacsave files.'
+    config_updates_available=false
+    : > "$database_raw"
+  fi
+  if ! pacdiff --find --nocolor --output > "$filesystem_raw" 2>/dev/null; then
+    add_error 'Could not search for orphaned pacnew and pacsave files.'
+    config_updates_available=false
+    : > "$filesystem_raw"
+  fi
+  jq -n \
+    --rawfile database "$database_raw" \
+    --rawfile filesystem "$filesystem_raw" '
+      [$database, $filesystem]
+      | map(split("\n"))
+      | add
+      | map(select(length > 0))
+      | unique
+    ' > "$output"
+}
+
+collect_kernel() {
+  local output=$1 running pkgbase_file release package package_query package_version
+  local kernels_raw="$build_dir/installed-kernels.raw"
+
+  running=$(uname -r)
+  : > "$kernels_raw"
+  for pkgbase_file in /usr/lib/modules/*/pkgbase; do
+    [[ -r $pkgbase_file ]] || continue
+    release=${pkgbase_file%/pkgbase}
+    release=${release##*/}
+    if ! IFS= read -r package < "$pkgbase_file" || [[ -z $package ]]; then
+      continue
+    fi
+    package_version=''
+    if package_query=$(pacman -Q "$package" 2>/dev/null); then
+      package_version=${package_query#"$package "}
+    fi
+    jq -nc \
+      --arg package "$package" \
+      --arg version "$package_version" \
+      --arg release "$release" \
+      '{package: $package, version: $version, release: $release}' \
+      >> "$kernels_raw"
+  done
+  jq -s 'unique_by(.release)' "$kernels_raw" > "$build_dir/installed-kernels.json"
+  if jq -e 'length == 0' "$build_dir/installed-kernels.json" >/dev/null; then
+    add_error 'Could not detect any installed kernel module trees.'
+  fi
+
+  if [[ -r /var/log/pacman.log ]]; then
+    jq -Rrs --slurpfile kernels "$build_dir/installed-kernels.json" '
+      [
+        split("\n")[]
+        | try capture("^\\[(?<time>[^]]+)\\] \\[ALPM\\] (?<action>installed|upgraded) (?<package>[^ ]+) \\((?<versions>[^)]+)\\)$") catch empty
+        | . as $entry
+        | select(any($kernels[0][]; .package == $entry.package))
+        | if .action == "upgraded" then
+            (.versions | capture("^(?<from>.+) -> (?<to>.+)$")) as $versions
+            | {time: $entry.time, package: $entry.package, from: $versions.from, to: $versions.to}
+          else
+            {time: $entry.time, package: $entry.package, from: null, to: $entry.versions}
+          end
+      ]
+      | last // null
+    ' /var/log/pacman.log > "$build_dir/kernel-update.json"
+  else
+    printf 'null\n' > "$build_dir/kernel-update.json"
+    add_error 'Could not read /var/log/pacman.log for the last kernel update.'
+  fi
+
+  jq -n \
+    --arg running "$running" \
+    --slurpfile kernels "$build_dir/installed-kernels.json" \
+    --slurpfile update "$build_dir/kernel-update.json" '
+      ($kernels[0] | map(select(.release == $running)) | first
+        // (if ($kernels[0] | length) == 1 then $kernels[0][0] else null end)) as $selected
+      | (try ($selected.release | capture("^(?<version>[0-9]+\\.[0-9]+(?:\\.[0-9]+)?)").version) catch "") as $upstream_version
+      | {
+        running_release: $running,
+        installed_kernels: $kernels[0],
+        active_package: ($selected.package // ""),
+        reboot_required: (
+          if ($kernels[0] | length) == 0 then null
+          else all($kernels[0][]; .release != $running)
+          end
+        ),
+        last_update: $update[0],
+        package_url: (if $selected == null then "" else "https://archlinux.org/packages/?q=" + ($selected.package | @uri) end),
+        changelog_url: (
+          if $upstream_version != "" then
+            "https://cdn.kernel.org/pub/linux/kernel/v" + ($upstream_version | split(".")[0]) + ".x/ChangeLog-" + $upstream_version
+          else ""
+          end
+        )
+      }
+    ' > "$output"
+}
+
+case ${1:-} in
+  '') ;;
+  --no-open) open_report=false ;;
+  -h|--help|help) usage; exit 0 ;;
+  *) usage >&2; exit 2 ;;
+esac
+
+require_commands
+[[ -d $runtime_dir ]] || die "runtime directory not found: $runtime_dir"
+[[ -r $template ]] || die "report template not found: $template"
+mkdir -p "$report_dir"
+build_dir=$(mktemp -d "$report_dir/.build.XXXXXX")
+trap 'rm -rf "$build_dir"' EXIT
+
+if ! journalctl --list-boots --output=json --no-pager > "$build_dir/boots-all.json"; then
+  die 'could not read the journal boot list'
+fi
+jq '[.[] | select(.index == 0 or .index == -1)] | sort_by(.index)' \
+  "$build_dir/boots-all.json" > "$build_dir/boots.json"
+jq -e 'any(.[]; .index == 0)' "$build_dir/boots.json" >/dev/null || die 'current boot not found in the journal'
+
+collect_journal 0 current "$build_dir/journal-current.json"
+if jq -e 'any(.[]; .index == -1)' "$build_dir/boots.json" >/dev/null; then
+  collect_journal -1 previous "$build_dir/journal-previous.json"
+else
+  printf '[]\n' > "$build_dir/journal-previous.json"
+fi
+collect_noctalia "$build_dir/noctalia.json"
+jq -s 'add' \
+  "$build_dir/journal-current.json" \
+  "$build_dir/journal-previous.json" \
+  "$build_dir/noctalia.json" \
+  > "$build_dir/events.json"
+
+collect_units system "$build_dir/failed-system.json"
+collect_units user "$build_dir/failed-user.json"
+collect_config_updates "$build_dir/config-updates.json"
+collect_kernel "$build_dir/kernel.json"
+printf '%s\n' "${collection_errors[@]}" \
+  | jq -Rsc 'split("\n") | map(select(length > 0))' \
+  > "$build_dir/collection-errors.json"
+
+jq -n \
+  --arg generated_at "$(date --iso-8601=seconds)" \
+  --arg hostname "$(uname -n)" \
+  --argjson journal_limit "$journal_limit" \
+  --argjson events_available "$journal_current_available" \
+  --argjson previous_events_available "$journal_previous_available" \
+  --argjson noctalia_available "$noctalia_available" \
+  --argjson failed_system_available "$failed_system_available" \
+  --argjson failed_user_available "$failed_user_available" \
+  --argjson config_updates_available "$config_updates_available" \
+  --slurpfile boots "$build_dir/boots.json" \
+  --slurpfile events "$build_dir/events.json" \
+  --slurpfile failed_system "$build_dir/failed-system.json" \
+  --slurpfile failed_user "$build_dir/failed-user.json" \
+  --slurpfile config_updates "$build_dir/config-updates.json" \
+  --slurpfile kernel "$build_dir/kernel.json" \
+  --slurpfile errors "$build_dir/collection-errors.json" '
+    {
+      generated_at: $generated_at,
+      hostname: $hostname,
+      limits: {journal_events_per_boot: $journal_limit},
+      availability: {
+        events: ($events_available and $previous_events_available and $noctalia_available),
+        crashes: ($events_available and $previous_events_available),
+        failed_system_units: $failed_system_available,
+        failed_user_units: $failed_user_available,
+        config_updates: $config_updates_available
+      },
+      boots: ($boots[0] | map({
+        index,
+        id: .boot_id,
+        started_us: .first_entry,
+        ended_us: .last_entry,
+        label: (if .index == 0 then "current" else "previous" end)
+      })),
+      events: $events[0],
+      health: {
+        failed_system_units: $failed_system[0],
+        failed_user_units: $failed_user[0],
+        config_updates: $config_updates[0]
+      },
+      kernel: $kernel[0],
+      collection_errors: $errors[0]
+    }
+  ' > "$build_dir/report.json"
+
+jq -nr \
+  --rawfile template "$template" \
+  --rawfile report "$build_dir/report.json" \
+  '$template | sub("__REPORT_DATA__"; ($report | @base64))' \
+  > "$build_dir/index.html"
+chmod 0600 "$build_dir/index.html"
+mv -f "$build_dir/index.html" "$report_file"
+
+printf '%s\n' "$report_file"
+if [[ $open_report == true ]]; then
+  xdg-open "$report_file" >/dev/null 2>&1 || die "could not open $report_file"
+fi

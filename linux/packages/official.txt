@@ -26,6 +26,7 @@ gtk4-layer-shell
 hyprland
 hyprpicker
 intel-media-driver
+jq
 lazydocker
 lazygit
 lib32-mesa
