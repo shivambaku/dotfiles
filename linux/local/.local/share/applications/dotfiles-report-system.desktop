@@ -1,12 +1,12 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=System Report
+Name=SB - System Report
 GenericName=System Diagnostics
 Comment=Review recent warnings, crashes, and system health
-Icon=utilities-system-monitor
-Exec=report-system
-TryExec=report-system
+Icon=utilities-terminal
+Exec=wezterm start --always-new-process -- report-system
+TryExec=wezterm
 Terminal=false
-Categories=System;
-Keywords=System;Report;Logs;Journal;Errors;Warnings;Crashes;Kernel;
+Categories=System;ConsoleOnly;
+Keywords=SB;System;Report;Logs;Journal;Errors;Warnings;Crashes;Kernel;

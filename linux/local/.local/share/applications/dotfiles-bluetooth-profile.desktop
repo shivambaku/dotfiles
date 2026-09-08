@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=SB - Bluetooth Profile
+GenericName=Bluetooth Audio Profile
+Comment=Choose automatic, music, or call mode for a Bluetooth headset
+Icon=utilities-terminal
+Exec=wezterm start --always-new-process -- auto-launcher-terminal pick-bluetooth-profile
+Terminal=false
+Categories=AudioVideo;Audio;
+Keywords=SB;Bluetooth;Audio;Headset;Profile;Music;Call;WirePlumber;

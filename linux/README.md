@@ -1,6 +1,8 @@
 # Arch Linux Setup
 
-## 1. Install Arch
+## Installation
+
+### Install Arch
 
 Run `archinstall` with:
 
@@ -17,7 +19,7 @@ Run `archinstall` with:
 - User: create a normal user with sudo access
 - Additional packages: `git`
 
-## 2. Install Dotfiles
+### Install Dotfiles
 
 As the normal user, connect with `nmtui` if needed, then run:
 
@@ -29,7 +31,7 @@ reboot
 
 After rebooting, log in on TTY1.
 
-## 3. Enroll Fingerprint
+### Enroll Fingerprints
 
 ```sh
 fprintd-enroll
@@ -47,21 +49,45 @@ Verify fingerprint:
 fprintd-verify
 ```
 
-## System Maintenance
+## Workspaces
 
-Open the local system report from the application launcher or run:
+| Workspace | Role               |
+| --------- | ------------------ |
+| `1`       | Terminal / Work    |
+| `2`       | Browser            |
+| `3`       | Communication      |
+| `4`       | Project Management |
+| `5`       | Lounge             |
+
+## Utilities
+
+| Launcher                        | Command                  | Arguments                                                                            | Summary                                                                                          |
+| ------------------------------- | ------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `SB - Bluetooth Profile`        | `pick-bluetooth-profile` | `status [--short]`, `music`, `call`, `toggle`, `automatic`, `--help`                 | Without arguments, opens a picker for inspecting or switching Bluetooth profiles.                |
+| `SB - DNS Picker`               | `pick-dns`               | `status`, `automatic`, `quad9`, `cloudflare`, `google`, `custom ADDRESSES`, `--help` | Without arguments, opens a picker for changing DNS on the active connection.                     |
+| `SB - System Report`            | `report-system`          | `crash [latest\|PID] [--include-command-line]`, `--no-pager`, `--help`                | Summarizes recent problems and produces focused, shareable crash reports.                         |
+| `SB - System Update`            | `update-system`          | None                                                                                 | Prunes the package cache, then updates Arch, AUR, and user Flatpak packages.                     |
+| `SB - System Update + Firmware` | `update-system`          | `--firmware`                                                                         | Runs the system update and installs available device firmware updates.                           |
+
+### Crash Reports
+
+Open a focused report for the latest crash or a PID shown in the system report:
 
 ```sh
-report-system
+report-system crash latest
+report-system crash 135971
 ```
 
-The report combines warnings and errors from the current and previous boots,
-Noctalia warnings, crashes, failed services, pending `.pacnew`/`.pacsave` files,
-and kernel update status. It is regenerated at
-`${XDG_RUNTIME_DIR}/system-report/index.html` and removed at logout or reboot.
-
-To generate the report without opening a browser:
+Copy a plain-text report to the clipboard for review before sending it to AI:
 
 ```sh
-report-system --no-open
+report-system crash latest | wl-copy
 ```
+
+Process command lines can contain secrets or private identifiers, so they are omitted by default. Add one only after reviewing it:
+
+```sh
+report-system crash 135971 --include-command-line
+```
+
+Focused reports never include the raw core dump, which can contain passwords, tokens, and private document contents.

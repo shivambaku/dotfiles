@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname -- "${BASH_SOURCE[0]}")/../share/dotfiles/terminal-ui.sh"
+
+readonly program=${0##*/}
 readonly QUAD9_DNS='9.9.9.9,149.112.112.112'
 readonly CLOUDFLARE_DNS='1.1.1.1,1.0.0.1'
 readonly GOOGLE_DNS='8.8.8.8,8.8.4.4'
@@ -10,7 +13,7 @@ device=''
 connection=''
 
 die() {
-  printf 'pick-dns: %s\n' "$*" >&2
+  sb_ui_error "$program: $*"
   exit 1
 }
 
@@ -107,9 +110,9 @@ show_status() {
     joined='none'
   fi
 
-  printf 'Connection: %s (%s)\n' "$connection" "$device"
-  printf 'Mode:       %s\n' "$(configured_mode)"
-  printf 'DNS:        %s\n' "$joined"
+  sb_ui_field 'Connection' "$connection ($device)" accent
+  sb_ui_field 'Mode' "$(configured_mode)"
+  sb_ui_field 'DNS' "$joined"
 }
 
 restore_settings() {
@@ -131,7 +134,7 @@ apply_dns() {
   old_dns=$(nmcli -g ipv4.dns connection show "$connection")
   old_ignore_auto=$(nmcli -g ipv4.ignore-auto-dns connection show "$connection")
 
-  printf 'Applying %s to %s...\n' "$mode" "$connection"
+  sb_ui_info "Applying $mode to $connection..."
 
   if [[ $mode == 'Automatic (DHCP)' ]]; then
     nmcli connection modify "$connection" \
@@ -153,7 +156,8 @@ apply_dns() {
     die "DNS verification failed; the previous DNS settings were restored"
   fi
 
-  printf 'DNS updated successfully.\n'
+  sb_ui_success 'DNS updated successfully.'
+  sb_ui_section 'Current state'
   show_status
 }
 
@@ -161,7 +165,8 @@ pick_custom_dns() {
   local custom_dns=${1:-}
 
   if [[ -z $custom_dns ]]; then
-    read -r -p 'IPv4 DNS addresses (comma or space separated): ' custom_dns
+    sb_ui_prompt 'IPv4 DNS addresses (comma or space separated)'
+    read -r custom_dns
   fi
 
   [[ -n $custom_dns ]] || die 'no DNS addresses provided'
@@ -171,18 +176,20 @@ pick_custom_dns() {
 interactive_picker() {
   local choice
 
+  sb_ui_title 'DNS Picker'
+  sb_ui_section 'Current state'
   show_status
-  printf '\n'
-  printf '%s\n' \
-    '1) Automatic (DHCP)' \
-    "2) Quad9      ($QUAD9_DNS)" \
-    "3) Cloudflare ($CLOUDFLARE_DNS)" \
-    "4) Google     ($GOOGLE_DNS)" \
-    '5) Custom' \
-    'q) Quit'
+  sb_ui_section 'Choose DNS mode'
+  sb_ui_choice '1' 'Automatic' 'Use DNS supplied by DHCP'
+  sb_ui_choice '2' 'Quad9' "$QUAD9_DNS"
+  sb_ui_choice '3' 'Cloudflare' "$CLOUDFLARE_DNS"
+  sb_ui_choice '4' 'Google' "$GOOGLE_DNS"
+  sb_ui_choice '5' 'Custom' 'Enter IPv4 DNS addresses'
+  sb_ui_choice 'q' 'Quit'
 
   while true; do
-    read -r -p 'Select DNS: ' choice || exit 0
+    sb_ui_prompt 'Select DNS'
+    read -r choice || exit 0
     case "$choice" in
       1) apply_dns 'Automatic (DHCP)'; return ;;
       2) apply_dns 'Quad9' "$QUAD9_DNS"; return ;;
@@ -190,7 +197,7 @@ interactive_picker() {
       4) apply_dns 'Google' "$GOOGLE_DNS"; return ;;
       5) pick_custom_dns; return ;;
       q|Q) return ;;
-      *) printf 'Choose 1-5 or q.\n' >&2 ;;
+      *) sb_ui_warning 'Choose 1-5 or q.' ;;
     esac
   done
 }

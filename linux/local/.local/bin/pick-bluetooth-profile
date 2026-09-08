@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname -- "${BASH_SOURCE[0]}")/../share/dotfiles/terminal-ui.sh"
+
+readonly program=${0##*/}
 readonly AUTOSWITCH_SETTING='bluetooth.autoswitch-to-headset-profile'
 readonly METADATA_LINE_PATTERN="^update:[[:space:]]+id:[0-9]+[[:space:]]+key:'([^']+)'[[:space:]]+value:'([^']*)'"
 readonly ROUTE_PROFILE_PATTERN='^(bluez_card\.[^:]+):profile:([^=]+)='
@@ -25,7 +28,7 @@ declare -A saved_profiles=()
 declare -A known_profile_seen=()
 
 die() {
-  printf 'pick-bluetooth-profile: %s\n' "$*" >&2
+  sb_ui_error "$program: $*"
   exit 1
 }
 
@@ -50,7 +53,8 @@ require_commands() {
 load_cards() {
   local output
 
-  output=$(LC_ALL=C pactl --format=json list cards) || return 1
+  # pactl's JSON serializer warns and substitutes "(null)" for some UTF-8 card labels.
+  output=$(LC_ALL=C pactl --format=json list cards 2>/dev/null) || return 1
   jq -s -e 'length == 1 and (.[0] | type == "array")' <<< "$output" >/dev/null 2>&1 || return 1
   cards_json=$output
 }
@@ -100,7 +104,7 @@ find_active_card() {
 }
 
 load_card_details() {
-  local card_json profiles name sinks sources priority available
+  local card_json object_id inspect_line inspected_description profiles name sinks sources priority available
 
   card_description=''
   active_profile=''
@@ -117,10 +121,29 @@ load_card_details() {
   ' <<< "$cards_json") || return 1
   active_profile=$(jq -er '.active_profile | select(type == "string" and length > 0)' <<< "$card_json") || return 1
   card_description=$(jq -r '
-    (.properties["device.description"]? // .name)
-    | if type == "string" and length > 0 then . else "" end
+    [.properties["device.description"]?, .properties["device.alias"]?]
+    | map(select(type == "string" and length > 0 and . != "(null)"))
+    | first // ""
   ' <<< "$card_json")
-  [[ -n $card_description ]] || card_description=$card
+  if [[ -z $card_description ]]; then
+    object_id=$(jq -r '
+      (.properties["object.id"]? // empty)
+      | tostring
+      | select(test("^[0-9]+$"))
+    ' <<< "$card_json")
+    if [[ -n $object_id ]]; then
+      while IFS= read -r inspect_line; do
+        if [[ $inspect_line =~ device\.description[[:space:]]*=[[:space:]]*\"(.*)\"$ ]]; then
+          inspected_description=${BASH_REMATCH[1]}
+          if [[ -n $inspected_description && $inspected_description != '(null)' ]]; then
+            card_description=$inspected_description
+            break
+          fi
+        fi
+      done < <(LC_ALL=C wpctl inspect "$object_id" 2>/dev/null)
+    fi
+  fi
+  [[ -n $card_description ]] || card_description="Bluetooth device $(format_card_address "$card")"
 
   profiles=$(jq -er '
     def number_or_zero:
@@ -376,7 +399,7 @@ format_card_address() {
 
 show_status() {
   local short=${1:-false}
-  local mode autoswitch saved
+  local mode autoswitch saved tone
 
   if ! find_active_card; then
     [[ $card_error == no\ connected* ]] && mode='disconnected' || mode='ambiguous'
@@ -385,19 +408,20 @@ show_status() {
       return
     fi
 
-    printf 'Device:        %s\n' "$card_error"
-    printf 'Mode:          %s\n' "$(mode_label "$mode")"
+    [[ $mode == disconnected ]] && tone=warning || tone=error
+    sb_ui_field 'Device' "$card_error" "$tone"
+    sb_ui_field 'Mode' "$(mode_label "$mode")" "$tone"
     if [[ $mode == disconnected ]]; then
       if find_saved_card; then
         saved=${saved_profiles[$saved_card]}
-        printf 'Saved device:  %s\n' "$(format_card_address "$saved_card")"
-        printf 'Saved mode:    %s\n' "$(mode_label "$(saved_profile_mode "$saved")")"
-        printf 'Saved profile: %s\n' "$saved"
+        sb_ui_field 'Saved device' "$(format_card_address "$saved_card")"
+        sb_ui_field 'Saved mode' "$(mode_label "$(saved_profile_mode "$saved")")"
+        sb_ui_field 'Saved profile' "$saved"
       else
-        printf 'Saved profile: unavailable (%s)\n' "$saved_error"
+        sb_ui_field 'Saved profile' "unavailable ($saved_error)" warning
       fi
     fi
-    printf 'Autoswitch:    %s\n' "$(autoswitch_state)"
+    sb_ui_field 'Autoswitch' "$(autoswitch_state)"
     return
   fi
 
@@ -413,11 +437,11 @@ show_status() {
   if load_saved_profiles; then
     saved=${saved_profiles[$card]:-none}
   fi
-  printf 'Device:        %s\n' "$card_description"
-  printf 'Mode:          %s\n' "$(mode_label "$mode")"
-  printf 'Profile:       %s\n' "$active_profile"
-  printf 'Saved profile: %s\n' "$saved"
-  printf 'Autoswitch:    %s\n' "$autoswitch"
+  sb_ui_field 'Device' "$card_description" accent
+  sb_ui_field 'Mode' "$(mode_label "$mode")" good
+  sb_ui_field 'Profile' "$active_profile"
+  sb_ui_field 'Saved profile' "$saved"
+  sb_ui_field 'Autoswitch' "$autoswitch"
 }
 
 notify_connected_mode() {
@@ -494,8 +518,9 @@ apply_connected_profile() {
     die "could not save $target_profile for $card_description; previous settings were restored"
   fi
 
-  printf 'Switched and saved %s as %s (%s).\n' "$card_description" "$(mode_label "$mode")" "$target_profile"
+  sb_ui_success "Switched and saved $card_description as $(mode_label "$mode") ($target_profile)."
   notify_connected_mode "$mode"
+  sb_ui_section 'Current state'
   show_status
 }
 
@@ -517,9 +542,9 @@ apply_disconnected_profile() {
     die "could not save $target_profile; previous settings were restored"
   fi
 
-  printf 'Saved %s (%s) for Bluetooth device %s; it will apply on the next connection.\n' \
-    "$(mode_label "$mode")" "$target_profile" "$(format_card_address "$saved_card")"
+  sb_ui_success "Saved $(mode_label "$mode") ($target_profile) for Bluetooth device $(format_card_address "$saved_card"); it will apply on the next connection."
   notify_saved_mode "$mode"
+  sb_ui_section 'Current state'
   show_status
 }
 
@@ -537,10 +562,11 @@ apply_profile() {
 
 enable_automatic() {
   set_autoswitch true || die 'could not enable automatic Bluetooth profile switching'
-  printf 'Automatic profile switching enabled for all Bluetooth headsets.\n'
+  sb_ui_success 'Automatic profile switching enabled for all Bluetooth headsets.'
   notify-send -a 'Bluetooth Profile' -i 'audio-headset' \
     'Bluetooth: Automatic' 'WirePlumber will choose Music or Call mode for all Bluetooth headsets.' \
     >/dev/null 2>&1 || true
+  sb_ui_section 'Current state'
   show_status
 }
 
@@ -568,22 +594,24 @@ toggle_profile() {
 interactive_picker() {
   local choice
 
+  sb_ui_title 'Bluetooth Profile'
+  sb_ui_section 'Current state'
   show_status
-  printf '\n'
-  printf '%s\n' \
-    '1) Automatic (switch profiles when the headset microphone is used)' \
-    '2) Music     (high-quality audio, headset microphone unavailable)' \
-    '3) Call      (headset microphone enabled, lower-quality audio)' \
-    'q) Quit'
+  sb_ui_section 'Choose audio mode'
+  sb_ui_choice '1' 'Automatic' 'Switch when the headset microphone is used'
+  sb_ui_choice '2' 'Music' 'High-quality audio; headset microphone unavailable'
+  sb_ui_choice '3' 'Call' 'Headset microphone enabled; lower-quality audio'
+  sb_ui_choice 'q' 'Quit'
 
   while true; do
-    read -r -p 'Select Bluetooth profile: ' choice || exit 0
+    sb_ui_prompt 'Select profile'
+    read -r choice || exit 0
     case $choice in
       1) enable_automatic; return ;;
       2) apply_profile music; return ;;
       3) apply_profile call; return ;;
       q|Q) return ;;
-      *) printf 'Choose 1-3 or q.\n' >&2 ;;
+      *) sb_ui_warning 'Choose 1-3 or q.' ;;
     esac
   done
 }

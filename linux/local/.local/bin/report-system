@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+source "$(dirname -- "${BASH_SOURCE[0]}")/../share/dotfiles/terminal-ui.sh"
+
 umask 077
 
 program=${0##*/}
-open_report=true
+page_report=true
+report_mode=system
+crash_selector=latest
+include_command_line=false
 runtime_dir=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
-report_dir="$runtime_dir/system-report"
-report_file="$report_dir/index.html"
-script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
-template="$script_dir/../share/dotfiles/report-system.html"
-journal_limit=5000
-journal_current_available=true
-journal_previous_available=true
+report_hours=24
+journal_available=true
 noctalia_available=true
 failed_system_available=true
 failed_user_available=true
@@ -45,7 +45,8 @@ unexpected_failure() {
 trap 'unexpected_failure "$LINENO"' ERR
 
 usage() {
-  printf 'Usage: %s [--no-open]\n' "$program"
+  printf 'Usage: %s [--no-pager]\n' "$program"
+  printf '       %s crash [latest|PID] [--include-command-line] [--no-pager]\n' "$program"
 }
 
 add_error() {
@@ -55,27 +56,51 @@ add_error() {
 require_commands() {
   local command
 
-  for command in date journalctl jq pacdiff pacman readlink systemctl uname; do
-    command -v "$command" >/dev/null || die "required command not found: $command"
-  done
-  if [[ $open_report == true ]]; then
-    command -v xdg-open >/dev/null || die 'required command not found: xdg-open'
+  if [[ $report_mode == system ]]; then
+    for command in cat date journalctl jq pacdiff pacman systemctl uname; do
+      command -v "$command" >/dev/null || die "required command not found: $command"
+    done
+  else
+    for command in cat coredumpctl date journalctl jq pacman uname; do
+      command -v "$command" >/dev/null || die "required command not found: $command"
+    done
+  fi
+  if [[ $page_report == true ]]; then
+    command -v bat >/dev/null || die 'required command not found: bat'
+  fi
+}
+
+show_report() {
+  local report=$1
+
+  chmod 0600 "$report"
+  if [[ $page_report == true ]]; then
+    bat \
+      --paging=always \
+      --pager=builtin \
+      --style=plain \
+      --theme=ansi \
+      --strip-ansi=never \
+      --wrap=character \
+      "$report"
+  else
+    cat -- "$report"
   fi
 }
 
 collect_journal() {
-  local boot_index=$1 boot_label=$2 output=$3
-  local raw="$build_dir/journal-$boot_label.raw"
+  local output=$1
+  local raw="$build_dir/journal.raw"
 
-  if ! journalctl -b "$boot_index" --priority=warning --lines="$journal_limit" --output=json --no-pager \
-    --output-fields=__REALTIME_TIMESTAMP,PRIORITY,MESSAGE,_BOOT_ID,_SYSTEMD_UNIT,_SYSTEMD_USER_UNIT,SYSLOG_IDENTIFIER,_COMM,_EXE,_PID,_TRANSPORT,MESSAGE_ID,COREDUMP_EXE,COREDUMP_SIGNAL_NAME \
+  if ! journalctl --since="$report_hours hours ago" --priority=warning --output=json --no-pager \
+    --output-fields=__REALTIME_TIMESTAMP,PRIORITY,MESSAGE,_BOOT_ID,_SYSTEMD_UNIT,_SYSTEMD_USER_UNIT,SYSLOG_IDENTIFIER,_COMM,_EXE,_PID,_TRANSPORT,MESSAGE_ID,COREDUMP_COMM,COREDUMP_EXE,COREDUMP_PID,COREDUMP_SIGNAL_NAME,COREDUMP_UID \
     > "$raw"; then
-    add_error "Could not read the $boot_label boot journal."
-    printf -v "journal_${boot_label}_available" '%s' false
+    add_error "Could not read the journal for the last $report_hours hours."
+    journal_available=false
     : > "$raw"
   fi
 
-  if ! jq -s --arg boot "$boot_label" '
+  if ! jq -s --argjson current_uid "$UID" '
     def text:
       if . == null then ""
       elif type == "array" then "<binary data>"
@@ -85,10 +110,14 @@ collect_journal() {
       .[]
       | . as $event
       | (.PRIORITY | tonumber? // 4) as $priority
-      | ([._SYSTEMD_USER_UNIT, ._SYSTEMD_UNIT, .SYSLOG_IDENTIFIER, ._COMM]
+      | ((.MESSAGE_ID | text) == "fc2e22bc6ee647b6b90729ab34a250b1"
+          or ((.COREDUMP_EXE | text) != "")) as $crash
+      | (if $crash then "systemd-coredump" else
+           ([._SYSTEMD_USER_UNIT, ._SYSTEMD_UNIT, .SYSLOG_IDENTIFIER, ._COMM]
           | map(text)
           | map(select(length > 0))
-          | first // "journal") as $source
+          | first // "journal")
+         end) as $source
       | (.MESSAGE | text) as $message
       | {
           time_us: (.__REALTIME_TIMESTAMP | tonumber? // 0),
@@ -97,18 +126,25 @@ collect_journal() {
           origin: "Journal",
           source: $source,
           message: (
-            if $message != "" then $message
+            if $crash then
+              "Process \(if ($event.COREDUMP_EXE | text) != "" then ($event.COREDUMP_EXE | text | split("/") | last)
+                         elif ($event.COREDUMP_COMM | text) != "" then ($event.COREDUMP_COMM | text)
+                         else "unknown" end) dumped core"
+            elif $message != "" then $message
             elif ($event.COREDUMP_EXE | text) != "" then
               "Process \($event.COREDUMP_EXE | text) received \($event.COREDUMP_SIGNAL_NAME | text)"
             else "(no message)"
             end
           ),
-          boot: $boot,
           details: {
             unit: ($event._SYSTEMD_USER_UNIT // $event._SYSTEMD_UNIT | text),
-            pid: ($event._PID | text),
-            command: ($event._COMM | text),
-            executable: ($event._EXE | text),
+            pid: (if $crash then
+                    (if ($event.COREDUMP_UID | tonumber?) == $current_uid then ($event.COREDUMP_PID | text) else "" end)
+                  else ($event._PID | text)
+                  end),
+            command: (if $crash then ($event.COREDUMP_COMM | text) else ($event._COMM | text) end),
+            executable: (if $crash then ($event.COREDUMP_EXE | text) else ($event._EXE | text) end),
+            uid: (if $crash then ($event.COREDUMP_UID | text) else "" end),
             transport: ($event._TRANSPORT | text),
             message_id: ($event.MESSAGE_ID | text),
             coredump_executable: ($event.COREDUMP_EXE | text),
@@ -117,22 +153,18 @@ collect_journal() {
         }
     ]
   ' "$raw" > "$output"; then
-    add_error "Could not parse the $boot_label boot journal."
-    printf -v "journal_${boot_label}_available" '%s' false
+    add_error "Could not parse the journal for the last $report_hours hours."
+    journal_available=false
     printf '[]\n' > "$output"
   fi
 }
 
 collect_noctalia() {
-  local output=$1 lower_bound current_start log_file log_name
+  local output=$1 lower_bound log_file log_name
   local raw="$build_dir/noctalia-events.raw"
 
   : > "$raw"
-  current_start=$(date --date="@$(jq -r 'map(select(.index == 0))[0].first_entry / 1000000' "$build_dir/boots.json")" '+%F %T')
-  lower_bound=$current_start
-  if jq -e 'any(.[]; .index == -1)' "$build_dir/boots.json" >/dev/null; then
-    lower_bound=$(date --date="@$(jq -r 'map(select(.index == -1))[0].first_entry / 1000000' "$build_dir/boots.json")" '+%F %T')
-  fi
+  lower_bound=$(date --date="$report_hours hours ago" '+%F %T')
 
   for log_file in \
     "${XDG_CACHE_HOME:-$HOME/.cache}/noctalia/noctalia.log.1" \
@@ -144,7 +176,7 @@ collect_noctalia() {
     fi
     [[ -r $log_file ]] || continue
     log_name=${log_file##*/}
-    if ! jq -Rn --arg lower "$lower_bound" --arg current "$current_start" --arg file "$log_name" '
+    if ! jq -Rn --arg lower "$lower_bound" --arg file "$log_name" '
       inputs
       | try capture("^(?<time>[0-9-]+ [0-9:.]+) \\[(?<code>WRN|ERR|CRT|FTL)\\] \\[(?<component>[^]]+)\\] (?<message>.*)$") catch empty
       | select(.time >= $lower)
@@ -155,7 +187,6 @@ collect_noctalia() {
           origin: "Noctalia",
           source: ("noctalia/" + .component),
           message: .message,
-          boot: (if .time >= $current then "current" else "previous" end),
           details: {component: .component, log_file: $file}
         }
     ' "$log_file" >> "$raw"; then
@@ -274,61 +305,809 @@ collect_kernel() {
     --arg running "$running" \
     --slurpfile kernels "$build_dir/installed-kernels.json" \
     --slurpfile update "$build_dir/kernel-update.json" '
-      ($kernels[0] | map(select(.release == $running)) | first
-        // (if ($kernels[0] | length) == 1 then $kernels[0][0] else null end)) as $selected
-      | (try ($selected.release | capture("^(?<version>[0-9]+\\.[0-9]+(?:\\.[0-9]+)?)").version) catch "") as $upstream_version
-      | {
+      {
         running_release: $running,
         installed_kernels: $kernels[0],
-        active_package: ($selected.package // ""),
         reboot_required: (
           if ($kernels[0] | length) == 0 then null
           else all($kernels[0][]; .release != $running)
           end
         ),
-        last_update: $update[0],
-        package_url: (if $selected == null then "" else "https://archlinux.org/packages/?q=" + ($selected.package | @uri) end),
-        changelog_url: (
-          if $upstream_version != "" then
-            "https://cdn.kernel.org/pub/linux/kernel/v" + ($upstream_version | split(".")[0]) + ".x/ChangeLog-" + $upstream_version
-          else ""
-          end
-        )
+        last_update: $update[0]
       }
+  ' > "$output"
+}
+
+collect_crash_report() {
+  local selector=$1 output=$2
+  local latest_raw="$build_dir/crash-latest.json"
+  local info_raw="$build_dir/crash-info.json"
+  local recurrence_raw="$build_dir/crash-recurrence.json"
+  local nearby_raw="$build_dir/crash-nearby.raw"
+  local nearby_json="$build_dir/crash-nearby.json"
+  local package_update="$build_dir/crash-package-update.json"
+  local package_candidates="$build_dir/crash-package-candidates.txt"
+  local coredump_error_file="$build_dir/coredump-error.txt"
+  local pid owner_uid executable command timestamp seconds since until coredump_error
+  local package_name='' package_version='' package_query='' os_name='Linux'
+  local package_event_time package_event_action package_event_versions package_event_epoch
+  local package_update_time='' package_update_action='' package_update_versions='' package_update_epoch=-1
+  local recurrence_available=true nearby_available=true
+  local separator=$'\x1f'
+  local -a matches
+
+  if [[ $selector == latest ]]; then
+    if ! LC_ALL=C coredumpctl list "COREDUMP_UID=$UID" -1 --quiet --no-pager --no-legend --json=short \
+      > "$latest_raw" 2> "$coredump_error_file"; then
+      coredump_error=$(<"$coredump_error_file")
+      if [[ -z $coredump_error || $coredump_error == *'No match found.'* || $coredump_error == *'No coredumps found.'* ]]; then
+        die 'no coredump found for the current user'
+      fi
+      die 'could not list recent coredumps'
+    fi
+    if ! pid=$(jq -r '.[0].pid // empty' "$latest_raw"); then
+      die 'could not parse the recent coredump list'
+    fi
+    [[ -n $pid ]] || die 'no coredump found for the current user'
+  else
+    [[ $selector =~ ^[0-9]+$ ]] || die "invalid crash PID: $selector"
+    pid=$selector
+  fi
+
+  if ! LC_ALL=C coredumpctl info "COREDUMP_PID=$pid" "COREDUMP_UID=$UID" -1 --quiet --no-pager --json=pretty \
+    > "$info_raw" 2> "$coredump_error_file"; then
+    coredump_error=$(<"$coredump_error_file")
+    if [[ -z $coredump_error || $coredump_error == *'No match found.'* || $coredump_error == *'No coredumps found.'* ]]; then
+      die "no coredump found for PID $pid"
+    fi
+    die "could not read coredump information for PID $pid"
+  fi
+  if ! jq -e --argjson pid "$pid" 'type == "object" and (.PID == $pid)' "$info_raw" >/dev/null; then
+    die "could not parse coredump information for PID $pid"
+  fi
+
+  owner_uid=$(jq -r '.UID // -1' "$info_raw")
+  [[ $owner_uid =~ ^[0-9]+$ ]] || die "coredump for PID $pid has no valid owner"
+  (( owner_uid == UID )) || die "coredump for PID $pid does not belong to the current user"
+
+  executable=$(jq -r '.Executable // ""' "$info_raw")
+  command=$(jq -r '.Command // ""' "$info_raw")
+  timestamp=$(jq -r '.Timestamp // 0' "$info_raw")
+  [[ $timestamp =~ ^[0-9]+$ ]] || timestamp=0
+  if (( timestamp > 0 )); then
+    seconds=$((timestamp / 1000000))
+  fi
+
+  matches=("COREDUMP_UID=$UID")
+  if [[ -n $executable ]]; then
+    matches+=("COREDUMP_EXE=$executable")
+  elif [[ -n $command ]]; then
+    matches+=("COREDUMP_COMM=$command")
+  fi
+  if ! LC_ALL=C coredumpctl list "${matches[@]}" --since='7 days ago' --quiet --no-pager --no-legend --json=short \
+    > "$recurrence_raw" 2> "$coredump_error_file"; then
+    coredump_error=$(<"$coredump_error_file")
+    if [[ -z $coredump_error || $coredump_error == *'No match found.'* || $coredump_error == *'No coredumps found.'* ]]; then
+      printf '[]\n' > "$recurrence_raw"
+    else
+      recurrence_available=false
+      printf '[]\n' > "$recurrence_raw"
+    fi
+  elif ! jq -e 'type == "array"' "$recurrence_raw" >/dev/null; then
+    recurrence_available=false
+    printf '[]\n' > "$recurrence_raw"
+  fi
+
+  : > "$nearby_raw"
+  if (( timestamp > 0 )); then
+    since=$(date --date="@$((seconds - 120))" --iso-8601=seconds)
+    until=$(date --date="@$((seconds + 120))" --iso-8601=seconds)
+    if ! journalctl --since="$since" --until="$until" --priority=warning --output=json --no-pager \
+      --output-fields=__REALTIME_TIMESTAMP,PRIORITY,MESSAGE,_SYSTEMD_UNIT,_SYSTEMD_USER_UNIT,SYSLOG_IDENTIFIER,_COMM,MESSAGE_ID \
+      > "$nearby_raw"; then
+      nearby_available=false
+      : > "$nearby_raw"
+    fi
+  fi
+  jq -s '
+    def text:
+      if . == null then ""
+      elif type == "array" then "<binary data>"
+      else tostring
+      end;
+    [
+      .[]
+      | select((.MESSAGE_ID | text) != "fc2e22bc6ee647b6b90729ab34a250b1")
+      | {
+          time_us: (.__REALTIME_TIMESTAMP | tonumber? // 0),
+          priority: (.PRIORITY | tonumber? // 4),
+          source: ([._SYSTEMD_USER_UNIT, ._SYSTEMD_UNIT, .SYSLOG_IDENTIFIER, ._COMM]
+            | map(text)
+            | map(select(length > 0))
+            | first // "journal"),
+          message: ((.MESSAGE | text) | if length > 0 then . else "(no message)" end)
+        }
+    ]
+  ' "$nearby_raw" > "$nearby_json"
+
+  if [[ -n $executable ]] && package_name=$(pacman -Qoq -- "$executable" 2>/dev/null); then
+    if package_query=$(pacman -Q "$package_name" 2>/dev/null); then
+      package_version=${package_query#"$package_name "}
+    fi
+  else
+    package_name=''
+  fi
+
+  printf 'null\n' > "$package_update"
+  if [[ -n $package_name && -r /var/log/pacman.log && $timestamp -gt 0 ]]; then
+    jq -Rr --arg package "$package_name" '
+      try capture("^\\[(?<time>[^]]+)\\] \\[ALPM\\] (?<action>installed|upgraded|downgraded) (?<package>[^ ]+) \\((?<versions>[^)]+)\\)$") catch empty
+      | select(.package == $package)
+      | [.time, .action, .versions]
+      | join("\u001f")
+    ' /var/log/pacman.log > "$package_candidates"
+    while IFS=$separator read -r package_event_time package_event_action package_event_versions; do
+      if package_event_epoch=$(date --date="$package_event_time" '+%s' 2>/dev/null) \
+        && (( package_event_epoch <= seconds && package_event_epoch > package_update_epoch )); then
+        package_update_epoch=$package_event_epoch
+        package_update_time=$package_event_time
+        package_update_action=$package_event_action
+        package_update_versions=$package_event_versions
+      fi
+    done < "$package_candidates"
+    if (( package_update_epoch >= 0 )); then
+      jq -n \
+        --arg time "$package_update_time" \
+        --arg action "$package_update_action" \
+        --arg versions "$package_update_versions" \
+        '{time: $time, action: $action, versions: $versions}' \
+        > "$package_update"
+    fi
+  fi
+
+  if [[ -r /etc/os-release ]]; then
+    os_name=$(source /etc/os-release; printf '%s' "${PRETTY_NAME:-Linux}")
+  fi
+
+  jq -n \
+    --arg generated_at "$(date --iso-8601=seconds)" \
+    --arg home "$HOME" \
+    --arg os "$os_name" \
+    --arg kernel "$(uname -r)" \
+    --arg package_name "$package_name" \
+    --arg package_version "$package_version" \
+    --argjson include_command_line "$include_command_line" \
+    --argjson recurrence_available "$recurrence_available" \
+    --argjson nearby_available "$nearby_available" \
+    --slurpfile core "$info_raw" \
+    --slurpfile recurrence "$recurrence_raw" \
+    --slurpfile nearby "$nearby_json" \
+    --slurpfile package_update "$package_update" '
+      def text: if . == null then "" else tostring end;
+      ($core[0]) as $c
+      | (($c.SignalName | text) as $name
+          | if $name == "" then ($c.Signal | text)
+            elif ($name | startswith("SIG")) then $name
+            else "SIG\($name)"
+            end) as $signal
+      |
+      {
+        generated_at: $generated_at,
+        crash: {
+          time_us: ($c.Timestamp // 0),
+          pid: ($c.PID // 0),
+          process: (if ($c.Executable | text) != "" then ($c.Executable | text | split("/") | last)
+                    else ($c.Command | text)
+                    end),
+          executable: ($c.Executable | text),
+          signal: $signal,
+          storage: ($c.Storage | text),
+          disk_size: ($c.DiskSize // 0),
+          command_line: (if $include_command_line then ($c.CommandLine | text) else null end),
+          message_lines: (($c.Message | text) | split("\n"))
+        },
+        recurrence: {
+          days: 7,
+          available: $recurrence_available,
+          events: (($recurrence[0] // []) | map({
+            time_us: (.time // 0),
+            pid: (.pid // 0),
+            signal: (.sig // 0),
+            storage: (.corefile // "unknown")
+          }))
+        },
+        system: {
+          os: $os,
+          kernel: $kernel,
+          package: (if $package_name == "" then null else {
+            name: $package_name,
+            version: $package_version,
+            last_change: $package_update[0]
+          } end)
+        },
+        nearby: {
+          minutes: 2,
+          available: $nearby_available,
+          events: ($nearby[0] // []),
+          oom_detected: any(($nearby[0] // [])[];
+            (.message | ascii_downcase | test("out of memory|oom-kill|killed process|systemd-oomd")))
+        }
+      }
+      | walk(
+          if type == "string" then
+            (split($home) | join("~") | explode | map(select(. >= 32 and (. < 127 or . > 159))) | implode)
+          else . end
+        )
     ' > "$output"
 }
 
-case ${1:-} in
-  '') ;;
-  --no-open) open_report=false ;;
-  -h|--help|help) usage; exit 0 ;;
-  *) usage >&2; exit 2 ;;
-esac
+format_bytes() {
+  local bytes=$1
 
+  if (( bytes >= 1073741824 )); then
+    printf '%d GiB' "$((bytes / 1073741824))"
+  elif (( bytes >= 1048576 )); then
+    printf '%d MiB' "$((bytes / 1048576))"
+  elif (( bytes >= 1024 )); then
+    printf '%d KiB' "$((bytes / 1024))"
+  else
+    printf '%d B' "$bytes"
+  fi
+}
+
+render_crash_report() {
+  local report=$1
+  local generated_at timestamp pid process executable signal storage disk_size command_line
+  local os kernel package package_change recurrence_count recurrence_available nearby_available oom_detected
+  local message_count nearby_count nearby_shown recurrence_shown storage_tone recurrence_tone
+  local line time source message event_pid event_storage event_signal event_signal_name
+  local separator=$'\x1f'
+
+  IFS=$separator read -r \
+    generated_at timestamp pid process executable signal storage disk_size command_line \
+    os kernel package package_change recurrence_count recurrence_available nearby_available oom_detected < <(
+      jq -r '
+        def clipped($limit):
+          if length > $limit then .[0:$limit] + " ... [truncated \(length - $limit) characters]"
+          else .
+          end;
+        def display_time($value):
+          if $value > 0 then ($value / 1000000 | strflocaltime("%Y-%m-%d %H:%M:%S %Z"))
+          else "Unknown"
+          end;
+        [
+          .generated_at,
+          display_time(.crash.time_us),
+          (.crash.pid | tostring),
+          (if .crash.process == "" then "Unknown" else .crash.process end),
+          (if .crash.executable == "" then "Unknown" else .crash.executable end),
+          .crash.signal,
+          (if .crash.storage == "" then "unknown" else .crash.storage end),
+          (.crash.disk_size | tostring),
+          ((.crash.command_line // "") | clipped(2000)),
+          .system.os,
+          .system.kernel,
+          (if .system.package == null then "Not managed by pacman"
+           else "\(.system.package.name) \(.system.package.version)" end),
+          (if .system.package == null or .system.package.last_change == null then "Unknown"
+           else "\(.system.package.last_change.time): \(.system.package.last_change.action) \(.system.package.last_change.versions)"
+           end),
+          (.recurrence.events | length | tostring),
+          (.recurrence.available | tostring),
+          (.nearby.available | tostring),
+          (.nearby.oom_detected | tostring)
+        ]
+        | map(tostring | gsub("[\\r\\n\\t]+"; " "))
+        | join("\u001f")
+      ' "$report"
+    )
+  generated_at=$(date --date="$generated_at" '+%F %T %Z')
+  storage_tone=warning
+  [[ $storage == present || $storage == journal ]] && storage_tone=good
+  recurrence_tone=good
+  if [[ $recurrence_available != true ]] || (( recurrence_count > 1 )); then
+    recurrence_tone=warning
+  fi
+
+  sb_ui_title 'Crash Report'
+  sb_ui_field 'Generated' "$generated_at"
+  sb_ui_field 'Time' "$timestamp" accent
+  sb_ui_field 'Process' "$process"
+  sb_ui_field 'PID' "$pid" accent
+  sb_ui_field 'Signal' "$signal" error
+  sb_ui_field 'Executable' "$executable"
+  if (( disk_size > 0 )); then
+    sb_ui_field 'Core' "$storage ($(format_bytes "$disk_size"))" "$storage_tone"
+  else
+    sb_ui_field 'Core' "$storage" "$storage_tone"
+  fi
+  if [[ $recurrence_available == true ]]; then
+    sb_ui_field 'Crashes (7d)' "$recurrence_count" "$recurrence_tone"
+  else
+    sb_ui_field 'Crashes (7d)' 'Unknown; coredump history could not be read.' warning
+  fi
+
+  sb_ui_section 'System Context'
+  sb_ui_field 'OS' "$os"
+  sb_ui_field 'Kernel' "$kernel"
+  sb_ui_field 'Current package' "$package"
+  sb_ui_field 'Last pkg change' "$package_change"
+  if [[ $nearby_available != true ]]; then
+    sb_ui_field 'Nearby OOM' 'Unknown; nearby journal could not be read.' warning
+  elif [[ $oom_detected == true ]]; then
+    sb_ui_field 'Nearby OOM' 'Evidence found; review nearby events.' error
+  else
+    sb_ui_field 'Nearby OOM' 'No evidence found.' good
+  fi
+
+  sb_ui_section 'Sharing'
+  sb_ui_item warning REVIEW 'Review paths and messages before sending this report.'
+  if [[ $include_command_line == true ]]; then
+    sb_ui_field 'Command line' "$command_line" warning
+    sb_ui_field 'Copy for AI' "$program crash $pid --include-command-line | wl-copy" accent
+  else
+    sb_ui_field 'Command line' 'Omitted; use --include-command-line to add it.'
+    sb_ui_field 'Copy for AI' "$program crash $pid | wl-copy" accent
+  fi
+  sb_ui_item warning PRIVATE 'The raw core is not included; it may contain passwords and private data.'
+
+  sb_ui_section 'Recent Matching Crashes'
+  recurrence_shown=$(jq '[.recurrence.events[]] | length | if . > 5 then 5 else . end' "$report")
+  if [[ $recurrence_available != true ]]; then
+    sb_ui_item warning UNAVAILABLE 'Matching coredump history could not be read.'
+  elif (( recurrence_shown == 0 )); then
+    sb_ui_item warning UNKNOWN 'No matching coredump history was available.'
+  else
+    while IFS=$separator read -r time event_pid event_signal event_storage; do
+      if [[ $event_signal =~ ^[0-9]+$ ]]; then
+        event_signal_name=$(kill -l "$event_signal" 2>/dev/null || true)
+        [[ -n $event_signal_name ]] && event_signal="SIG$event_signal_name ($event_signal)"
+      fi
+      printf '  %s  PID %s  signal %s  core %s\n' "$time" "$event_pid" "$event_signal" "$event_storage"
+    done < <(
+      jq -r '
+        .recurrence.events
+        | sort_by(.time_us)
+        | reverse
+        | .[:5][]
+        | [
+            (if .time_us > 0 then (.time_us / 1000000 | strflocaltime("%Y-%m-%d %H:%M:%S")) else "Unknown" end),
+            (.pid | tostring),
+            (.signal | tostring),
+            .storage
+          ]
+        | map(tostring | gsub("[\\r\\n\\t]+"; " "))
+        | join("\u001f")
+      ' "$report"
+    )
+    if (( recurrence_count > recurrence_shown )); then
+      sb_ui_item warning MORE "$((recurrence_count - recurrence_shown)) older matching crashes not shown."
+    fi
+  fi
+
+  sb_ui_section 'Recorded Stack Trace'
+  message_count=$(jq '.crash.message_lines | length' "$report")
+  if (( message_count == 0 )) || [[ $(jq -r '.crash.message_lines | join("")' "$report") == '' ]]; then
+    sb_ui_item warning UNAVAILABLE 'systemd-coredump recorded no stack trace.'
+  else
+    while IFS= read -r line; do
+      printf '  %s\n' "$line"
+    done < <(
+      jq -r '
+        def clipped($limit):
+          if length > $limit then .[0:$limit] + " ... [truncated \(length - $limit) characters]"
+          else .
+          end;
+        .crash.message_lines[:80][] | clipped(500)
+      ' "$report"
+    )
+    if (( message_count > 80 )); then
+      sb_ui_item warning TRUNCATED "$((message_count - 80)) additional stack-trace lines not shown."
+    fi
+  fi
+
+  sb_ui_section 'Nearby Warnings and Errors (2 minutes before/after)'
+  nearby_count=$(jq '.nearby.events | length' "$report")
+  nearby_shown=$nearby_count
+  (( nearby_shown > 40 )) && nearby_shown=40
+  if [[ $nearby_available != true ]]; then
+    sb_ui_item warning UNAVAILABLE 'The nearby journal could not be read.'
+  elif (( nearby_count == 0 )); then
+    sb_ui_item good OK 'No nearby warning or error events found.'
+  else
+    while IFS=$separator read -r time source message; do
+      printf '\n  %s  %s%s%s\n    %s\n' "$time" "$SB_UI_ICE" "$source" "$SB_UI_RESET" "$message"
+    done < <(
+      jq -r '
+        def clipped($limit):
+          if length > $limit then .[0:$limit] + " ... [truncated \(length - $limit) characters]"
+          else .
+          end;
+        .nearby.events
+        | sort_by(.time_us)
+        | reverse
+        | .[:40][]
+        | [
+            (if .time_us > 0 then (.time_us / 1000000 | strflocaltime("%Y-%m-%d %H:%M:%S")) else "Unknown" end),
+            .source,
+            (.message | gsub("[\\r\\n\\t]+"; " ") | clipped(1000))
+          ]
+        | map(tostring | gsub("[\\r\\n\\t]+"; " "))
+        | join("\u001f")
+      ' "$report"
+    )
+    if (( nearby_count > nearby_shown )); then
+      sb_ui_item warning TRUNCATED "$((nearby_count - nearby_shown)) additional nearby events not shown."
+    fi
+  fi
+}
+
+report_count() {
+  if [[ $1 == true ]]; then
+    printf '%s' "$2"
+  else
+    printf 'UNKNOWN'
+  fi
+}
+
+report_count_tone() {
+  local available=$1 count=$2 problem_tone=$3
+
+  if [[ $available != true ]]; then
+    printf 'warning'
+  elif (( count > 0 )); then
+    printf '%s' "$problem_tone"
+  else
+    printf 'good'
+  fi
+}
+
+render_report() {
+  local report=$1 event_groups="$build_dir/event-groups.json" crash_groups="$build_dir/crash-groups.json"
+  local generated_at hostname errors warnings crashes failed_system failed_user config_updates
+  local events_available crashes_available
+  local reboot_required collection_error_count failed_units status status_tone
+  local running_kernel installed_kernels last_update
+  local event_count group_count crash_group_count value tone line unit state description path source message process signal
+  local latest_crash_pid='' pid crash_count event_uid
+  local timestamp level origin count details first_time last_time level_color
+  local separator=$'\x1f'
+
+  IFS=$'\t' read -r \
+    generated_at hostname errors warnings crashes failed_system failed_user config_updates \
+    events_available crashes_available reboot_required collection_error_count < <(
+      jq -r '
+        def crash:
+          .details.message_id? == "fc2e22bc6ee647b6b90729ab34a250b1"
+          or ((.details.coredump_executable? // "") != "");
+        [
+          .generated_at,
+          .hostname,
+          ([.events[] | select(.priority <= 3)] | length),
+          ([.events[] | select(.priority == 4)] | length),
+          ([.events[] | select(crash)] | length),
+          (.health.failed_system_units | length),
+          (.health.failed_user_units | length),
+          (.health.config_updates | length),
+          .availability.events,
+          .availability.crashes,
+          (if .kernel.reboot_required == null then "unknown" else (.kernel.reboot_required | tostring) end),
+          (.collection_errors | length)
+        ] | @tsv
+      ' "$report"
+    )
+  failed_units=$((failed_system + failed_user))
+  generated_at=$(date --date="$generated_at" '+%F %T %Z')
+
+  if (( failed_units > 0 )); then
+    status='Action needed'
+    status_tone=error
+  elif (( config_updates > 0 )) || [[ $reboot_required == true ]]; then
+    status='Maintenance needed'
+    status_tone=warning
+  elif (( collection_error_count > 0 )); then
+    status='Report incomplete; review collection errors'
+    status_tone=warning
+  elif (( errors > 0 || crashes > 0 )); then
+    status="Review errors from the last $report_hours hours"
+    status_tone=warning
+  elif (( warnings > 0 )); then
+    status="Warnings recorded in the last $report_hours hours"
+    status_tone=warning
+  else
+    status='No recent problems found'
+    status_tone=good
+  fi
+  if (( collection_error_count > 0 )) && [[ $status != Report\ incomplete* ]]; then
+    status+='; report is incomplete'
+  fi
+
+  jq '
+    def display_time:
+      if (.time_us? // 0) > 0 then
+        (.time_us / 1000000 | strflocaltime("%Y-%m-%d %H:%M:%S"))
+      elif (.time_local? // "") != "" then
+        (.time_local | sub("\\.[0-9]+$"; ""))
+      else "Unknown"
+      end;
+    [
+      .events[]
+      | . + {_display_time: display_time}
+    ]
+    | group_by([.priority, .origin, .source, .message])
+    | map(
+        . as $group
+        | ($group | max_by(._display_time))
+          + {
+              count: ($group | length),
+              first_time: ($group | min_by(._display_time) | ._display_time),
+              last_time: ($group | max_by(._display_time) | ._display_time)
+            }
+      )
+    | sort_by(.last_time)
+    | reverse
+  ' "$report" > "$event_groups"
+
+  jq '
+    def crash:
+      .details.message_id? == "fc2e22bc6ee647b6b90729ab34a250b1"
+      or ((.details.coredump_executable? // "") != "");
+    def display_time:
+      if (.time_us? // 0) > 0 then
+        (.time_us / 1000000 | strflocaltime("%F %R"))
+      elif (.time_local? // "") != "" then
+        (.time_local | sub("\\.[0-9]+$"; "") | .[0:16])
+      else "Unknown time"
+      end;
+    [
+      .events[]
+      | select(crash)
+      | {
+          time_us: (.time_us // 0),
+          timestamp: display_time,
+          process: (if (.details.coredump_executable? // "") != "" then
+                       (.details.coredump_executable | split("/") | last)
+                     elif (.details.command? // "") != "" then .details.command
+                     else .source end),
+          signal: (.details.signal // "unknown"),
+          pid: (.details.pid // ""),
+          uid: (.details.uid // "")
+        }
+    ]
+    | group_by([.process, .signal, .uid])
+    | map(. as $group | ($group | max_by(.time_us)) + {count: ($group | length)})
+    | sort_by(.time_us)
+    | reverse
+  ' "$report" > "$crash_groups"
+
+  event_count=$(jq '.events | length' "$report")
+  group_count=$(jq 'length' "$event_groups")
+  crash_group_count=$(jq 'length' "$crash_groups")
+  latest_crash_pid=$(jq -r --argjson uid "$UID" '
+    [.[] | select((.uid | tonumber?) == $uid and (.pid | test("^[0-9]+$")))]
+    | first.pid // ""
+  ' "$crash_groups")
+
+  sb_ui_title 'System Report'
+  sb_ui_field 'Host' "$hostname" accent
+  sb_ui_field 'Generated' "$generated_at"
+  sb_ui_field 'Status' "$status" "$status_tone"
+
+  if (( collection_error_count > 0 || failed_units > 0 || config_updates > 0 || crashes > 0 )) \
+    || [[ $reboot_required == true ]]; then
+    sb_ui_section 'Highlights'
+  fi
+  while IFS= read -r line; do
+    sb_ui_item warning INCOMPLETE "$line"
+  done < <(jq -r '.collection_errors[]' "$report")
+
+  while IFS=$separator read -r unit state description; do
+    message="$unit ($state)"
+    [[ -n $description ]] && message+=" - $description"
+    sb_ui_item error FAILED "$message"
+  done < <(
+    jq -r '
+      .health.failed_system_units[]
+      | [.unit, .sub, .description]
+      | map((. // "") | tostring | gsub("[\\r\\n\\t]+"; " "))
+      | join("\u001f")
+    ' "$report"
+  )
+
+  while IFS=$separator read -r unit state description; do
+    message="$unit ($state)"
+    [[ -n $description ]] && message+=" - $description"
+    sb_ui_item error FAILED "$message [user]"
+  done < <(
+    jq -r '
+      .health.failed_user_units[]
+      | [.unit, .sub, .description]
+      | map((. // "") | tostring | gsub("[\\r\\n\\t]+"; " "))
+      | join("\u001f")
+    ' "$report"
+  )
+
+  while IFS= read -r path; do
+    sb_ui_item warning CONFIG "Merge required: $path"
+  done < <(jq -r '.health.config_updates[] | gsub("[\\r\\n\\t]+"; " ")' "$report")
+
+  if [[ $reboot_required == true ]]; then
+    sb_ui_item warning REBOOT 'An installed kernel is newer than the running kernel.'
+  fi
+
+  while IFS=$separator read -r timestamp process signal pid crash_count event_uid; do
+    if [[ $signal == unknown ]]; then
+      message="$process"
+    else
+      message="$process ($signal)"
+    fi
+    (( crash_count > 1 )) && message+=" x$crash_count"
+    message+=" - $timestamp"
+    if [[ $event_uid == "$UID" && $pid =~ ^[0-9]+$ ]]; then
+      message+=" - PID $pid"
+    fi
+    sb_ui_item error CRASH "$message"
+  done < <(
+    jq -r '
+      .[:10][]
+      | [
+          .timestamp,
+          .process,
+          .signal,
+          .pid,
+          (.count | tostring),
+          .uid
+        ]
+      | map((. // "") | tostring | gsub("[\\r\\n\\t]+"; " "))
+      | join("\u001f")
+    ' "$crash_groups"
+  )
+  if (( crash_group_count > 10 )); then
+    sb_ui_item error CRASHES "$((crash_group_count - 10)) more crash groups are listed under Recent events."
+  fi
+
+  if (( failed_units > 0 || config_updates > 0 || crashes > 0 )) || [[ $reboot_required == true ]]; then
+    sb_ui_section 'Next Steps'
+  fi
+  if [[ -n $latest_crash_pid ]]; then
+    sb_ui_field 'Crash details' "$program crash $latest_crash_pid" accent
+    sb_ui_field 'Copy for AI' "$program crash $latest_crash_pid | wl-copy" accent
+  fi
+  (( failed_system > 0 )) && sb_ui_field 'System units' 'systemctl --failed'
+  (( failed_user > 0 )) && sb_ui_field 'User units' 'systemctl --user --failed'
+  (( config_updates > 0 )) && sb_ui_field 'Config updates' 'sudo pacdiff' warning
+  [[ $reboot_required == true ]] && sb_ui_field 'Kernel' 'Reboot to load the installed kernel.' warning
+
+  sb_ui_section 'Overview'
+  value=$(report_count "$events_available" "$errors")
+  tone=$(report_count_tone "$events_available" "$errors" error)
+  sb_ui_field 'Errors' "$value" "$tone"
+  value=$(report_count "$events_available" "$warnings")
+  tone=$(report_count_tone "$events_available" "$warnings" warning)
+  sb_ui_field 'Warnings' "$value" "$tone"
+  value=$(report_count "$crashes_available" "$crashes")
+  tone=$(report_count_tone "$crashes_available" "$crashes" error)
+  sb_ui_field 'Crashes' "$value" "$tone"
+
+  IFS=$separator read -r running_kernel installed_kernels last_update < <(
+    jq -r '
+      [
+        (.kernel.running_release // "Unknown"),
+        (if (.kernel.installed_kernels | length) == 0 then "Unknown"
+         else (.kernel.installed_kernels | map("\(.package): \(.release)") | join(", ")) end),
+        (if .kernel.last_update == null then "Unknown"
+         elif .kernel.last_update.from == null then
+           "\(.kernel.last_update.time): \(.kernel.last_update.package) installed \(.kernel.last_update.to)"
+         else
+           "\(.kernel.last_update.time): \(.kernel.last_update.package) \(.kernel.last_update.from) -> \(.kernel.last_update.to)"
+         end)
+      ]
+      | map((. // "") | tostring | gsub("[\\r\\n\\t]+"; " "))
+      | join("\u001f")
+    ' "$report"
+  )
+  sb_ui_section 'Kernel'
+  sb_ui_field 'Running' "$running_kernel" accent
+  sb_ui_field 'Installed' "$installed_kernels"
+  sb_ui_field 'Last update' "$last_update"
+
+  sb_ui_section "Recent events - last $report_hours hours ($group_count unique / $event_count total)"
+  if (( group_count == 0 )); then
+    sb_ui_item good OK 'No warning or error events found.'
+    return
+  fi
+  while IFS=$separator read -r timestamp level origin source count message details first_time last_time; do
+    [[ $details == - ]] && details=''
+    case $level in
+      EMERGENCY|ALERT|CRITICAL|ERROR) level_color=$SB_UI_ERROR ;;
+      WARNING) level_color=$SB_UI_WARNING ;;
+      *) level_color=$SB_UI_ICE ;;
+    esac
+    printf '\n  %s  %s[%s]%s %s[%s]%s %s%s%s' \
+      "$timestamp" "$level_color" "$level" "$SB_UI_RESET" \
+      "$SB_UI_MUTED" "$origin" "$SB_UI_RESET" "$SB_UI_ICE" "$source" "$SB_UI_RESET"
+    (( count > 1 )) && printf ' %sx%s%s' "$SB_UI_WARNING" "$count" "$SB_UI_RESET"
+    printf '\n    %s\n' "$message"
+    if (( count > 1 )); then
+      details="${details:+$details  }first=$first_time  last=$last_time"
+    fi
+    [[ -n $details ]] && printf '    %s%s%s\n' "$SB_UI_MUTED" "$details" "$SB_UI_RESET"
+  done < <(
+    jq -r '
+      .[]
+      | [
+          .last_time,
+          (.level | ascii_upcase),
+          (.origin | ascii_upcase),
+          .source,
+          (.count | tostring),
+          (.message | gsub("[\\r\\n\\t]+"; " ")),
+          (((.details // {})
+              | to_entries
+              | map("\(.key)=\(.value | tostring | gsub("[\\r\\n\\t]+"; " "))")
+              | join("  ")) as $details
+            | if $details == "" then "-" else $details end),
+          .first_time,
+          .last_time
+        ]
+      | map((. // "") | tostring | gsub("[\\r\\n\\t]+"; " "))
+      | join("\u001f")
+    ' "$event_groups"
+  )
+}
+
+while (($#)); do
+  case $1 in
+    crash)
+      [[ $report_mode == system ]] || die 'crash mode was specified more than once'
+      report_mode=crash
+      shift
+      if (($#)) && [[ $1 != --* ]]; then
+        crash_selector=$1
+        shift
+      fi
+      ;;
+    --include-command-line)
+      include_command_line=true
+      shift
+      ;;
+    --no-pager)
+      page_report=false
+      shift
+      ;;
+    -h|--help|help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [[ $include_command_line == true && $report_mode != crash ]]; then
+  die '--include-command-line requires crash mode'
+fi
+
+[[ -t 1 ]] || page_report=false
+[[ $page_report == true ]] || sb_ui_disable
 require_commands
 [[ -d $runtime_dir ]] || die "runtime directory not found: $runtime_dir"
-[[ -r $template ]] || die "report template not found: $template"
-mkdir -p "$report_dir"
-build_dir=$(mktemp -d "$report_dir/.build.XXXXXX")
+build_dir=$(mktemp -d "$runtime_dir/system-report.XXXXXX")
 trap 'rm -rf "$build_dir"' EXIT
 
-if ! journalctl --list-boots --output=json --no-pager > "$build_dir/boots-all.json"; then
-  die 'could not read the journal boot list'
+if [[ $report_mode == crash ]]; then
+  collect_crash_report "$crash_selector" "$build_dir/crash-report.json"
+  render_crash_report "$build_dir/crash-report.json" > "$build_dir/report.txt"
+  show_report "$build_dir/report.txt"
+  exit 0
 fi
-jq '[.[] | select(.index == 0 or .index == -1)] | sort_by(.index)' \
-  "$build_dir/boots-all.json" > "$build_dir/boots.json"
-jq -e 'any(.[]; .index == 0)' "$build_dir/boots.json" >/dev/null || die 'current boot not found in the journal'
 
-collect_journal 0 current "$build_dir/journal-current.json"
-if jq -e 'any(.[]; .index == -1)' "$build_dir/boots.json" >/dev/null; then
-  collect_journal -1 previous "$build_dir/journal-previous.json"
-else
-  printf '[]\n' > "$build_dir/journal-previous.json"
-fi
+collect_journal "$build_dir/journal.json"
 collect_noctalia "$build_dir/noctalia.json"
 jq -s 'add' \
-  "$build_dir/journal-current.json" \
-  "$build_dir/journal-previous.json" \
+  "$build_dir/journal.json" \
   "$build_dir/noctalia.json" \
   > "$build_dir/events.json"
 
@@ -343,14 +1122,12 @@ printf '%s\n' "${collection_errors[@]}" \
 jq -n \
   --arg generated_at "$(date --iso-8601=seconds)" \
   --arg hostname "$(uname -n)" \
-  --argjson journal_limit "$journal_limit" \
-  --argjson events_available "$journal_current_available" \
-  --argjson previous_events_available "$journal_previous_available" \
+  --argjson report_hours "$report_hours" \
+  --argjson events_available "$journal_available" \
   --argjson noctalia_available "$noctalia_available" \
   --argjson failed_system_available "$failed_system_available" \
   --argjson failed_user_available "$failed_user_available" \
   --argjson config_updates_available "$config_updates_available" \
-  --slurpfile boots "$build_dir/boots.json" \
   --slurpfile events "$build_dir/events.json" \
   --slurpfile failed_system "$build_dir/failed-system.json" \
   --slurpfile failed_user "$build_dir/failed-user.json" \
@@ -360,21 +1137,14 @@ jq -n \
     {
       generated_at: $generated_at,
       hostname: $hostname,
-      limits: {journal_events_per_boot: $journal_limit},
+      limits: {hours: $report_hours},
       availability: {
-        events: ($events_available and $previous_events_available and $noctalia_available),
-        crashes: ($events_available and $previous_events_available),
+        events: ($events_available and $noctalia_available),
+        crashes: $events_available,
         failed_system_units: $failed_system_available,
         failed_user_units: $failed_user_available,
         config_updates: $config_updates_available
       },
-      boots: ($boots[0] | map({
-        index,
-        id: .boot_id,
-        started_us: .first_entry,
-        ended_us: .last_entry,
-        label: (if .index == 0 then "current" else "previous" end)
-      })),
       events: $events[0],
       health: {
         failed_system_units: $failed_system[0],
@@ -384,17 +1154,12 @@ jq -n \
       kernel: $kernel[0],
       collection_errors: $errors[0]
     }
+    | walk(
+        if type == "string" then
+          gsub("[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f]+"; "")
+        else . end
+      )
   ' > "$build_dir/report.json"
 
-jq -nr \
-  --rawfile template "$template" \
-  --rawfile report "$build_dir/report.json" \
-  '$template | sub("__REPORT_DATA__"; ($report | @base64))' \
-  > "$build_dir/index.html"
-chmod 0600 "$build_dir/index.html"
-mv -f "$build_dir/index.html" "$report_file"
-
-printf '%s\n' "$report_file"
-if [[ $open_report == true ]]; then
-  xdg-open "$report_file" >/dev/null 2>&1 || die "could not open $report_file"
-fi
+render_report "$build_dir/report.json" > "$build_dir/report.txt"
+show_report "$build_dir/report.txt"
