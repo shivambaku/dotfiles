@@ -25,7 +25,7 @@ app_grid = false
 sort_by_usage = false
 
 [shell.launcher.providers.calculator]
-global = false
+global = true
 
 [shell.panel]
 borders = false
