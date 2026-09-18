@@ -23,6 +23,7 @@ git-delta
 gnome-keyring
 gpu-screen-recorder
 gtk4-layer-shell
+gvfs-smb
 hyprland
 hyprpicker
 intel-media-driver

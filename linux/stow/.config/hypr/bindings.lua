@@ -140,8 +140,20 @@ hl.bind(main_mod .. " + SHIFT + DOWN", move_floating_window(0, 50), { repeating 
 hl.bind(main_mod .. " + bracketleft", hl.dsp.window.move({ direction = "left" }))
 hl.bind(main_mod .. " + bracketright", hl.dsp.layout("promote"))
 
+local function focus_or_cycle_workspace(workspace)
+	return function()
+		local active = hl.get_active_workspace()
+		if active and active.id == workspace then
+			hl.dispatch(hl.dsp.window.cycle_next({ next = true, tiled = true }))
+			return
+		end
+
+		hl.dispatch(hl.dsp.focus({ workspace = workspace }))
+	end
+end
+
 for workspace = 1, 5 do
-	hl.bind(main_mod .. " + " .. workspace, hl.dsp.focus({ workspace = workspace }))
+	hl.bind(main_mod .. " + " .. workspace, focus_or_cycle_workspace(workspace))
 	hl.bind(main_mod .. " + SHIFT + " .. workspace, hl.dsp.window.move({ workspace = workspace }))
 end
 

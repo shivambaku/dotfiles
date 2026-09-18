@@ -149,29 +149,6 @@ show_label = false
 scale = 0.75
 color = "on_surface_variant"
 
-[desktop_widgets]
-enabled = false
-schema_version = 2
-widget_order = ["focus-lounge-spectrum@eDP-1"]
-
-[desktop_widgets.widget."focus-lounge-spectrum@eDP-1"]
-type = "audio_visualizer"
-output = "eDP-1"
-cx = 720.0
-cy = 832.0
-box_width = 1440.0
-box_height = 256.0
-rotation = 0.0
-
-[desktop_widgets.widget."focus-lounge-spectrum@eDP-1".settings]
-background = false
-bands = 12
-mirrored = true
-centered = false
-show_when_idle = false
-color_1 = "outline"
-color_2 = "primary"
-
 [dock]
 enabled = false
 
