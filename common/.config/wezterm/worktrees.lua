@@ -86,17 +86,59 @@ local function get_worktrees(git_root)
 end
 
 local function get_local_branches(git_root)
-	local success, stdout, stderr = run_git({ "for-each-ref", "--format=%(refname:short)", "refs/heads" }, git_root)
+	local success, stdout, stderr =
+		run_git({ "for-each-ref", "--format=%(refname:short)%09%(upstream)", "refs/heads" }, git_root)
+	if not success then
+		return nil, nil, nil, git_error_message(stdout, stderr)
+	end
+
+	local branches = {}
+	local branch_names = {}
+	local tracked_remote_refs = {}
+	for line in stdout:gmatch("[^\r\n]+") do
+		local branch, upstream = line:match("^([^\t]+)\t(.*)$")
+		if not branch then
+			branch = line
+			upstream = ""
+		end
+
+		table.insert(branches, branch)
+		branch_names[branch] = true
+		if upstream ~= "" then
+			tracked_remote_refs[upstream] = true
+		end
+	end
+
+	table.sort(branches)
+
+	return branches, branch_names, tracked_remote_refs
+end
+
+local function get_remote_branches(git_root, local_branch_names, tracked_remote_refs)
+	local success, stdout, stderr = run_git({
+		"for-each-ref",
+		"--format=%(refname)%09%(refname:short)%09%(refname:lstrip=3)%09%(symref)",
+		"refs/remotes",
+	}, git_root)
 	if not success then
 		return nil, git_error_message(stdout, stderr)
 	end
 
 	local branches = {}
-	for branch in stdout:gmatch("[^\r\n]+") do
-		table.insert(branches, branch)
+	for line in stdout:gmatch("[^\r\n]+") do
+		local ref, short_ref, branch, symref = line:match("^([^\t]+)\t([^\t]+)\t([^\t]+)\t?(.*)$")
+		if ref and symref == "" and not local_branch_names[branch] and not tracked_remote_refs[ref] then
+			table.insert(branches, {
+				branch = branch,
+				ref = ref,
+				label = short_ref .. " (remote)",
+			})
+		end
 	end
 
-	table.sort(branches)
+	table.sort(branches, function(a, b)
+		return a.label < b.label
+	end)
 
 	return branches
 end
@@ -134,7 +176,7 @@ local function worktree_label(worktree)
 	return label
 end
 
-local function add_worktree(window, pane, git_root, main_worktree_root, branch, create_branch)
+local function add_worktree(window, pane, git_root, main_worktree_root, branch, create_branch, start_point)
 	local worktree_path = build_worktree_path(git_root, main_worktree_root, branch)
 	if not worktree_path then
 		utils_session.notify("Worktree", window, "Unable to determine the new worktree path", "warn")
@@ -144,9 +186,15 @@ local function add_worktree(window, pane, git_root, main_worktree_root, branch, 
 	local args = { "worktree", "add" }
 
 	if create_branch then
+		if start_point then
+			table.insert(args, "--track")
+		end
 		table.insert(args, "-b")
 		table.insert(args, branch)
 		table.insert(args, worktree_path)
+		if start_point then
+			table.insert(args, start_point)
+		end
 	else
 		table.insert(args, worktree_path)
 		table.insert(args, branch)
@@ -162,9 +210,16 @@ local function add_worktree(window, pane, git_root, main_worktree_root, branch, 
 end
 
 local function create_worktree(window, pane, git_root, main_worktree_root, worktrees)
-	local branches, branch_error = get_local_branches(git_root)
+	local branches, local_branch_names, tracked_remote_refs, branch_error = get_local_branches(git_root)
 	if not branches then
 		utils_session.notify("Worktree", window, branch_error, "warn")
+		return
+	end
+
+	local remote_branches, remote_branch_error =
+		get_remote_branches(git_root, local_branch_names, tracked_remote_refs)
+	if not remote_branches then
+		utils_session.notify("Worktree", window, remote_branch_error, "warn")
 		return
 	end
 
@@ -176,6 +231,7 @@ local function create_worktree(window, pane, git_root, main_worktree_root, workt
 	end
 
 	local choices = {}
+	local remote_choices = {}
 	for _, branch in ipairs(branches) do
 		if not checked_out_branches[branch] then
 			table.insert(choices, {
@@ -183,6 +239,15 @@ local function create_worktree(window, pane, git_root, main_worktree_root, workt
 				id = branch,
 			})
 		end
+	end
+
+	for _, remote_branch in ipairs(remote_branches) do
+		local id = "__remote_branch__" .. remote_branch.ref
+		remote_choices[id] = remote_branch
+		table.insert(choices, {
+			label = remote_branch.label,
+			id = id,
+		})
 	end
 
 	table.insert(choices, {
@@ -198,6 +263,20 @@ local function create_worktree(window, pane, git_root, main_worktree_root, workt
 			fuzzy_description = "Branch: ",
 			action = wezterm.action_callback(function(child_window, child_pane, id, _)
 				if not id then
+					return
+				end
+
+				local remote_branch = remote_choices[id]
+				if remote_branch then
+					add_worktree(
+						child_window,
+						child_pane,
+						git_root,
+						main_worktree_root,
+						remote_branch.branch,
+						true,
+						remote_branch.ref
+					)
 					return
 				end
 
