@@ -8,7 +8,8 @@
     "session.half.page.down": "ctrl+d"
   },
   "plugins": [
-    "./ledger"
+    "./plugins/ledger",
+    "./plugins/account-status"
   ],
   "diffs": {
     "wrap": "word",
@@ -19,7 +20,7 @@
     "sidebar": "hide",
     "scrollbar": false,
     "thinking": "hide",
-    "permissions": "prompt",
+    "permissions": "autoaccept",
     "new_location": "inherit",
     "tps": false
   },

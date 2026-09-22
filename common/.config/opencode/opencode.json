@@ -2,13 +2,12 @@
   "$schema": "https://opencode.ai/config.json",
   "permissions": [
     { "action": "read", "resource": "*", "effect": "allow" },
-    { "action": "read", "resource": "**/appsettings.Development.json", "effect": "deny" }
-  ],
-  "agents": {
-    "title": {
-      "disabled": false
+    {
+      "action": "read",
+      "resource": "**/appsettings.Development.json",
+      "effect": "deny"
     }
-  },
+  ],
   "update": "auto",
   "worktree": {
     "directory": ".."

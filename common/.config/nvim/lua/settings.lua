@@ -30,6 +30,7 @@ vim.opt.wrap = false
 -- Keymapping
 vim.keymap.set("n", "<Esc>", "<CMD>noh<CR>")
 vim.keymap.set("n", "<leader>w", "<CMD>w<CR>", { desc = "Save buffer" })
+vim.keymap.set("n", "<leader>yp", "<CMD>CopyFilePath<CR>", { desc = "Copy file path" })
 vim.keymap.set("i", "<C-v>", "<C-r>+", { desc = "Paste from system clipboard" })
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
@@ -54,6 +55,28 @@ vim.keymap.set("n", "<leader>qn", "<Cmd>cnewer<CR>", { desc = "Newer quickfix li
 vim.keymap.set("n", "<leader>qp", "<Cmd>colder<CR>", { desc = "Older quickfix list" })
 
 -- User Commands
+vim.api.nvim_create_user_command("CopyFilePath", function()
+	local path
+	if vim.bo.filetype == "oil" then
+		local oil = require("oil")
+		local directory = oil.get_current_dir()
+		local entry = oil.get_cursor_entry()
+		if directory and entry then
+			path = vim.fn.simplify(vim.fs.joinpath(directory, entry.name))
+		end
+	elseif vim.bo.buftype == "" then
+		path = vim.fn.expand("%:p")
+	end
+
+	if not path or path == "" then
+		vim.notify("No file path to copy", vim.log.levels.WARN)
+		return
+	end
+
+	vim.fn.setreg("+", path, "v")
+	vim.notify("Copied: " .. path)
+end, { desc = "Copy the current file or Oil entry path to the clipboard" })
+
 vim.api.nvim_create_user_command("SetDatabaseURL", function()
 	local line = vim.api.nvim_get_current_line()
 	local _, match, _ = line:match('^(.-)"([^"]+)"(.*)$')
