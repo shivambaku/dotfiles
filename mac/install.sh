@@ -34,6 +34,11 @@ if [[ ! -f "$SCRIPT_DIR/Brewfile" ]]; then
 fi
 
 # Install packages from Brewfile
+# V1 and V2 install the same executable; remove the old formula before Bundle.
+if brew list --formula opencode >/dev/null 2>&1; then
+  log "Removing the OpenCode V1 formula before installing V2..."
+  brew uninstall --formula opencode
+fi
 log "Installing packages from Brewfile..."
 brew bundle install --file="$SCRIPT_DIR/Brewfile"
 

@@ -1,15 +1,16 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permission": {
-    "read": {
-      "*": "allow",
-      "**/appsettings.Development.json": "deny"
-    }
-  },
-  "agent": {
+  "permissions": [
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "**/appsettings.Development.json", "effect": "deny" }
+  ],
+  "agents": {
     "title": {
-      "disable": false
+      "disabled": false
     }
   },
-  "autoupdate": true
+  "update": "auto",
+  "worktree": {
+    "directory": ".."
+  }
 }

@@ -119,6 +119,17 @@ config.keys = {
 		action = lazygit.open(),
 	},
 	-- Tabs
+	-- Let terminal applications handle session-tab navigation.
+	{
+		mods = "CTRL",
+		key = "Tab",
+		action = act.DisableDefaultAssignment,
+	},
+	{
+		mods = "CTRL|SHIFT",
+		key = "Tab",
+		action = act.DisableDefaultAssignment,
+	},
 	{
 		mods = leader_mod,
 		key = "n",
