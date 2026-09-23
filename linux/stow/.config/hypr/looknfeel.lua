@@ -57,9 +57,7 @@ hl.window_rule({ match = { class = "^lounge-todos$" }, float = true })
 hl.window_rule({ match = { class = "^lounge-todos$" }, center = true })
 hl.window_rule({ match = { class = "^lounge-todos$" }, size = { 900, 700 } })
 
-hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, float = true })
-hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, center = true })
-hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, size = { 1000, 700 } })
+hl.window_rule({ match = { class = "^[Xx]dg-desktop-portal-gtk$" }, tile = true })
 
 hl.window_rule({ match = { class = "^hyprland-share-picker$" }, float = true })
 hl.window_rule({ match = { class = "^hyprland-share-picker$" }, center = true })

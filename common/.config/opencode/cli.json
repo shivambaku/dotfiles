@@ -8,8 +8,10 @@
     "session.half.page.down": "ctrl+d"
   },
   "plugins": [
+    "-opencode.prompt.footer",
     "./plugins/ledger",
-    "./plugins/account-status"
+    "./plugins/status-footer",
+    "./plugins/openai-usage"
   ],
   "diffs": {
     "wrap": "word",
