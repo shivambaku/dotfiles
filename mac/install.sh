@@ -59,9 +59,11 @@ else
 fi
 
 log "Linking configs with stow..."
+# Target ~/.config directly so Stow folds app folders, not ~/.config itself.
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
 git -C "$DOTFILES_DIR" submodule update --init --recursive
-stow -R -d "$DOTFILES_DIR" -t "$HOME" common
+stow -R --ignore='^\.config$' -d "$DOTFILES_DIR" -t "$HOME" common
+stow -R -d "$DOTFILES_DIR/common" -t "$HOME/.config" .config
 stow -R -d "$SCRIPT_DIR" -t "$HOME" stow
 
 log "=== Installation complete ==="

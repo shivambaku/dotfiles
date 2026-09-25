@@ -15,8 +15,11 @@ if ! command -v stow &>/dev/null; then
 fi
 
 log "Unlinking configs with stow..."
-stow -D -d "$DOTFILES_DIR" -t ~ common
-stow -D -d "$SCRIPT_DIR" -t ~ stow
+stow -D --ignore='^\.config$' -d "$DOTFILES_DIR" -t "$HOME" common
+if [[ -d "$HOME/.config" ]]; then
+  stow -D -d "$DOTFILES_DIR/common" -t "$HOME/.config" .config
+fi
+stow -D -d "$SCRIPT_DIR" -t "$HOME" stow
 
 log "Done! Symlinks removed."
 log "Note: Homebrew packages were not removed. Run 'brew bundle cleanup --file=$SCRIPT_DIR/Brewfile' to remove them."
