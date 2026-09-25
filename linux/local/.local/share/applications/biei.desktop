@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Biei
+GenericName=System Control Panel
+Comment=A keyboard-first control panel for your Linux system
+Icon=biei
+TryExec=biei
+Exec=wezterm start --always-new-process -- biei
+Terminal=false
+Categories=Settings;ConsoleOnly;
+Keywords=Biei;Control;System;Wi-Fi;Network;DNS;Bluetooth;Audio;Headset;

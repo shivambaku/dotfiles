@@ -47,4 +47,3 @@ alias oc='LEDGER_DEBUG=1 opencode'
 alias reload="source ~/.zshrc"
 alias cat="bat"
 alias yz="yazi"
-alias ff="fastfetch"
