@@ -7,12 +7,7 @@
     "session.half.page.up": "ctrl+u",
     "session.half.page.down": "ctrl+d"
   },
-  "plugins": [
-    "-opencode.prompt.footer",
-    "./plugins/ledger",
-    "./plugins/status-footer",
-    "./plugins/openai-usage"
-  ],
+  "plugins": ["../../Documents/Projects/Personal/opencode-ledger/src"],
   "diffs": {
     "wrap": "word",
     "view": "split",
@@ -35,10 +30,5 @@
   },
   "terminal": {
     "title": true
-  },
-  "debug": {
-    "devtools": false,
-    "timing": false,
-    "turn_tokens": false
   }
 }
