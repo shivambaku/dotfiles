@@ -9,6 +9,7 @@ read -r -p 'Install system packages and dotfiles? [y/N] ' reply
 scripts=(
   configure-pacman
   install-official-packages
+  configure-faillock
   configure-keyring
   configure-console
   configure-dotfiles
