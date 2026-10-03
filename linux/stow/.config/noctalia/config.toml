@@ -253,6 +253,7 @@ keyboard_backlight = true
 
 [lockscreen]
 enabled = true
+transition = []
 fingerprint = true
 lock_before_suspend = true
 blurred_desktop = false
