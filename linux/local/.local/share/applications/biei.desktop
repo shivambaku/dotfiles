@@ -9,4 +9,4 @@ TryExec=biei
 Exec=wezterm start --always-new-process -- biei
 Terminal=false
 Categories=Settings;ConsoleOnly;
-Keywords=Biei;Control;System;Wi-Fi;Network;DNS;Bluetooth;Audio;Headset;
+Keywords=Biei;Control;System;Wi-Fi;Network;DNS;Bluetooth;Audio;Headset;Reports;Diagnostics;Logs;Crashes;

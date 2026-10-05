@@ -63,30 +63,9 @@ fprintd-verify
 
 | Launcher                        | Command                  | Arguments                                                                            | Summary                                                                                          |
 | ------------------------------- | ------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `Biei`                          | `biei`                  | `home`, `wifi`, `dns`, `bluetooth`, `--focused`, `--help`                            | System overview, Wi-Fi, DNS, and Bluetooth controls.                                             |
-| `SB - System Report`            | `report-system`          | `crash [latest\|PID] [--include-command-line]`, `--no-pager`, `--help`                | Summarizes recent problems and produces focused, shareable crash reports.                         |
+| `Biei`                          | `biei`                  | `home`, `wifi`, `dns`, `bluetooth`, `reports`, `--focused`, `--help`                 | System overview, diagnostics, Wi-Fi, DNS, and Bluetooth controls.                                 |
 | `SB - System Update`            | `update-system`          | None                                                                                 | Prunes the package cache, then updates Arch, AUR, and user Flatpak packages.                     |
 | `SB - System Update + Firmware` | `update-system`          | `--firmware`                                                                         | Runs the system update and installs available device firmware updates.                           |
 
-### Crash Reports
-
-Open a focused report for the latest crash or a PID shown in the system report:
-
-```sh
-report-system crash latest
-report-system crash 135971
-```
-
-Copy a plain-text report to the clipboard for review before sending it to AI:
-
-```sh
-report-system crash latest | wl-copy
-```
-
-Process command lines can contain secrets or private identifiers, so they are omitted by default. Add one only after reviewing it:
-
-```sh
-report-system crash 135971 --include-command-line
-```
-
-Focused reports never include the raw core dump, which can contain passwords, tokens, and private document contents.
+Open `biei reports` for failed services, grouped events, config updates, and crash details.
+Use `/` to search, Space for the time range or copying the report, Enter for details, and `y` to copy an item or its open details.
