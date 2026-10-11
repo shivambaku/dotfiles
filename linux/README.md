@@ -63,9 +63,6 @@ fprintd-verify
 
 | Launcher                        | Command                  | Arguments                                                                            | Summary                                                                                          |
 | ------------------------------- | ------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `Biei`                          | `biei`                  | `home`, `wifi`, `dns`, `bluetooth`, `reports`, `--focused`, `--help`                 | System overview, diagnostics, Wi-Fi, DNS, and Bluetooth controls.                                 |
+| `Biei`                          | `biei`                  | `--help`                                                                             | Linux control panel.                                                                             |
 | `SB - System Update`            | `update-system`          | None                                                                                 | Prunes the package cache, then updates Arch, AUR, and user Flatpak packages.                     |
 | `SB - System Update + Firmware` | `update-system`          | `--firmware`                                                                         | Runs the system update and installs available device firmware updates.                           |
-
-Open `biei reports` for failed services, grouped events, config updates, and crash details.
-Use `/` to search, Space for the time range or copying the report, Enter for details, and `y` to copy an item or its open details.

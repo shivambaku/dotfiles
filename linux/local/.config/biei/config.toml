@@ -1,0 +1,3 @@
+[models]
+# llama-server --list-devices shows the available backend names.
+device = "Vulkan0"

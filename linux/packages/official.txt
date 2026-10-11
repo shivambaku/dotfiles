@@ -19,6 +19,7 @@ fnm
 fprintd
 fwupd
 fzf
+ggml-vulkan
 git-delta
 gnome-keyring
 gpu-screen-recorder
@@ -34,6 +35,7 @@ lib32-mesa
 lib32-vulkan-intel
 libnotify
 libva-utils
+llama-cpp
 mesa
 mpv
 mpv-mpris

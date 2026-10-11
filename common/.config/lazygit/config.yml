@@ -11,7 +11,7 @@ gui:
   sidePanelWidth: 0.4
   expandFocusedSidePanel: true
   expandedSidePanelWeight: 3
-  wrapLinesInStagingView: false
+  wrapLinesInDiffView: false
   showBottomLine: false
   showCommandLog: false
   showFileTree: false
@@ -38,5 +38,5 @@ gui:
       - '#e1e8ec'
     searchingActiveBorderColor:
       - '#d3b26f'
-  authorColors:
-    '*': '#b3a1d6'
+    authorColors:
+      '*': '#b3a1d6'
