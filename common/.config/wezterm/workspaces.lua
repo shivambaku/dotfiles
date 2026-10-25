@@ -8,7 +8,6 @@ local notes_dir = wezterm.home_dir .. "/Documents/Notes"
 local project_dir = wezterm.home_dir .. "/Documents/Projects"
 local workspace_prefix = "path:"
 local slot_file_name = "workspace-slots.json"
-local is_windows = wezterm.target_triple:find("windows") ~= nil
 local is_macos = wezterm.target_triple:find("apple%-darwin") ~= nil
 
 local last_workspace = nil
@@ -26,10 +25,6 @@ local function project_dirs()
 end
 
 local function slots_file()
-	if is_windows then
-		return nil
-	end
-
 	local data_home
 	if is_macos then
 		data_home = utils_session.join_path(wezterm.home_dir, "Library", "Application Support")
@@ -42,10 +37,6 @@ end
 
 local function load_saved_workspaces()
 	local path = slots_file()
-	if not path then
-		return {}
-	end
-
 	local file = io.open(path, "r")
 	if not file then
 		return {}
@@ -68,10 +59,6 @@ end
 
 local function save_saved_workspaces(saved_workspaces)
 	local path = slots_file()
-	if not path then
-		return true
-	end
-
 	local dir = utils_session.dirname(path)
 	if not dir then
 		return false
@@ -296,10 +283,6 @@ end
 
 function module.choose_saved_workspace()
 	return wezterm.action_callback(function(window, pane)
-		if is_windows then
-			return
-		end
-
 		local saved_workspaces = load_saved_workspaces()
 		local choices = {}
 
@@ -351,27 +334,16 @@ end
 
 function module.save_workspace(slot)
 	return wezterm.action_callback(function(window, _)
-		if is_windows then
-			return
-		end
-
 		local saved_workspaces = load_saved_workspaces()
 		local current_workspace = window:active_workspace()
 		saved_workspaces[tostring(slot)] = current_workspace
 
-		local ok = save_saved_workspaces(saved_workspaces)
-		if not ok then
-			return
-		end
+		save_saved_workspaces(saved_workspaces)
 	end)
 end
 
 function module.switch_to_saved_workspace(slot)
 	return wezterm.action_callback(function(window, pane)
-		if is_windows then
-			return
-		end
-
 		local saved_workspaces = load_saved_workspaces()
 		local workspace_name = saved_workspaces[tostring(slot)]
 		if type(workspace_name) ~= "string" then

@@ -14,6 +14,13 @@ local is_macos = wezterm.target_triple:find("apple%-darwin") ~= nil
 local mod = is_macos and "SUPER" or "ALT"
 local leader_mod = "LEADER|" .. mod
 
+local function vim_window_action(key)
+	return act.Multiple({
+		act.SendKey({ key = "w", mods = "CTRL" }),
+		act.SendKey({ key = key }),
+	})
+end
+
 -- Shows the project name and the assigned group on the bottom right
 wezterm.on("update-status", function(window, _)
 	window:set_right_status(" " .. workspaces.status_text(window:active_workspace()) .. " ")
@@ -163,28 +170,19 @@ config.keys = {
 	utils_vim.key_map_vim_mix(
 		leader_mod,
 		"-",
-		act.Multiple({
-			act.SendKey({ key = "w", mods = "CTRL" }),
-			act.SendKey({ key = "s" }),
-		}),
+		vim_window_action("s"),
 		act.SplitVertical({ domain = "CurrentPaneDomain" })
 	),
 	utils_vim.key_map_vim_mix(
 		leader_mod,
 		"\\",
-		act.Multiple({
-			act.SendKey({ key = "w", mods = "CTRL" }),
-			act.SendKey({ key = "v" }),
-		}),
+		vim_window_action("v"),
 		act.SplitHorizontal({ domain = "CurrentPaneDomain" })
 	),
 	utils_vim.key_map_vim_mix(
 		leader_mod,
 		"w",
-		act.Multiple({
-			act.SendKey({ key = "w", mods = "CTRL" }),
-			act.SendKey({ key = "q" }),
-		}),
+		vim_window_action("q"),
 		act.CloseCurrentPane({ confirm = false })
 	),
 	utils_vim.key_map_vim_mix(
@@ -209,50 +207,7 @@ config.keys = {
 		}),
 		act.SetPaneZoomState(false)
 	),
-	utils_vim.key_map_vim_mix(
-		leader_mod,
-		"h",
-		act.Multiple({
-			act.SendKey({ key = "w", mods = "CTRL" }),
-			act.SendKey({ key = "h" }),
-		}),
-		act.ActivatePaneDirection("Left")
-	),
-	utils_vim.key_map_vim_mix(
-		leader_mod,
-		"j",
-		act.Multiple({
-			act.SendKey({ key = "w", mods = "CTRL" }),
-			act.SendKey({ key = "j" }),
-		}),
-		act.ActivatePaneDirection("Down")
-	),
-	utils_vim.key_map_vim_mix(
-		leader_mod,
-		"k",
-		act.Multiple({
-			act.SendKey({ key = "w", mods = "CTRL" }),
-			act.SendKey({ key = "k" }),
-		}),
-		act.ActivatePaneDirection("Up")
-	),
-	utils_vim.key_map_vim_mix(
-		leader_mod,
-		"l",
-		act.Multiple({
-			act.SendKey({ key = "w", mods = "CTRL" }),
-			act.SendKey({ key = "l" }),
-		}),
-		act.ActivatePaneDirection("Right")
-	),
-	utils_vim.key_map_vim_mix(
-		leader_mod,
-		";",
-		act.Multiple({
-			act.SendKey({ mods = "CTRL", key = "w" }),
-			act.SendKey({ key = "w" }),
-		})
-	),
+	utils_vim.key_map_vim_mix(leader_mod, ";", vim_window_action("w")),
 
 	-- Neovim
 	-- Telescope file finder
@@ -277,14 +232,25 @@ config.keys = {
 	),
 	-- Harpoon navigation
 	utils_vim.key_map_vim_mix(mod, "h", act.SendKey({ mods = "CTRL", key = "h" })),
-	utils_vim.key_map_vim_mix(mod, "1", act.SendKey({ mods = "CTRL", key = "!" })),
-	utils_vim.key_map_vim_mix(mod, "2", act.SendKey({ mods = "CTRL", key = "@" })),
-	utils_vim.key_map_vim_mix(mod, "3", act.SendKey({ mods = "CTRL", key = "#" })),
-	utils_vim.key_map_vim_mix(mod, "4", act.SendKey({ mods = "CTRL", key = "$" })),
-	utils_vim.key_map_vim_mix(mod, "5", act.SendKey({ mods = "CTRL", key = "%" })),
 	-- Multi cursor
 	utils_vim.key_map_vim_mix(mod, "d", act.SendKey({ mods = "CTRL", key = "n" })),
 }
+
+for _, binding in ipairs({ { "h", "Left" }, { "j", "Down" }, { "k", "Up" }, { "l", "Right" } }) do
+	table.insert(
+		config.keys,
+		utils_vim.key_map_vim_mix(
+			leader_mod,
+			binding[1],
+			vim_window_action(binding[1]),
+			act.ActivatePaneDirection(binding[2])
+		)
+	)
+end
+
+for index, key in ipairs({ "!", "@", "#", "$", "%" }) do
+	table.insert(config.keys, utils_vim.key_map_vim_mix(mod, tostring(index), act.SendKey({ mods = "CTRL", key = key })))
+end
 
 for _, key in ipairs({ "k", "w", "n", "f", "+", "-", "r" }) do
 	table.insert(config.keys, 1, {

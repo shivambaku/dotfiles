@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PACKAGE_DIR="$SCRIPT_DIR/packages"
 LINUX_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DOTFILES_DIR="$(cd "$LINUX_DIR/.." && pwd)"
 

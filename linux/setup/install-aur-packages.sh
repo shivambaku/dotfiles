@@ -2,7 +2,7 @@
 set -euo pipefail
 source "$(dirname "$0")/_common.sh"
 
-mapfile -t manifest < "$LINUX_DIR/packages/aur.txt"
+mapfile -t manifest < "$PACKAGE_DIR/aur.txt"
 packages=()
 for package in "${manifest[@]}"; do
   [[ -z "$package" || "$package" == "paru" ]] || packages+=("$package")

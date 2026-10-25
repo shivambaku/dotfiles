@@ -1,11 +1,8 @@
 tap "anomalyco/tap", "https://github.com/anomalyco/homebrew-tap.git"
-tap "jundot/omlx", "https://github.com/jundot/omlx"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
-# Linux virtual machines
-brew "lima"
 # Container runtimes on MacOS (and Linux) with minimal setup
 brew "colima"
 # Pack, ship and run any application as a lightweight container
@@ -66,11 +63,9 @@ cask "discord"
 cask "firefox"
 # Screen colour temperature controller
 cask "flux-app"
-cask "font-meslo-lg-nerd-font"
+cask "font-commit-mono-nerd-font"
 # App to manage software development and track bugs
 cask "linear"
-# Provides updates to various Microsoft products
-cask "microsoft-auto-update"
 # Intercept, modify, replay, save HTTP/S traffic
 cask "mitmproxy"
 # Reverse proxy, secure introspectable tunnels to localhost

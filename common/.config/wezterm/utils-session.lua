@@ -1,10 +1,8 @@
 local wezterm = require("wezterm")
 local module = {}
 
-local path_sep = wezterm.target_triple:find("windows") and "\\" or "/"
-
 function module.join_path(...)
-	return table.concat({ ... }, path_sep)
+	return table.concat({ ... }, "/")
 end
 
 function module.notify(scope, window, message, level)

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PACKAGE_DIR="$SCRIPT_DIR/packages"
+PACKAGE_DIR="$SCRIPT_DIR/setup/packages"
 temporary="$(mktemp -d)"
 trap 'rm -rf "$temporary"' EXIT
 

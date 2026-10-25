@@ -1,7 +1,9 @@
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+
 # oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
 
-ZSH_CUSTOM=$HOME/.config/zsh/custom
+ZSH_CUSTOM="$XDG_CONFIG_HOME/zsh/custom"
 ZSH_THEME="dotfiles"
 DISABLE_AUTO_TITLE="true"
 DISABLE_LS_COLORS="true"
@@ -17,24 +19,22 @@ plugins=(
     fzf
 )
 
-source $ZSH/oh-my-zsh.sh
-source "${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/theme/fzf.zsh"
+source "$ZSH/oh-my-zsh.sh"
+source "$XDG_CONFIG_HOME/dotfiles/theme/fzf.zsh"
 
 # Clear vi-mode right prompt (mode indicator handled by theme)
-RPS1=''
 RPROMPT=''
 
 # Exports
 export EDITOR='nvim'
-export XDG_CONFIG_HOME="$HOME/.config"
-export EZA_CONFIG_DIR="$HOME/.config/eza"
+export EZA_CONFIG_DIR="$XDG_CONFIG_HOME/eza"
 
 if command -v fnm >/dev/null; then
     eval "$(fnm env --use-on-cd --version-file-strategy=recursive --shell zsh)"
 fi
 
 # Hotkeys
-bindkey '^E' edit-command-line 
+bindkey '^E' edit-command-line
 
 # Aliases
 alias n='nvim .'
@@ -43,7 +43,7 @@ alias ll='ls -lh --git --icons=always'
 alias lla='ll -a'
 alias lzg="lazygit"
 alias lzd="lazydocker"
-alias oc='LEDGER_DEBUG=1 opencode'
+alias oc='opencode'
 alias reload="source ~/.zshrc"
 alias cat="bat"
 alias yz="yazi"

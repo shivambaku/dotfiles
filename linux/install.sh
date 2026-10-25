@@ -26,7 +26,7 @@ scripts=(
 )
 
 for script in "${scripts[@]}"; do
-  "$SCRIPT_DIR/scripts/$script.sh"
+  "$SCRIPT_DIR/setup/$script.sh"
 done
 
 printf 'Installation complete\n'

@@ -1,3 +1,30 @@
 [models]
 # llama-server --list-devices shows the available backend names.
 device = "Vulkan0"
+# Pinned comparison runtime (d1 needs a newer build than Arch's 0.6.0).
+server = "~/.local/share/biei/runtimes/llama-b11669/llama-server"
+batch_size = 4096
+
+[[models.profiles]]
+id = "hei-qwen35"
+name = "Hei Qwen3.5 4B"
+purpose = "Experimental structured-chat assistant routing"
+repo = "unsloth/Qwen3.5-4B-GGUF"
+revision = "e87f176479d0855a907a41277aca2f8ee7a09523"
+file = "Qwen3.5-4B-Q8_0.gguf"
+size_bytes = 4482403488
+context_size = 8192
+port = 8765
+gpu_layers = 99
+
+[[models.profiles]]
+id = "hei-d1"
+name = "Hei d1 3B"
+purpose = "Experimental System One assistant routing"
+repo = "LiquidAI/d1-3B-GGUF"
+revision = "bb1e436ea78eb96a3f1acb6da865f70c2fbeb563"
+file = "d1-3B-Q8_0.gguf"
+size_bytes = 2874781280
+context_size = 8192
+port = 8766
+gpu_layers = 99
