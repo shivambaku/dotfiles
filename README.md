@@ -1,55 +1,50 @@
 # Dotfiles
 
-Dotfiles for macOS and Arch Linux.
+## Install Arch
 
-## Layout
+Boot in UEFI mode and run `archinstall` with:
 
-- `common/`: shared application configuration.
-- `linux/stow/` and `mac/stow/`: platform-specific configuration.
-- `linux/local/`: individually linked configuration, commands, and launchers.
-- `linux/setup/` and `mac/setup/`: installation steps and `packages/` manifests.
+- Disk: default layout with LUKS encryption
+- Bootloader: `systemd-boot`
+- Unified kernel images: enabled
+- Profile: `Minimal`
+- Bluetooth: enabled
+- Audio: `PipeWire`
+- Power management: `tuned`
+- Firewall: `ufw`
+- Network: `NetworkManager`
+- User: create a normal user with sudo access
+- Additional packages: `git`
 
-Theme files live in [`common/.config/dotfiles/theme`](common/.config/dotfiles/theme/README.md).
+## Install dotfiles
 
-## Install
+Log in as your normal user and connect with `nmtui` if needed:
 
 ```bash
 git clone https://github.com/shivambaku/dotfiles.git
 cd dotfiles
 ./install.sh
+reboot
 ```
 
-The root installer selects the platform. Each platform installer runs its setup
-steps in order. See [Linux setup](linux/README.md) for the Arch prerequisites.
-On macOS, setup installs Homebrew if needed, applies the Brewfile, installs
-Oh My Zsh, and links configuration.
+After rebooting, log in on TTY1 to start Hyprland automatically.
+The installer includes 1Password through AUR; open it and sign in.
 
-## Link configuration only
+## Workspaces
 
-With Git and GNU Stow installed, run the appropriate command without installing
-packages or configuring system services:
+| Workspace | Role               |
+| --------- | ------------------ |
+| `1`       | Terminal / Work    |
+| `2`       | Browser            |
+| `3`       | Communication      |
+| `4`       | Project Management |
+| `5`       | Lounge             |
 
-```bash
-./linux/setup/configure-dotfiles.sh
-# or, on macOS:
-./mac/setup/configure-dotfiles.sh
-```
+## Updates
 
-Both initialize the Zsh plugin submodules. Linux also refreshes the desktop-entry
-database using `update-desktop-database` from `desktop-file-utils`.
-Shared and platform configuration use normal folded Stow links; only
-`linux/local/` uses `--no-folding` to coexist with application-created files.
+Run `update-system` to prune package caches and update Arch, AUR, and user
+Flatpak apps. Add `--firmware` to include firmware updates.
 
-## Unlink
+---
 
-Run `./linux/unlink.sh` or `./mac/unlink.sh` to remove managed links. This leaves
-repository files, installed packages, services, and system settings in place;
-it does not restore previous configuration.
-
-## Package manifests
-
-- Linux: `linux/setup/packages/{official,aur,npm,flatpak}.txt`.
-- macOS: `mac/setup/packages/Brewfile`.
-
-`./linux/dump.sh` reports package differences. `./mac/dump.sh` overwrites the
-Brewfile with the installed Homebrew selection; review its diff before committing.
+The last version with macOS support is preserved in the `last-macos-support` Git tag.

@@ -8,7 +8,6 @@ local notes_dir = wezterm.home_dir .. "/Documents/Notes"
 local project_dir = wezterm.home_dir .. "/Documents/Projects"
 local workspace_prefix = "path:"
 local slot_file_name = "workspace-slots.json"
-local is_macos = wezterm.target_triple:find("apple%-darwin") ~= nil
 
 local last_workspace = nil
 
@@ -25,12 +24,7 @@ local function project_dirs()
 end
 
 local function slots_file()
-	local data_home
-	if is_macos then
-		data_home = utils_session.join_path(wezterm.home_dir, "Library", "Application Support")
-	else
-		data_home = os.getenv("XDG_DATA_HOME") or utils_session.join_path(wezterm.home_dir, ".local", "share")
-	end
+	local data_home = os.getenv("XDG_DATA_HOME") or utils_session.join_path(wezterm.home_dir, ".local", "share")
 
 	return utils_session.join_path(data_home, "wezterm", slot_file_name)
 end

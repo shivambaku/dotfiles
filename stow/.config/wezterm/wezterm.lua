@@ -10,8 +10,7 @@ local workspaces = require("workspaces")
 local worktrees = require("worktrees")
 local lazygit = require("lazygit")
 
-local is_macos = wezterm.target_triple:find("apple%-darwin") ~= nil
-local mod = is_macos and "SUPER" or "ALT"
+local mod = "ALT"
 local leader_mod = "LEADER|" .. mod
 
 local function vim_window_action(key)

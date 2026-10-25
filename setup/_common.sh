@@ -2,8 +2,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_DIR="$SCRIPT_DIR/packages"
-LINUX_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-DOTFILES_DIR="$(cd "$LINUX_DIR/.." && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 [[ $EUID -ne 0 ]] || { printf 'Run this script as your normal user\n' >&2; exit 1; }
 

@@ -3,21 +3,32 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-log()  { echo -e "\033[1;32m$*\033[0m"; }
-error() { echo -e "\033[1;31m$*\033[0m"; }
+read -r -p 'Install system packages and dotfiles? [y/N] ' reply
+[[ "$reply" == "y" || "$reply" == "Y" ]] || exit 0
 
-# Detect OS
-case "$(uname -s)" in
-  Darwin)
-    log "Detected macOS"
-    exec "$SCRIPT_DIR/mac/install.sh"
-    ;;
-  Linux)
-    log "Detected Linux"
-    exec "$SCRIPT_DIR/linux/install.sh" "$@"
-    ;;
-  *)
-    error "Unsupported OS: $(uname -s)"
-    exit 1
-    ;;
-esac
+scripts=(
+  configure-pacman
+  install-official-packages
+  configure-faillock
+  configure-keyring
+  configure-console
+  configure-dotfiles
+  configure-user-dirs
+  configure-desktop
+  configure-services
+  configure-boot
+  configure-shell
+  configure-development
+  install-npm-packages
+  install-aur-packages
+  install-flatpaks
+  configure-voxtype
+)
+
+for script in "${scripts[@]}"; do
+  "$SCRIPT_DIR/setup/$script.sh"
+done
+
+printf 'Installation complete\n'
+printf 'Reboot, then enroll a fingerprint with: fprintd-enroll\n'
+printf 'Check firmware with: update-system --firmware\n'
