@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export LC_ALL=C
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PACKAGE_DIR="$SCRIPT_DIR/setup/packages"
@@ -22,21 +23,39 @@ fi
 
 report_diff() {
   local heading=$1
-  local left=$2
-  local right=$3
+  local manifest=$2
+  local installed=$3
   local result
+  local -a missing=() untracked=()
 
-  result="$(comm -23 "$left" "$right")"
-  printf '%s\n' "$heading"
+  result="$(comm -23 "$manifest" "$installed")"
   if [[ -n "$result" ]]; then
-    printf '%s\n' "$result"
+    mapfile -t missing <<< "$result"
+  fi
+
+  if (($# == 4)); then
+    result="$(comm -23 "$4" "$manifest")"
+    if [[ -n "$result" ]]; then
+      mapfile -t untracked <<< "$result"
+    fi
+    if ((${#missing[@]} == 0 && ${#untracked[@]} == 0)); then
+      printf '%s — no differences\n' "$heading"
+    else
+      printf '%s — %d missing, %d untracked\n' "$heading" "${#missing[@]}" "${#untracked[@]}"
+    fi
   else
-    printf '  none\n'
+    printf '%s — %d missing\n' "$heading" "${#missing[@]}"
+  fi
+
+  if ((${#missing[@]})); then
+    printf '  %s (missing)\n' "${missing[@]}"
+  fi
+  if ((${#untracked[@]})); then
+    printf '  %s\n' "${untracked[@]}"
   fi
 }
 
-report_diff 'Missing official packages:' "$PACKAGE_DIR/official.txt" "$temporary/all.txt"
-report_diff 'Untracked explicit official packages:' "$temporary/official-explicit.txt" "$PACKAGE_DIR/official.txt"
-report_diff 'Missing AUR packages:' "$PACKAGE_DIR/aur.txt" "$temporary/aur-explicit.txt"
-report_diff 'Untracked explicit foreign packages:' "$temporary/aur-explicit.txt" "$PACKAGE_DIR/aur.txt"
-report_diff 'Missing Flatpak applications:' "$PACKAGE_DIR/flatpak.txt" "$temporary/flatpak-installed.txt"
+report_diff 'Official packages' "$PACKAGE_DIR/official.txt" "$temporary/all.txt" "$temporary/official-explicit.txt"
+printf '\n'
+report_diff 'AUR packages' "$PACKAGE_DIR/aur.txt" "$temporary/aur-explicit.txt" "$temporary/aur-explicit.txt"
+report_diff 'Flatpak apps' "$PACKAGE_DIR/flatpak.txt" "$temporary/flatpak-installed.txt"
