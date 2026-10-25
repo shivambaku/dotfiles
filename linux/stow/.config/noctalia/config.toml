@@ -18,6 +18,7 @@ enabled = true
 speed = 1.8
 
 [shell.launcher]
+layout = "simple"
 categories = false
 show_icons = true
 compact = true
