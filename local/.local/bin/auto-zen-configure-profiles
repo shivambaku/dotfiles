@@ -8,6 +8,7 @@ config_dir=${ZEN_CONFIG_DIR:-"${XDG_CONFIG_HOME:-$HOME/.config}/zen"}
 style_names=('dotfiles.css' 'taskbar-tabs.css')
 import_lines=('@import url("dotfiles.css");' '@import url("taskbar-tabs.css");')
 preference_names=(
+	'browser.tabs.loadBookmarksInTabs'
 	'browser.taskbarTabs.enabled'
 	'full-screen-api.warning.timeout'
 	'toolkit.legacyUserProfileCustomizations.stylesheets'
@@ -23,7 +24,7 @@ preference_names=(
 	'zen.view.show-newtab-button-top'
 	'zen.urlbar.behavior'
 )
-preference_values=('true' '0' 'true' 'true' 'true' 'true' 'true' 'false' 'true' 'false' 'false' 'false' 'false' '"float"')
+preference_values=('true' 'true' '0' 'true' 'true' 'true' 'true' 'true' 'false' 'true' 'false' 'false' 'false' 'false' '"float"')
 removed_preference_names=('zen.workspaces.show-workspace-indicator' 'browser.download.autohideButton')
 
 [[ -f $profiles_ini ]] || exit 0
@@ -49,7 +50,7 @@ replace_if_changed() {
 }
 
 configure_shortcuts() {
-	local target=$1 temporary status has_id=0
+	local target=$1 temporary status
 	local shortcut_id='dotfiles-open-location-f6'
 	local compact_action='cmd_toggleCompactModeIgnoreHover'
 
@@ -59,55 +60,27 @@ configure_shortcuts() {
 		return 2
 	fi
 
-	if jq -e --arg id "$shortcut_id" 'any(.shortcuts[]; .id == $id)' "$target" >/dev/null; then
-		has_id=1
+	if jq -e --arg id "$shortcut_id" --arg action "$compact_action" '
+		any(.shortcuts[]; .id == $id or (.action == $action and .disabled == false and .reserved == false))
+	' "$target" >/dev/null; then
+		:
 	else
 		status=$?
-		if ((status != 1)); then
-			printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
-			return 2
-		fi
-	fi
-
-	if ((!has_id)) && jq -e 'any(.shortcuts[]; .keycode == "VK_F6")' "$target" >/dev/null; then
-		printf 'F6 is already assigned in %s\n' "$target" >&2
+		((status == 1)) && return 1
+		printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
 		return 2
-	fi
-
-	if ((has_id)); then
-		if jq -e --arg action "$compact_action" '
-			any(.shortcuts[]; .action == $action and .disabled == false and .reserved == false)
-		' "$target" >/dev/null; then
-			:
-		else
-			status=$?
-			((status == 1)) && return 1
-			printf 'Unsupported Zen shortcuts format: %s\n' "$target" >&2
-			return 2
-		fi
 	fi
 
 	temporary=$(mktemp "$target.tmp.XXXXXX")
 	if ! jq --arg id "$shortcut_id" --arg action "$compact_action" '
 		.shortcuts |= (
 			map(
-				if .action == $action and .disabled == false and .reserved == false then
+				select(.id != $id)
+				| if .action == $action and .disabled == false and .reserved == false then
 					.reserved = true
 				else .
 				end
 			)
-			| if any(.[]; .id == $id) then . else . + [{
-				id: $id,
-				key: "",
-				keycode: "VK_F6",
-				group: "pageOperations",
-				l10nId: "zen-location-open-shortcut",
-				modifiers: {control: false, alt: false, shift: false, meta: false, accel: false},
-				action: "Browser:OpenLocation",
-				disabled: false,
-				reserved: true,
-				internal: false
-			}] end
 		)
 	' "$target" > "$temporary"; then
 		rm -f "$temporary"
